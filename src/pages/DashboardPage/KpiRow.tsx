@@ -1,0 +1,55 @@
+import { makeStyles, tokens } from '@fluentui/react-components'
+import { CheckmarkCircleRegular, ClockRegular, ReceiptRegular } from '@fluentui/react-icons'
+import { KpiCard } from '../../components/KpiCard'
+import { formatCurrency, formatNumber } from '../../utils/currency'
+import { MiniProgressRing } from './MiniProgressRing'
+import type { DashboardData } from './useDashboardData'
+
+const useStyles = makeStyles({
+  root: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(4, 1fr)',
+    columnGap: tokens.spacingHorizontalM,
+    marginBottom: tokens.spacingVerticalL,
+  },
+})
+
+interface KpiRowProps {
+  data: DashboardData
+}
+
+export function KpiRow({ data }: KpiRowProps) {
+  const styles = useStyles()
+  const { kpi } = data
+
+  return (
+    <div className={styles.root}>
+      <KpiCard
+        icon={ReceiptRegular}
+        label="Tổng hoá đơn"
+        value={`${formatNumber(kpi.tongSoHoaDon)} hoá đơn`}
+        subValue={formatCurrency(kpi.tongTien)}
+      />
+      <KpiCard
+        icon={CheckmarkCircleRegular}
+        label="Đã thu"
+        value={`${formatNumber(kpi.soDaThanhToan)} hoá đơn`}
+        subValue={formatCurrency(kpi.daThuTien)}
+        accent="success"
+      />
+      <KpiCard
+        icon={ClockRegular}
+        label="Cần thu (còn lại)"
+        value={`${formatNumber(kpi.soCanThu)} hoá đơn`}
+        subValue={formatCurrency(kpi.canThuTien)}
+        accent="warning"
+      />
+      <KpiCard
+        icon={CheckmarkCircleRegular}
+        label="Tỉ lệ hoàn thành"
+        value={`${Math.round(kpi.tiLeHoanThanh * 100)}%`}
+        trailing={<MiniProgressRing ratio={kpi.tiLeHoanThanh} />}
+      />
+    </div>
+  )
+}

@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
 import { PlaceholderPage } from './pages/PlaceholderPage'
 import { PortalShell } from './pages/PortalShell'
@@ -11,7 +12,7 @@ function App() {
 
       <Route element={<ProtectedRoute />}>
         <Route element={<PortalShell />}>
-          <Route path="/dashboard" element={<PlaceholderPage title="Tổng quan" />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route
             path="/danh-muc-phi/tong-hop"
             element={<PlaceholderPage title="Danh mục Phí — Tổng hợp toàn thành phố" />}
