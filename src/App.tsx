@@ -1,47 +1,47 @@
-import {
-  Body1,
-  Button,
-  Card,
-  CardHeader,
-  Title3,
-  makeStyles,
-  tokens,
-} from '@fluentui/react-components'
-import { formatCurrency } from './utils/currency'
-import { formatDate, formatMonthYear } from './utils/date'
-
-const useStyles = makeStyles({
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '100%',
-    backgroundColor: tokens.colorNeutralBackground3,
-    fontFamily: tokens.fontFamilyBase,
-  },
-  card: {
-    width: '360px',
-    padding: tokens.spacingHorizontalL,
-    rowGap: tokens.spacingVerticalM,
-  },
-})
+import { Navigate, Route, Routes } from 'react-router-dom'
+import { LoginPage } from './pages/LoginPage'
+import { PlaceholderPage } from './pages/PlaceholderPage'
+import { PortalShell } from './pages/PortalShell'
+import { ProtectedRoute } from './routes/ProtectedRoute'
 
 function App() {
-  const styles = useStyles()
-
   return (
-    <div className={styles.root}>
-      <Card className={styles.card}>
-        <CardHeader
-          header={<Title3>Portal Giám sát Thu học phí</Title3>}
-          description={<Body1>Phase 1 — Design system &amp; theme (Fluent 2)</Body1>}
-        />
-        <Body1>Tổng thu mẫu: {formatCurrency(586630000)}</Body1>
-        <Body1>Kỳ báo cáo mẫu: {formatMonthYear(new Date())}</Body1>
-        <Body1>Ngày cập nhật mẫu: {formatDate(new Date())}</Body1>
-        <Button appearance="primary">Nút primary (Fluent 2)</Button>
-      </Card>
-    </div>
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+
+      <Route element={<ProtectedRoute />}>
+        <Route element={<PortalShell />}>
+          <Route path="/dashboard" element={<PlaceholderPage title="Tổng quan" />} />
+          <Route
+            path="/danh-muc-phi/tong-hop"
+            element={<PlaceholderPage title="Danh mục Phí — Tổng hợp toàn thành phố" />}
+          />
+          <Route
+            path="/danh-muc-phi/chi-tiet"
+            element={<PlaceholderPage title="Danh mục Phí — Chi tiết theo trường" />}
+          />
+          <Route
+            path="/thu-hoc-phi/tong-hop"
+            element={<PlaceholderPage title="Thu Học phí — Tổng hợp toàn thành phố" />}
+          />
+          <Route
+            path="/thu-hoc-phi/chi-tiet"
+            element={<PlaceholderPage title="Thu Học phí — Chi tiết theo trường" />}
+          />
+          <Route
+            path="/cong-no/tong-hop"
+            element={<PlaceholderPage title="Công nợ Học phí — Tổng hợp toàn thành phố" />}
+          />
+          <Route
+            path="/cong-no/chi-tiet"
+            element={<PlaceholderPage title="Công nợ Học phí — Chi tiết theo trường" />}
+          />
+        </Route>
+      </Route>
+
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
   )
 }
 
