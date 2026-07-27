@@ -1,0 +1,31 @@
+import { generateHoaDonList } from './hoaDon'
+import { generateHocSinhList } from './hocSinh'
+import { generateKhoanPhiList } from './khoanPhi'
+import { generatePhuongXaList } from './phuongXa'
+import { generateTruongList } from './truong'
+import type { KhoanPhi, MockDataset, Truong } from './types'
+
+function buildDataset(): MockDataset {
+  const phuongXaList = generatePhuongXaList()
+  const truongList = generateTruongList(phuongXaList)
+  const hocSinhList = generateHocSinhList(truongList)
+  const khoanPhiList = generateKhoanPhiList(truongList)
+
+  const truongById = new Map<string, Truong>(truongList.map((truong) => [truong.id, truong]))
+  const khoanPhiByTruong = new Map<string, KhoanPhi[]>()
+  for (const khoanPhi of khoanPhiList) {
+    const list = khoanPhiByTruong.get(khoanPhi.truongId) ?? []
+    list.push(khoanPhi)
+    khoanPhiByTruong.set(khoanPhi.truongId, list)
+  }
+
+  const hoaDonList = generateHoaDonList(hocSinhList, truongById, khoanPhiByTruong)
+
+  return { phuongXaList, truongList, hocSinhList, khoanPhiList, hoaDonList }
+}
+
+// Sinh dữ liệu 1 lần khi module được import (seed cố định trong random.ts nên
+// kết quả nhất quán giữa các lần chạy/reload).
+export const mockDataset: MockDataset = buildDataset()
+
+export * from './types'
