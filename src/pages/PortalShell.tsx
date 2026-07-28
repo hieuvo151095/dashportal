@@ -29,9 +29,9 @@ export function PortalShell() {
 
   return (
     <div className={styles.root}>
-      <Sidebar collapsed={collapsed} />
+      <Sidebar collapsed={collapsed} onToggleCollapse={() => setCollapsed((value) => !value)} />
       <div className={styles.contentColumn}>
-        <Header collapsed={collapsed} onToggleCollapse={() => setCollapsed((value) => !value)} />
+        <Header />
         <main className={styles.main}>
           <Outlet />
         </main>

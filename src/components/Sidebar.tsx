@@ -1,8 +1,10 @@
 import {
+  Button,
   NavCategory,
   NavCategoryItem,
   NavDrawer,
   NavDrawerBody,
+  NavDrawerFooter,
   NavDrawerHeader,
   NavItem,
   NavSubItem,
@@ -13,6 +15,7 @@ import {
   tokens,
   type OnNavItemSelectData,
 } from '@fluentui/react-components'
+import { ChevronLeftRegular, ChevronRightRegular } from '@fluentui/react-icons'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { DashboardIcon, isNavGroup, navTree } from '../routes/routeConfig'
 
@@ -27,13 +30,21 @@ const useStyles = makeStyles({
     paddingLeft: tokens.spacingHorizontalM,
     overflow: 'hidden',
   },
+  footer: {
+    display: 'flex',
+    justifyContent: 'center',
+    paddingTop: tokens.spacingVerticalS,
+    paddingBottom: tokens.spacingVerticalS,
+    borderTop: `1px solid ${tokens.colorNeutralStroke2}`,
+  },
 })
 
 interface SidebarProps {
   collapsed: boolean
+  onToggleCollapse: () => void
 }
 
-export function Sidebar({ collapsed }: SidebarProps) {
+export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
   const styles = useStyles()
   const location = useNavigate()
   const currentPath = useLocation().pathname
@@ -81,6 +92,19 @@ export function Sidebar({ collapsed }: SidebarProps) {
           </NavCategory>
         ))}
       </NavDrawerBody>
+      <NavDrawerFooter>
+        <div className={styles.footer}>
+          <Tooltip content={collapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'} relationship="label">
+            <Button
+              appearance="subtle"
+              icon={collapsed ? <ChevronRightRegular /> : <ChevronLeftRegular />}
+              onClick={onToggleCollapse}
+              aria-label={collapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}
+              aria-pressed={!collapsed}
+            />
+          </Tooltip>
+        </div>
+      </NavDrawerFooter>
     </NavDrawer>
   )
 }

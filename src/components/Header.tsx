@@ -6,7 +6,6 @@ import {
   BreadcrumbDivider,
   BreadcrumbItem,
   Button,
-  Hamburger,
   Menu,
   MenuDivider,
   MenuItem,
@@ -67,12 +66,7 @@ const THONG_BAO_MAU = [
   'Có 5 trường chưa cập nhật danh mục phí niên khoá 2025-2026.',
 ]
 
-interface HeaderProps {
-  collapsed: boolean
-  onToggleCollapse: () => void
-}
-
-export function Header({ collapsed, onToggleCollapse }: HeaderProps) {
+export function Header() {
   const styles = useStyles()
   const navigate = useNavigate()
   const trail = getBreadcrumbTrail(useLocation().pathname)
@@ -85,7 +79,6 @@ export function Header({ collapsed, onToggleCollapse }: HeaderProps) {
   return (
     <header className={styles.root}>
       <div className={styles.left}>
-        <Hamburger onClick={onToggleCollapse} aria-label="Thu gọn/mở rộng sidebar" aria-pressed={!collapsed} />
         <Breadcrumb>
           {trail.map((item, index) => (
             <Fragment key={item.label}>
