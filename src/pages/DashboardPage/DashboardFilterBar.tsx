@@ -2,27 +2,33 @@ import { Button, Combobox, Dropdown, Field, Option } from '@fluentui/react-compo
 import { ArrowDownloadRegular } from '@fluentui/react-icons'
 import { CAP_HOC_LIST, mockDataset, type CapHoc } from '../../mock-data'
 import { FilterBar } from '../../components/FilterBar'
-import { getKyOptions, type DashboardFiltersApi } from './useDashboardFilters'
+import { getKyOptions } from './useDashboardFilters'
+import type { DashboardFilters } from './useDashboardFilters'
 
 const KY_OPTIONS = getKyOptions()
 const TOAN_THANH_PHO = 'all'
 
 interface DashboardFilterBarProps {
-  filters: DashboardFiltersApi
+  draft: DashboardFilters
+  setDraft: (patch: Partial<DashboardFilters>) => void
+  onApply: () => void
+  onReset: () => void
 }
 
-export function DashboardFilterBar({ filters }: DashboardFilterBarProps) {
+export function DashboardFilterBar({ draft, setDraft, onApply, onReset }: DashboardFilterBarProps) {
   const { phuongXaList } = mockDataset
   const phuongXaLabel =
-    filters.phuongXaId === TOAN_THANH_PHO
+    draft.phuongXaId === TOAN_THANH_PHO
       ? 'Toàn thành phố'
-      : (phuongXaList.find((p) => p.id === filters.phuongXaId)?.ten ?? 'Toàn thành phố')
+      : (phuongXaList.find((p) => p.id === draft.phuongXaId)?.ten ?? 'Toàn thành phố')
 
   const capHocLabel =
-    filters.capHocList.length === CAP_HOC_LIST.length ? 'Tất cả cấp học' : filters.capHocList.join(', ')
+    draft.capHocList.length === CAP_HOC_LIST.length ? 'Tất cả cấp học' : draft.capHocList.join(', ')
 
   return (
     <FilterBar
+      onApply={onApply}
+      onReset={onReset}
       action={
         <Button icon={<ArrowDownloadRegular />} onClick={() => {}}>
           Xuất báo cáo
@@ -31,9 +37,9 @@ export function DashboardFilterBar({ filters }: DashboardFilterBarProps) {
     >
       <Field label="Kỳ báo cáo">
         <Dropdown
-          value={filters.ky}
-          selectedOptions={[filters.ky]}
-          onOptionSelect={(_, data) => data.optionValue && filters.setKy(data.optionValue)}
+          value={draft.ky}
+          selectedOptions={[draft.ky]}
+          onOptionSelect={(_, data) => data.optionValue && setDraft({ ky: data.optionValue })}
         >
           {KY_OPTIONS.map((ky) => (
             <Option key={ky} value={ky}>
@@ -46,8 +52,8 @@ export function DashboardFilterBar({ filters }: DashboardFilterBarProps) {
       <Field label="Xã/Phường">
         <Combobox
           value={phuongXaLabel}
-          selectedOptions={[filters.phuongXaId]}
-          onOptionSelect={(_, data) => data.optionValue && filters.setPhuongXaId(data.optionValue)}
+          selectedOptions={[draft.phuongXaId]}
+          onOptionSelect={(_, data) => data.optionValue && setDraft({ phuongXaId: data.optionValue })}
         >
           <Option value={TOAN_THANH_PHO}>Toàn thành phố</Option>
           {phuongXaList.map((px) => (
@@ -62,8 +68,8 @@ export function DashboardFilterBar({ filters }: DashboardFilterBarProps) {
         <Dropdown
           multiselect
           value={capHocLabel}
-          selectedOptions={filters.capHocList}
-          onOptionSelect={(_, data) => filters.setCapHocList(data.selectedOptions as CapHoc[])}
+          selectedOptions={draft.capHocList}
+          onOptionSelect={(_, data) => setDraft({ capHocList: data.selectedOptions as CapHoc[] })}
         >
           {CAP_HOC_LIST.map((capHoc) => (
             <Option key={capHoc} value={capHoc}>

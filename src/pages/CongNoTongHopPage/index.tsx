@@ -2,6 +2,7 @@ import { makeStyles, tokens } from '@fluentui/react-components'
 import { PageTitle } from '../../components/PageTitle'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
+import { useFilterDraft } from '../../utils/useFilterDraft'
 import { useSkeletonDelay } from '../../utils/useSkeletonDelay'
 import { AgingChart } from './AgingChart'
 import { KpiRow } from './KpiRow'
@@ -9,7 +10,7 @@ import { SchoolDebtTable } from './SchoolDebtTable'
 import { TongHopFilterBar } from './TongHopFilterBar'
 import { TrendChart } from './TrendChart'
 import { useTongHopData } from './useTongHopData'
-import { useTongHopFilters } from './useTongHopFilters'
+import { useTongHopFilters, type TongHopFilters } from './useTongHopFilters'
 
 const useStyles = makeStyles({
   twoColRow: {
@@ -26,6 +27,13 @@ const useStyles = makeStyles({
 export function CongNoTongHopPage() {
   const styles = useStyles()
   const filters = useTongHopFilters()
+  const [draft, setDraft] = useFilterDraft<TongHopFilters>({
+    phuongXaId: filters.phuongXaId,
+    truongId: filters.truongId,
+    kyTu: filters.kyTu,
+    kyDen: filters.kyDen,
+    nhomTuoiNo: filters.nhomTuoiNo,
+  })
   const data = useTongHopData(filters)
   const loading = useSkeletonDelay([
     filters.phuongXaId,
@@ -39,7 +47,7 @@ export function CongNoTongHopPage() {
     <div>
       <PageTitle title="Công nợ Học phí — Tổng hợp toàn thành phố" />
 
-      <TongHopFilterBar filters={filters} />
+      <TongHopFilterBar draft={draft} setDraft={setDraft} onApply={() => filters.apply(draft)} onReset={filters.reset} />
 
       <KpiRow data={data} />
 

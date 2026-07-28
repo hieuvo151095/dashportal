@@ -3,29 +3,32 @@ import { FilterBar } from '../../components/FilterBar'
 import { SearchInput } from '../../components/SearchInput'
 import { NHOM_TUOI_NO_LIST } from '../../utils/congNo'
 import { getKyOptions } from '../../utils/ky'
-import type { ChiTietFiltersApi } from './useChiTietFilters'
+import type { ChiTietFilters } from './useChiTietFilters'
 
 const KY_OPTIONS = getKyOptions()
 const TAT_CA = 'all'
 
 interface ChiTietFilterBarProps {
-  filters: ChiTietFiltersApi
+  draft: ChiTietFilters
+  setDraft: (patch: Partial<ChiTietFilters>) => void
+  onApply: () => void
+  onReset: () => void
   khoiOptions: string[]
   lopOptions: string[]
 }
 
-export function ChiTietFilterBar({ filters, khoiOptions, lopOptions }: ChiTietFilterBarProps) {
+export function ChiTietFilterBar({ draft, setDraft, onApply, onReset, khoiOptions, lopOptions }: ChiTietFilterBarProps) {
   return (
-    <FilterBar>
+    <FilterBar onApply={onApply} onReset={onReset}>
       <Field label="Mã học sinh">
-        <SearchInput value={filters.maHocSinh} onChange={filters.setMaHocSinh} placeholder="Tìm theo mã học sinh" />
+        <SearchInput value={draft.maHocSinh} onChange={(value) => setDraft({ maHocSinh: value })} placeholder="Tìm theo mã học sinh" />
       </Field>
 
       <Field label="Khối">
         <Dropdown
-          value={filters.khoi === TAT_CA ? 'Tất cả khối' : filters.khoi}
-          selectedOptions={[filters.khoi]}
-          onOptionSelect={(_, data) => data.optionValue && filters.setKhoi(data.optionValue)}
+          value={draft.khoi === TAT_CA ? 'Tất cả khối' : draft.khoi}
+          selectedOptions={[draft.khoi]}
+          onOptionSelect={(_, data) => data.optionValue && setDraft({ khoi: data.optionValue, lop: TAT_CA })}
         >
           <Option value={TAT_CA}>Tất cả khối</Option>
           {khoiOptions.map((khoi) => (
@@ -38,9 +41,9 @@ export function ChiTietFilterBar({ filters, khoiOptions, lopOptions }: ChiTietFi
 
       <Field label="Lớp">
         <Dropdown
-          value={filters.lop === TAT_CA ? 'Tất cả lớp' : filters.lop}
-          selectedOptions={[filters.lop]}
-          onOptionSelect={(_, data) => data.optionValue && filters.setLop(data.optionValue)}
+          value={draft.lop === TAT_CA ? 'Tất cả lớp' : draft.lop}
+          selectedOptions={[draft.lop]}
+          onOptionSelect={(_, data) => data.optionValue && setDraft({ lop: data.optionValue })}
         >
           <Option value={TAT_CA}>Tất cả lớp</Option>
           {lopOptions.map((lop) => (
@@ -53,9 +56,9 @@ export function ChiTietFilterBar({ filters, khoiOptions, lopOptions }: ChiTietFi
 
       <Field label="Kỳ phí từ">
         <Dropdown
-          value={filters.kyTu}
-          selectedOptions={[filters.kyTu]}
-          onOptionSelect={(_, data) => data.optionValue && filters.setKyTu(data.optionValue)}
+          value={draft.kyTu}
+          selectedOptions={[draft.kyTu]}
+          onOptionSelect={(_, data) => data.optionValue && setDraft({ kyTu: data.optionValue })}
         >
           {KY_OPTIONS.map((ky) => (
             <Option key={ky} value={ky}>
@@ -67,9 +70,9 @@ export function ChiTietFilterBar({ filters, khoiOptions, lopOptions }: ChiTietFi
 
       <Field label="đến kỳ">
         <Dropdown
-          value={filters.kyDen}
-          selectedOptions={[filters.kyDen]}
-          onOptionSelect={(_, data) => data.optionValue && filters.setKyDen(data.optionValue)}
+          value={draft.kyDen}
+          selectedOptions={[draft.kyDen]}
+          onOptionSelect={(_, data) => data.optionValue && setDraft({ kyDen: data.optionValue })}
         >
           {KY_OPTIONS.map((ky) => (
             <Option key={ky} value={ky}>
@@ -81,9 +84,9 @@ export function ChiTietFilterBar({ filters, khoiOptions, lopOptions }: ChiTietFi
 
       <Field label="Nhóm tuổi nợ">
         <Dropdown
-          value={filters.nhomTuoiNo === TAT_CA ? 'Tất cả nhóm' : filters.nhomTuoiNo}
-          selectedOptions={[filters.nhomTuoiNo]}
-          onOptionSelect={(_, data) => data.optionValue && filters.setNhomTuoiNo(data.optionValue)}
+          value={draft.nhomTuoiNo === TAT_CA ? 'Tất cả nhóm' : draft.nhomTuoiNo}
+          selectedOptions={[draft.nhomTuoiNo]}
+          onOptionSelect={(_, data) => data.optionValue && setDraft({ nhomTuoiNo: data.optionValue })}
         >
           <Option value={TAT_CA}>Tất cả nhóm</Option>
           {NHOM_TUOI_NO_LIST.map((nhom) => (

@@ -2,13 +2,14 @@ import { Tab, TabList, makeStyles, tokens, type SelectTabData, type SelectTabEve
 import { PageTitle } from '../../components/PageTitle'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
+import { useFilterDraft } from '../../utils/useFilterDraft'
 import { useSkeletonDelay } from '../../utils/useSkeletonDelay'
 import { InvoiceTable } from './InvoiceTable'
 import { KpiRow } from './KpiRow'
 import { OverviewTable } from './OverviewTable'
 import { TongHopFilterBar } from './TongHopFilterBar'
 import { useTongHopData } from './useTongHopData'
-import { useTongHopFilters, type TabId } from './useTongHopFilters'
+import { useTongHopFilters, type TabId, type TongHopFilters } from './useTongHopFilters'
 
 const useStyles = makeStyles({
   tabList: {
@@ -26,6 +27,13 @@ const TAB_LABELS: Record<TabId, string> = {
 export function ThuHocPhiTongHopPage() {
   const styles = useStyles()
   const filters = useTongHopFilters()
+  const [draft, setDraft] = useFilterDraft<TongHopFilters>({
+    ky: filters.ky,
+    phuongXaId: filters.phuongXaId,
+    truongId: filters.truongId,
+    capHocList: filters.capHocList,
+    hinhThucThanhToan: filters.hinhThucThanhToan,
+  })
   const data = useTongHopData(filters)
   const loading = useSkeletonDelay([
     filters.ky,
@@ -40,7 +48,7 @@ export function ThuHocPhiTongHopPage() {
     <div>
       <PageTitle title="Thu Học phí — Tổng hợp toàn thành phố" />
 
-      <TongHopFilterBar filters={filters} />
+      <TongHopFilterBar draft={draft} setDraft={setDraft} onApply={() => filters.apply(draft)} onReset={filters.reset} />
 
       <KpiRow data={data} />
 

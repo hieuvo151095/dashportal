@@ -1,7 +1,7 @@
-import { useSearchParams } from 'react-router-dom'
 import { NIEN_KHOA } from '../../mock-data'
+import { useUrlFilters } from '../../utils/useUrlFilters'
 
-const DEFAULTS = {
+const DEFAULTS: Record<'xa' | 'truong' | 'nienKhoa' | 'nhomPhi' | 'nguonThu' | 'q' | 'page', string> = {
   xa: 'all',
   truong: 'all',
   nienKhoa: NIEN_KHOA,
@@ -9,17 +9,18 @@ const DEFAULTS = {
   nguonThu: 'all',
   q: '',
   page: '1',
-} as const
+}
 
-type ParamKey = keyof typeof DEFAULTS
-
-export interface TongHopFiltersApi {
+export interface TongHopFilters {
   phuongXaId: string
   truongId: string
   nienKhoa: string
   nhomPhi: string
   nguonThu: string
   q: string
+}
+
+export interface TongHopFiltersApi extends TongHopFilters {
   page: number
   setPhuongXaId: (value: string) => void
   setTruongId: (value: string) => void
@@ -28,34 +29,15 @@ export interface TongHopFiltersApi {
   setNguonThu: (value: string) => void
   setQ: (value: string) => void
   setPage: (value: number) => void
+  apply: (draft: TongHopFilters) => void
+  reset: () => void
 }
 
-// Dùng chung 1 useSearchParams cho toàn bộ filter — vì các filter cần cập nhật
-// đồng thời (vd chọn Xã/Phường phải reset Trường + trang) trong 1 lần điều hướng,
-// gọi setSearchParams nhiều lần liên tiếp trong cùng 1 handler sẽ đè lẫn nhau.
+// Dùng chung 1 useUrlFilters cho toàn bộ filter — vì các filter cần cập nhật đồng thời
+// (vd chọn Xã/Phường phải reset Trường + trang) trong 1 lần điều hướng, gọi setSearchParams
+// nhiều lần liên tiếp trong cùng 1 handler sẽ đè lẫn nhau.
 export function useTongHopFilters(): TongHopFiltersApi {
-  const [params, setParams] = useSearchParams()
-
-  function get(key: ParamKey): string {
-    return params.get(key) ?? DEFAULTS[key]
-  }
-
-  function update(patch: Partial<Record<ParamKey, string>>) {
-    setParams(
-      (prev) => {
-        const next = new URLSearchParams(prev)
-        for (const [key, value] of Object.entries(patch) as [ParamKey, string][]) {
-          if (value === DEFAULTS[key]) {
-            next.delete(key)
-          } else {
-            next.set(key, value)
-          }
-        }
-        return next
-      },
-      { replace: true },
-    )
-  }
+  const { get, update, reset } = useUrlFilters(DEFAULTS)
 
   return {
     phuongXaId: get('xa'),
@@ -72,5 +54,16 @@ export function useTongHopFilters(): TongHopFiltersApi {
     setNguonThu: (value) => update({ nguonThu: value, page: DEFAULTS.page }),
     setQ: (value) => update({ q: value, page: DEFAULTS.page }),
     setPage: (value) => update({ page: String(value) }),
+    apply: (draft) =>
+      update({
+        xa: draft.phuongXaId,
+        truong: draft.truongId,
+        nienKhoa: draft.nienKhoa,
+        nhomPhi: draft.nhomPhi,
+        nguonThu: draft.nguonThu,
+        q: draft.q,
+        page: DEFAULTS.page,
+      }),
+    reset,
   }
 }

@@ -1,8 +1,10 @@
-import { useSearchParams } from 'react-router-dom'
 import { mockDataset } from '../../mock-data'
+import { useUrlFilters } from '../../utils/useUrlFilters'
 
-const DEFAULTS = {
-  truong: mockDataset.truongList[0]?.id ?? '',
+const DEFAULT_TRUONG_ID = mockDataset.truongList[0]?.id ?? ''
+
+const DEFAULTS: Record<'truong' | 'q' | 'lop' | 'ky' | 'trangThai' | 'hinhThuc' | 'hanTu' | 'hanDen', string> = {
+  truong: DEFAULT_TRUONG_ID,
   q: '',
   lop: 'all',
   ky: 'all',
@@ -10,12 +12,9 @@ const DEFAULTS = {
   hinhThuc: 'all',
   hanTu: '',
   hanDen: '',
-} as const
+}
 
-type ParamKey = keyof typeof DEFAULTS
-
-export interface ChiTietFiltersApi {
-  truongId: string
+export interface ChiTietFilters {
   q: string
   lop: string
   ky: string
@@ -23,6 +22,10 @@ export interface ChiTietFiltersApi {
   hinhThucThanhToan: string
   hanTu: string
   hanDen: string
+}
+
+export interface ChiTietFiltersApi extends ChiTietFilters {
+  truongId: string
   setTruongId: (value: string) => void
   setQ: (value: string) => void
   setLop: (value: string) => void
@@ -31,33 +34,14 @@ export interface ChiTietFiltersApi {
   setHinhThucThanhToan: (value: string) => void
   setHanTu: (value: string) => void
   setHanDen: (value: string) => void
+  apply: (draft: ChiTietFilters) => void
+  reset: () => void
 }
 
-// Dùng chung 1 useSearchParams — chọn Trường khác phải reset Lớp trong cùng 1 lần điều
+// Dùng chung 1 useUrlFilters — chọn Trường khác phải reset Lớp trong cùng 1 lần điều
 // hướng (xem ghi chú tương tự ở Module 2/3.1).
 export function useChiTietFilters(): ChiTietFiltersApi {
-  const [params, setParams] = useSearchParams()
-
-  function get(key: ParamKey): string {
-    return params.get(key) ?? DEFAULTS[key]
-  }
-
-  function update(patch: Partial<Record<ParamKey, string>>) {
-    setParams(
-      (prev) => {
-        const next = new URLSearchParams(prev)
-        for (const [key, value] of Object.entries(patch) as [ParamKey, string][]) {
-          if (value === DEFAULTS[key]) {
-            next.delete(key)
-          } else {
-            next.set(key, value)
-          }
-        }
-        return next
-      },
-      { replace: true },
-    )
-  }
+  const { get, update } = useUrlFilters(DEFAULTS)
 
   return {
     truongId: get('truong'),
@@ -68,6 +52,7 @@ export function useChiTietFilters(): ChiTietFiltersApi {
     hinhThucThanhToan: get('hinhThuc'),
     hanTu: get('hanTu'),
     hanDen: get('hanDen'),
+    // Chọn trường (SchoolHeader) là điều hướng ngữ cảnh trang, áp dụng ngay — không qua draft.
     setTruongId: (value) => update({ truong: value, lop: DEFAULTS.lop }),
     setQ: (value) => update({ q: value }),
     setLop: (value) => update({ lop: value }),
@@ -76,5 +61,26 @@ export function useChiTietFilters(): ChiTietFiltersApi {
     setHinhThucThanhToan: (value) => update({ hinhThuc: value }),
     setHanTu: (value) => update({ hanTu: value }),
     setHanDen: (value) => update({ hanDen: value }),
+    apply: (draft) =>
+      update({
+        q: draft.q,
+        lop: draft.lop,
+        ky: draft.ky,
+        trangThai: draft.trangThai,
+        hinhThuc: draft.hinhThucThanhToan,
+        hanTu: draft.hanTu,
+        hanDen: draft.hanDen,
+      }),
+    // "Làm mới" chỉ reset field của FilterBar — không đụng trường đang chọn (truongId).
+    reset: () =>
+      update({
+        q: DEFAULTS.q,
+        lop: DEFAULTS.lop,
+        ky: DEFAULTS.ky,
+        trangThai: DEFAULTS.trangThai,
+        hinhThuc: DEFAULTS.hinhThuc,
+        hanTu: DEFAULTS.hanTu,
+        hanDen: DEFAULTS.hanDen,
+      }),
   }
 }

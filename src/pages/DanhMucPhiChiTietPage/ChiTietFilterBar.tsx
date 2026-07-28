@@ -3,17 +3,22 @@ import { ArrowDownloadRegular, AddRegular } from '@fluentui/react-icons'
 import { FilterBar } from '../../components/FilterBar'
 import { SearchInput } from '../../components/SearchInput'
 import { NGUON_THU_LIST, NHOM_PHI_LIST, NIEN_KHOA_LIST } from '../../mock-data'
-import type { ChiTietFiltersApi } from './useChiTietFilters'
+import type { ChiTietFilters } from './useChiTietFilters'
 
 const TAT_CA = 'all'
 
 interface ChiTietFilterBarProps {
-  filters: ChiTietFiltersApi
+  draft: ChiTietFilters
+  setDraft: (patch: Partial<ChiTietFilters>) => void
+  onApply: () => void
+  onReset: () => void
 }
 
-export function ChiTietFilterBar({ filters }: ChiTietFilterBarProps) {
+export function ChiTietFilterBar({ draft, setDraft, onApply, onReset }: ChiTietFilterBarProps) {
   return (
     <FilterBar
+      onApply={onApply}
+      onReset={onReset}
       action={
         <>
           <Button icon={<AddRegular />} onClick={() => {}}>
@@ -26,18 +31,18 @@ export function ChiTietFilterBar({ filters }: ChiTietFilterBarProps) {
       }
     >
       <Field label="Tên phí">
-        <SearchInput value={filters.tenPhi} onChange={filters.setTenPhi} placeholder="Tìm theo tên phí" />
+        <SearchInput value={draft.tenPhi} onChange={(value) => setDraft({ tenPhi: value })} placeholder="Tìm theo tên phí" />
       </Field>
 
       <Field label="Mã phí">
-        <SearchInput value={filters.maPhi} onChange={filters.setMaPhi} placeholder="Tìm theo mã phí" />
+        <SearchInput value={draft.maPhi} onChange={(value) => setDraft({ maPhi: value })} placeholder="Tìm theo mã phí" />
       </Field>
 
       <Field label="Nguồn thu">
         <Dropdown
-          value={filters.nguonThu === TAT_CA ? 'Tất cả nguồn thu' : filters.nguonThu}
-          selectedOptions={[filters.nguonThu]}
-          onOptionSelect={(_, data) => data.optionValue && filters.setNguonThu(data.optionValue)}
+          value={draft.nguonThu === TAT_CA ? 'Tất cả nguồn thu' : draft.nguonThu}
+          selectedOptions={[draft.nguonThu]}
+          onOptionSelect={(_, data) => data.optionValue && setDraft({ nguonThu: data.optionValue })}
         >
           <Option value={TAT_CA}>Tất cả nguồn thu</Option>
           {NGUON_THU_LIST.map((nguon) => (
@@ -50,9 +55,9 @@ export function ChiTietFilterBar({ filters }: ChiTietFilterBarProps) {
 
       <Field label="Nhóm phí">
         <Dropdown
-          value={filters.nhomPhi === TAT_CA ? 'Tất cả nhóm phí' : filters.nhomPhi}
-          selectedOptions={[filters.nhomPhi]}
-          onOptionSelect={(_, data) => data.optionValue && filters.setNhomPhi(data.optionValue)}
+          value={draft.nhomPhi === TAT_CA ? 'Tất cả nhóm phí' : draft.nhomPhi}
+          selectedOptions={[draft.nhomPhi]}
+          onOptionSelect={(_, data) => data.optionValue && setDraft({ nhomPhi: data.optionValue })}
         >
           <Option value={TAT_CA}>Tất cả nhóm phí</Option>
           {NHOM_PHI_LIST.map((nhom) => (
@@ -65,9 +70,9 @@ export function ChiTietFilterBar({ filters }: ChiTietFilterBarProps) {
 
       <Field label="Niên khoá">
         <Dropdown
-          value={filters.nienKhoa}
-          selectedOptions={[filters.nienKhoa]}
-          onOptionSelect={(_, data) => data.optionValue && filters.setNienKhoa(data.optionValue)}
+          value={draft.nienKhoa}
+          selectedOptions={[draft.nienKhoa]}
+          onOptionSelect={(_, data) => data.optionValue && setDraft({ nienKhoa: data.optionValue })}
         >
           {NIEN_KHOA_LIST.map((nk) => (
             <Option key={nk} value={nk}>

@@ -4,40 +4,44 @@ import { useMemo } from 'react'
 import { FilterBar } from '../../components/FilterBar'
 import { CAP_HOC_LIST, HINH_THUC_THANH_TOAN_LIST, mockDataset, type CapHoc } from '../../mock-data'
 import { getKyOptions } from '../../utils/ky'
-import type { TongHopFiltersApi } from './useTongHopFilters'
+import type { TongHopFilters } from './useTongHopFilters'
 
 const KY_OPTIONS = getKyOptions()
 const TOAN_THANH_PHO = 'all'
 const TAT_CA = 'all'
 
 interface TongHopFilterBarProps {
-  filters: TongHopFiltersApi
+  draft: TongHopFilters
+  setDraft: (patch: Partial<TongHopFilters>) => void
+  onApply: () => void
+  onReset: () => void
 }
 
-export function TongHopFilterBar({ filters }: TongHopFilterBarProps) {
+export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopFilterBarProps) {
   const { phuongXaList, truongList } = mockDataset
 
   const truongOptions = useMemo(
-    () =>
-      truongList.filter((t) => filters.phuongXaId === TOAN_THANH_PHO || t.phuongXaId === filters.phuongXaId),
-    [truongList, filters.phuongXaId],
+    () => truongList.filter((t) => draft.phuongXaId === TOAN_THANH_PHO || t.phuongXaId === draft.phuongXaId),
+    [truongList, draft.phuongXaId],
   )
 
   const phuongXaLabel =
-    filters.phuongXaId === TOAN_THANH_PHO
+    draft.phuongXaId === TOAN_THANH_PHO
       ? 'Toàn thành phố'
-      : (phuongXaList.find((p) => p.id === filters.phuongXaId)?.ten ?? 'Toàn thành phố')
+      : (phuongXaList.find((p) => p.id === draft.phuongXaId)?.ten ?? 'Toàn thành phố')
 
   const truongLabel =
-    filters.truongId === TAT_CA
+    draft.truongId === TAT_CA
       ? 'Tất cả trường'
-      : (truongList.find((t) => t.id === filters.truongId)?.tenTruong ?? 'Tất cả trường')
+      : (truongList.find((t) => t.id === draft.truongId)?.tenTruong ?? 'Tất cả trường')
 
   const capHocLabel =
-    filters.capHocList.length === CAP_HOC_LIST.length ? 'Tất cả cấp học' : filters.capHocList.join(', ')
+    draft.capHocList.length === CAP_HOC_LIST.length ? 'Tất cả cấp học' : draft.capHocList.join(', ')
 
   return (
     <FilterBar
+      onApply={onApply}
+      onReset={onReset}
       action={
         <Button icon={<ArrowDownloadRegular />} onClick={() => {}}>
           Xuất báo cáo
@@ -46,9 +50,9 @@ export function TongHopFilterBar({ filters }: TongHopFilterBarProps) {
     >
       <Field label="Kỳ báo cáo">
         <Dropdown
-          value={filters.ky}
-          selectedOptions={[filters.ky]}
-          onOptionSelect={(_, data) => data.optionValue && filters.setKy(data.optionValue)}
+          value={draft.ky}
+          selectedOptions={[draft.ky]}
+          onOptionSelect={(_, data) => data.optionValue && setDraft({ ky: data.optionValue })}
         >
           {KY_OPTIONS.map((ky) => (
             <Option key={ky} value={ky}>
@@ -61,8 +65,8 @@ export function TongHopFilterBar({ filters }: TongHopFilterBarProps) {
       <Field label="Xã/Phường">
         <Combobox
           value={phuongXaLabel}
-          selectedOptions={[filters.phuongXaId]}
-          onOptionSelect={(_, data) => data.optionValue && filters.setPhuongXaId(data.optionValue)}
+          selectedOptions={[draft.phuongXaId]}
+          onOptionSelect={(_, data) => data.optionValue && setDraft({ phuongXaId: data.optionValue, truongId: TAT_CA })}
         >
           <Option value={TOAN_THANH_PHO}>Toàn thành phố</Option>
           {phuongXaList.map((px) => (
@@ -76,8 +80,8 @@ export function TongHopFilterBar({ filters }: TongHopFilterBarProps) {
       <Field label="Trường">
         <Combobox
           value={truongLabel}
-          selectedOptions={[filters.truongId]}
-          onOptionSelect={(_, data) => data.optionValue && filters.setTruongId(data.optionValue)}
+          selectedOptions={[draft.truongId]}
+          onOptionSelect={(_, data) => data.optionValue && setDraft({ truongId: data.optionValue })}
         >
           <Option value={TAT_CA}>Tất cả trường</Option>
           {truongOptions.map((t) => (
@@ -92,8 +96,8 @@ export function TongHopFilterBar({ filters }: TongHopFilterBarProps) {
         <Dropdown
           multiselect
           value={capHocLabel}
-          selectedOptions={filters.capHocList}
-          onOptionSelect={(_, data) => filters.setCapHocList(data.selectedOptions as CapHoc[])}
+          selectedOptions={draft.capHocList}
+          onOptionSelect={(_, data) => setDraft({ capHocList: data.selectedOptions as CapHoc[] })}
         >
           {CAP_HOC_LIST.map((capHoc) => (
             <Option key={capHoc} value={capHoc}>
@@ -105,9 +109,9 @@ export function TongHopFilterBar({ filters }: TongHopFilterBarProps) {
 
       <Field label="Hình thức thanh toán">
         <Dropdown
-          value={filters.hinhThucThanhToan === TAT_CA ? 'Tất cả hình thức' : filters.hinhThucThanhToan}
-          selectedOptions={[filters.hinhThucThanhToan]}
-          onOptionSelect={(_, data) => data.optionValue && filters.setHinhThucThanhToan(data.optionValue)}
+          value={draft.hinhThucThanhToan === TAT_CA ? 'Tất cả hình thức' : draft.hinhThucThanhToan}
+          selectedOptions={[draft.hinhThucThanhToan]}
+          onOptionSelect={(_, data) => data.optionValue && setDraft({ hinhThucThanhToan: data.optionValue })}
         >
           <Option value={TAT_CA}>Tất cả hình thức</Option>
           {HINH_THUC_THANH_TOAN_LIST.map((ht) => (

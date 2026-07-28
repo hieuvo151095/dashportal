@@ -1,5 +1,6 @@
 import { makeStyles, tokens } from '@fluentui/react-components'
 import { PageTitle } from '../../components/PageTitle'
+import { useFilterDraft } from '../../utils/useFilterDraft'
 import { useSkeletonDelay } from '../../utils/useSkeletonDelay'
 import { DashboardFilterBar } from './DashboardFilterBar'
 import { DebtAgingChart } from './DebtAgingChart'
@@ -11,7 +12,7 @@ import { RevenueCompositionSection } from './RevenueCompositionSection'
 import { TopDebtSchoolsTable } from './TopDebtSchoolsTable'
 import { TopRegionsRanking } from './TopRegionsRanking'
 import { useDashboardData } from './useDashboardData'
-import { useDashboardFilters } from './useDashboardFilters'
+import { useDashboardFilters, type DashboardFilters } from './useDashboardFilters'
 
 const useStyles = makeStyles({
   twoColRow: {
@@ -28,6 +29,11 @@ const useStyles = makeStyles({
 export function DashboardPage() {
   const styles = useStyles()
   const filters = useDashboardFilters()
+  const [draft, setDraft] = useFilterDraft<DashboardFilters>({
+    ky: filters.ky,
+    phuongXaId: filters.phuongXaId,
+    capHocList: filters.capHocList,
+  })
   const data = useDashboardData(filters)
   const loading = useSkeletonDelay([filters.ky, filters.phuongXaId, filters.capHocList])
 
@@ -35,7 +41,12 @@ export function DashboardPage() {
     <div>
       <PageTitle title="Tổng quan Thu học phí" />
 
-      <DashboardFilterBar filters={filters} />
+      <DashboardFilterBar
+        draft={draft}
+        setDraft={setDraft}
+        onApply={() => filters.apply(draft)}
+        onReset={filters.reset}
+      />
 
       <KpiRow data={data} />
 

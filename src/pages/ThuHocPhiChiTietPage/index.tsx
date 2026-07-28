@@ -1,13 +1,23 @@
 import { SchoolHeader } from '../../components/SchoolHeader'
 import { TableSkeleton } from '../../components/TableSkeleton'
+import { useFilterDraft } from '../../utils/useFilterDraft'
 import { useSkeletonDelay } from '../../utils/useSkeletonDelay'
 import { ChiTietFilterBar } from './ChiTietFilterBar'
 import { ChiTietTable } from './ChiTietTable'
 import { useChiTietData } from './useChiTietData'
-import { useChiTietFilters } from './useChiTietFilters'
+import { useChiTietFilters, type ChiTietFilters } from './useChiTietFilters'
 
 export function ThuHocPhiChiTietPage() {
   const filters = useChiTietFilters()
+  const [draft, setDraft] = useFilterDraft<ChiTietFilters>({
+    q: filters.q,
+    lop: filters.lop,
+    ky: filters.ky,
+    trangThai: filters.trangThai,
+    hinhThucThanhToan: filters.hinhThucThanhToan,
+    hanTu: filters.hanTu,
+    hanDen: filters.hanDen,
+  })
   const data = useChiTietData(filters)
   const loading = useSkeletonDelay([
     filters.truongId,
@@ -30,7 +40,13 @@ export function ThuHocPhiChiTietPage() {
         onSelectTruong={filters.setTruongId}
       />
 
-      <ChiTietFilterBar filters={filters} lopOptions={data.lopOptions} />
+      <ChiTietFilterBar
+        draft={draft}
+        setDraft={setDraft}
+        onApply={() => filters.apply(draft)}
+        onReset={filters.reset}
+        lopOptions={data.lopOptions}
+      />
 
       {loading ? <TableSkeleton rows={8} /> : <ChiTietTable rows={data.rows} />}
     </div>
