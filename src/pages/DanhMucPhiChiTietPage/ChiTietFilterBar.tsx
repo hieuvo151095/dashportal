@@ -1,6 +1,7 @@
-import { Button, Dropdown, Field, Input, Option } from '@fluentui/react-components'
-import { ArrowDownloadRegular, AddRegular, SearchRegular } from '@fluentui/react-icons'
+import { Button, Dropdown, Field, Option } from '@fluentui/react-components'
+import { ArrowDownloadRegular, AddRegular } from '@fluentui/react-icons'
 import { FilterBar } from '../../components/FilterBar'
+import { SearchInput } from '../../components/SearchInput'
 import { NGUON_THU_LIST, NHOM_PHI_LIST, NIEN_KHOA_LIST } from '../../mock-data'
 import type { ChiTietFiltersApi } from './useChiTietFilters'
 
@@ -25,21 +26,11 @@ export function ChiTietFilterBar({ filters }: ChiTietFilterBarProps) {
       }
     >
       <Field label="Tên phí">
-        <Input
-          contentBefore={<SearchRegular />}
-          value={filters.tenPhi}
-          placeholder="Tìm theo tên phí"
-          onChange={(_, data) => filters.setTenPhi(data.value)}
-        />
+        <SearchInput value={filters.tenPhi} onChange={filters.setTenPhi} placeholder="Tìm theo tên phí" />
       </Field>
 
       <Field label="Mã phí">
-        <Input
-          contentBefore={<SearchRegular />}
-          value={filters.maPhi}
-          placeholder="Tìm theo mã phí"
-          onChange={(_, data) => filters.setMaPhi(data.value)}
-        />
+        <SearchInput value={filters.maPhi} onChange={filters.setMaPhi} placeholder="Tìm theo mã phí" />
       </Field>
 
       <Field label="Nguồn thu">
