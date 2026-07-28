@@ -1,5 +1,4 @@
 import {
-  Body1,
   Button,
   DataGrid,
   DataGridBody,
@@ -12,7 +11,9 @@ import {
 } from '@fluentui/react-components'
 import { EyeRegular } from '@fluentui/react-icons'
 import { useNavigate } from 'react-router-dom'
+import { EmptyState } from '../../components/EmptyState'
 import { SectionCard } from '../../components/SectionCard'
+import { TableSkeleton } from '../../components/TableSkeleton'
 import { formatCurrency, formatNumber } from '../../utils/currency'
 import type { DashboardData } from './useDashboardData'
 
@@ -20,9 +21,10 @@ type TopDebtRow = DashboardData['top20CongNo'][number]
 
 interface TopDebtSchoolsTableProps {
   data: DashboardData
+  loading?: boolean
 }
 
-export function TopDebtSchoolsTable({ data }: TopDebtSchoolsTableProps) {
+export function TopDebtSchoolsTable({ data, loading }: TopDebtSchoolsTableProps) {
   const navigate = useNavigate()
 
   const columns: TableColumnDefinition<TopDebtRow>[] = [
@@ -68,8 +70,10 @@ export function TopDebtSchoolsTable({ data }: TopDebtSchoolsTableProps) {
 
   return (
     <SectionCard title="Top 20 trường có công nợ cao nhất">
-      {data.top20CongNo.length === 0 ? (
-        <Body1>Không có dữ liệu phù hợp với bộ lọc đã chọn.</Body1>
+      {loading ? (
+        <TableSkeleton rows={6} />
+      ) : data.top20CongNo.length === 0 ? (
+        <EmptyState />
       ) : (
         <DataGrid
           items={data.top20CongNo}

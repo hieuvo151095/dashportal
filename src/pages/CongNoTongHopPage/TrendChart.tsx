@@ -10,19 +10,29 @@ import {
   YAxis,
 } from 'recharts'
 import { SectionCard } from '../../components/SectionCard'
+import { TableSkeleton } from '../../components/TableSkeleton'
 import { formatCurrency, formatNumber } from '../../utils/currency'
 import type { TongHopData } from './useTongHopData'
 
 interface TrendChartProps {
   data: TongHopData
+  loading?: boolean
 }
 
-export function TrendChart({ data }: TrendChartProps) {
+export function TrendChart({ data, loading }: TrendChartProps) {
   const chartData = data.xuHuongThang.map((item) => ({
     thang: item.thang,
     'Công nợ': item.tongNo,
     'HS nợ mới phát sinh': item.soHocSinhNoMoi,
   }))
+
+  if (loading) {
+    return (
+      <SectionCard title="Xu hướng công nợ theo tháng">
+        <TableSkeleton rows={5} />
+      </SectionCard>
+    )
+  }
 
   return (
     <SectionCard title="Xu hướng công nợ theo tháng">

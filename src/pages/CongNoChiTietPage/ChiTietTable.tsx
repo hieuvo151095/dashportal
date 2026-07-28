@@ -9,6 +9,7 @@ import {
   DataGridHeaderCell,
   DataGridRow,
   createTableColumn,
+  makeStyles,
   tokens,
   type TableColumnDefinition,
 } from '@fluentui/react-components'
@@ -26,6 +27,26 @@ const BADGE_COLOR: Record<NhomTuoiNo, 'informative' | 'warning' | 'severe' | 'da
   '>90 ngày': 'danger',
 }
 
+const useStyles = makeStyles({
+  scroll: {
+    overflowX: 'auto',
+  },
+})
+
+const COLUMN_SIZING_OPTIONS = {
+  stt: { minWidth: 48, defaultWidth: 48 },
+  maHocSinh: { minWidth: 110, defaultWidth: 120 },
+  hoTen: { minWidth: 140, defaultWidth: 160 },
+  lop: { minWidth: 90, defaultWidth: 100 },
+  kyNo: { minWidth: 90, defaultWidth: 100 },
+  soTienNo: { minWidth: 120, defaultWidth: 130 },
+  hanThanhToan: { minWidth: 120, defaultWidth: 130 },
+  soNgayQuaHan: { minWidth: 130, defaultWidth: 140 },
+  nhomTuoiNo: { minWidth: 110, defaultWidth: 120 },
+  lyDoNo: { minWidth: 180, defaultWidth: 200 },
+  hanhDong: { minWidth: 150, defaultWidth: 160 },
+}
+
 function mauSoNgayQuaHan(soNgay: number): string {
   if (soNgay <= 30) return tokens.colorPaletteMarigoldForeground2
   if (soNgay <= 90) return tokens.colorPaletteDarkOrangeForeground1
@@ -37,6 +58,8 @@ interface ChiTietTableProps {
 }
 
 export function ChiTietTable({ rows }: ChiTietTableProps) {
+  const styles = useStyles()
+
   if (rows.length === 0) {
     return <EmptyState />
   }
@@ -113,20 +136,28 @@ export function ChiTietTable({ rows }: ChiTietTableProps) {
 
   return (
     <div>
-      <DataGrid items={rows} columns={columns} getRowId={(item: DebtRow) => item.hoaDon.id} resizableColumns>
-        <DataGridHeader>
-          <DataGridRow>
-            {({ renderHeaderCell }) => <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>}
-          </DataGridRow>
-        </DataGridHeader>
-        <DataGridBody<DebtRow>>
-          {({ item, rowId }) => (
-            <DataGridRow<DebtRow> key={rowId}>
-              {({ renderCell }) => <DataGridCell>{renderCell(item)}</DataGridCell>}
+      <div className={styles.scroll}>
+        <DataGrid
+          items={rows}
+          columns={columns}
+          getRowId={(item: DebtRow) => item.hoaDon.id}
+          resizableColumns
+          columnSizingOptions={COLUMN_SIZING_OPTIONS}
+        >
+          <DataGridHeader>
+            <DataGridRow>
+              {({ renderHeaderCell }) => <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>}
             </DataGridRow>
-          )}
-        </DataGridBody>
-      </DataGrid>
+          </DataGridHeader>
+          <DataGridBody<DebtRow>>
+            {({ item, rowId }) => (
+              <DataGridRow<DebtRow> key={rowId}>
+                {({ renderCell }) => <DataGridCell>{renderCell(item)}</DataGridCell>}
+              </DataGridRow>
+            )}
+          </DataGridBody>
+        </DataGrid>
+      </div>
       <Body1 as="p">{`Tổng số dòng: ${rows.length}`}</Body1>
     </div>
   )

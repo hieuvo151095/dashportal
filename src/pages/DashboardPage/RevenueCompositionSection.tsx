@@ -1,6 +1,8 @@
 import { tokens } from '@fluentui/react-components'
 import { DonutChart } from '../../components/DonutChart'
+import { EmptyState } from '../../components/EmptyState'
 import { SectionCard } from '../../components/SectionCard'
+import { TableSkeleton } from '../../components/TableSkeleton'
 import type { DanhMucKhoanThu } from '../../mock-data'
 import { formatCurrency } from '../../utils/currency'
 import type { DashboardData } from './useDashboardData'
@@ -17,19 +19,26 @@ const MAU_THEO_DANH_MUC: Record<DanhMucKhoanThu, string> = {
 
 interface RevenueCompositionSectionProps {
   data: DashboardData
+  loading?: boolean
 }
 
-export function RevenueCompositionSection({ data }: RevenueCompositionSectionProps) {
+export function RevenueCompositionSection({ data, loading }: RevenueCompositionSectionProps) {
   return (
     <SectionCard title="Cơ cấu khoản thu">
-      <DonutChart
-        data={data.coCauKhoanThu.map((item) => ({
-          label: item.label,
-          value: item.value,
-          color: MAU_THEO_DANH_MUC[item.label],
-        }))}
-        valueFormatter={formatCurrency}
-      />
+      {loading ? (
+        <TableSkeleton rows={4} />
+      ) : data.coCauKhoanThu.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <DonutChart
+          data={data.coCauKhoanThu.map((item) => ({
+            label: item.label,
+            value: item.value,
+            color: MAU_THEO_DANH_MUC[item.label],
+          }))}
+          valueFormatter={formatCurrency}
+        />
+      )}
     </SectionCard>
   )
 }

@@ -48,8 +48,8 @@ export function CongNoTongHopPage() {
       <KpiRow data={data} />
 
       <div className={styles.twoColRow}>
-        <AgingChart data={data} />
-        <TrendChart data={data} />
+        <AgingChart data={data} loading={loading} />
+        <TrendChart data={data} loading={loading} />
       </div>
 
       <div className={styles.fullRow}>

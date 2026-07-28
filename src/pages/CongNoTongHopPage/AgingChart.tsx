@@ -1,6 +1,7 @@
 import { tokens } from '@fluentui/react-components'
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { SectionCard } from '../../components/SectionCard'
+import { TableSkeleton } from '../../components/TableSkeleton'
 import type { NhomTuoiNo } from '../../mock-data'
 import { formatCurrency, formatNumber } from '../../utils/currency'
 import type { TongHopData } from './useTongHopData'
@@ -14,10 +15,19 @@ const MAU_THEO_NHOM: Record<NhomTuoiNo, string> = {
 
 interface AgingChartProps {
   data: TongHopData
+  loading?: boolean
 }
 
-export function AgingChart({ data }: AgingChartProps) {
+export function AgingChart({ data, loading }: AgingChartProps) {
   const chartData = data.congNoTheoTuoiNo
+
+  if (loading) {
+    return (
+      <SectionCard title="Công nợ theo tuổi nợ">
+        <TableSkeleton rows={4} />
+      </SectionCard>
+    )
+  }
 
   return (
     <SectionCard title="Công nợ theo tuổi nợ">

@@ -1,5 +1,7 @@
 import { Caption1, Tooltip, makeStyles, tokens } from '@fluentui/react-components'
+import { EmptyState } from '../../components/EmptyState'
 import { SectionCard } from '../../components/SectionCard'
+import { TableSkeleton } from '../../components/TableSkeleton'
 import type { DashboardData } from './useDashboardData'
 
 const useStyles = makeStyles({
@@ -34,30 +36,39 @@ function mauTheoTyLe(tyLe: number): string {
 interface RegionHeatmapProps {
   data: DashboardData
   onSelectPhuongXa: (phuongXaId: string) => void
+  loading?: boolean
 }
 
-export function RegionHeatmap({ data, onSelectPhuongXa }: RegionHeatmapProps) {
+export function RegionHeatmap({ data, onSelectPhuongXa, loading }: RegionHeatmapProps) {
   const styles = useStyles()
 
   return (
     <SectionCard title="Bản đồ tỷ lệ thu theo Xã/Phường">
-      <div className={styles.grid}>
-        {data.tyLeThuTheoPhuong.map(({ phuongXa, tyLe }) => (
-          <Tooltip key={phuongXa.id} content={`${phuongXa.ten}: ${Math.round(tyLe * 100)}%`} relationship="label">
-            <button
-              type="button"
-              className={styles.cell}
-              style={{ backgroundColor: mauTheoTyLe(tyLe) }}
-              onClick={() => onSelectPhuongXa(phuongXa.id)}
-            >
-              {Math.round(tyLe * 100)}%
-            </button>
-          </Tooltip>
-        ))}
-      </div>
-      <Caption1 className={styles.footer} as="p">
-        {data.soPhuongXaCoDuLieu} Xã/Phường trên địa bàn
-      </Caption1>
+      {loading ? (
+        <TableSkeleton rows={4} />
+      ) : data.tyLeThuTheoPhuong.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <>
+          <div className={styles.grid}>
+            {data.tyLeThuTheoPhuong.map(({ phuongXa, tyLe }) => (
+              <Tooltip key={phuongXa.id} content={`${phuongXa.ten}: ${Math.round(tyLe * 100)}%`} relationship="label">
+                <button
+                  type="button"
+                  className={styles.cell}
+                  style={{ backgroundColor: mauTheoTyLe(tyLe) }}
+                  onClick={() => onSelectPhuongXa(phuongXa.id)}
+                >
+                  {Math.round(tyLe * 100)}%
+                </button>
+              </Tooltip>
+            ))}
+          </div>
+          <Caption1 className={styles.footer} as="p">
+            {data.soPhuongXaCoDuLieu} Xã/Phường trên địa bàn
+          </Caption1>
+        </>
+      )}
     </SectionCard>
   )
 }

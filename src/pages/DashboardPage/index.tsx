@@ -1,4 +1,5 @@
 import { Title2, makeStyles, tokens } from '@fluentui/react-components'
+import { useSkeletonDelay } from '../../utils/useSkeletonDelay'
 import { DashboardFilterBar } from './DashboardFilterBar'
 import { DebtAgingChart } from './DebtAgingChart'
 import { KpiRow } from './KpiRow'
@@ -30,6 +31,7 @@ export function DashboardPage() {
   const styles = useStyles()
   const filters = useDashboardFilters()
   const data = useDashboardData(filters)
+  const loading = useSkeletonDelay([filters.ky, filters.phuongXaId, filters.capHocList])
 
   return (
     <div>
@@ -42,25 +44,25 @@ export function DashboardPage() {
       <KpiRow data={data} />
 
       <div className={styles.twoColRow}>
-        <RegionHeatmap data={data} onSelectPhuongXa={filters.setPhuongXaId} />
-        <TopRegionsRanking data={data} />
+        <RegionHeatmap data={data} onSelectPhuongXa={filters.setPhuongXaId} loading={loading} />
+        <TopRegionsRanking data={data} loading={loading} />
       </div>
 
       <div className={styles.twoColRow}>
-        <RevenueCompositionSection data={data} />
-        <PaymentMethodSection data={data} />
+        <RevenueCompositionSection data={data} loading={loading} />
+        <PaymentMethodSection data={data} loading={loading} />
       </div>
 
       <div className={styles.fullRow}>
-        <TopDebtSchoolsTable data={data} />
+        <TopDebtSchoolsTable data={data} loading={loading} />
       </div>
 
       <div className={styles.fullRow}>
-        <MonthlyTrendChart data={data} />
+        <MonthlyTrendChart data={data} loading={loading} />
       </div>
 
       <div className={styles.fullRow}>
-        <DebtAgingChart data={data} />
+        <DebtAgingChart data={data} loading={loading} />
       </div>
     </div>
   )

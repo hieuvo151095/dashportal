@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 // Đồng bộ 1 filter với URL query param — deep-link giữ nguyên bộ lọc, và cho phép
@@ -26,7 +27,9 @@ export function useQueryParam(key: string, defaultValue: string): [string, (valu
 
 export function useQueryParamArray(key: string, defaultValue: string[]): [string[], (value: string[]) => void] {
   const [raw, setRaw] = useQueryParam(key, defaultValue.join(','))
-  const value = raw === '' ? [] : raw.split(',')
+  // Memo hoá theo giá trị chuỗi để giữ nguyên tham chiếu mảng giữa các lần render —
+  // tránh vòng lặp render vô hạn ở nơi dùng giá trị này làm dependency (so sánh Object.is).
+  const value = useMemo(() => (raw === '' ? [] : raw.split(',')), [raw])
 
   function setValue(next: string[]) {
     setRaw(next.join(','))

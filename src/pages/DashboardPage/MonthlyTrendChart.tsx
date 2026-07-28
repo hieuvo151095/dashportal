@@ -10,19 +10,29 @@ import {
   YAxis,
 } from 'recharts'
 import { SectionCard } from '../../components/SectionCard'
+import { TableSkeleton } from '../../components/TableSkeleton'
 import { formatCurrency } from '../../utils/currency'
 import type { DashboardData } from './useDashboardData'
 
 interface MonthlyTrendChartProps {
   data: DashboardData
+  loading?: boolean
 }
 
-export function MonthlyTrendChart({ data }: MonthlyTrendChartProps) {
+export function MonthlyTrendChart({ data, loading }: MonthlyTrendChartProps) {
   const chartData = data.xuHuongThang.map((item) => ({
     thang: item.thang,
     'Đã thu': item.daThu,
     'Tỉ lệ thu (%)': Math.round(item.tyLe * 100),
   }))
+
+  if (loading) {
+    return (
+      <SectionCard title="Xu hướng thu theo tháng">
+        <TableSkeleton rows={5} />
+      </SectionCard>
+    )
+  }
 
   return (
     <SectionCard title="Xu hướng thu theo tháng">
