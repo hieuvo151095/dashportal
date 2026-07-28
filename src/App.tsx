@@ -5,6 +5,8 @@ import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
 import { PlaceholderPage } from './pages/PlaceholderPage'
 import { PortalShell } from './pages/PortalShell'
+import { ThuHocPhiChiTietPage } from './pages/ThuHocPhiChiTietPage'
+import { ThuHocPhiTongHopPage } from './pages/ThuHocPhiTongHopPage'
 import { ProtectedRoute } from './routes/ProtectedRoute'
 
 function App() {
@@ -17,14 +19,8 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/danh-muc-phi/tong-hop" element={<DanhMucPhiTongHopPage />} />
           <Route path="/danh-muc-phi/chi-tiet" element={<DanhMucPhiChiTietPage />} />
-          <Route
-            path="/thu-hoc-phi/tong-hop"
-            element={<PlaceholderPage title="Thu Học phí — Tổng hợp toàn thành phố" />}
-          />
-          <Route
-            path="/thu-hoc-phi/chi-tiet"
-            element={<PlaceholderPage title="Thu Học phí — Chi tiết theo trường" />}
-          />
+          <Route path="/thu-hoc-phi/tong-hop" element={<ThuHocPhiTongHopPage />} />
+          <Route path="/thu-hoc-phi/chi-tiet" element={<ThuHocPhiChiTietPage />} />
           <Route
             path="/cong-no/tong-hop"
             element={<PlaceholderPage title="Công nợ Học phí — Tổng hợp toàn thành phố" />}

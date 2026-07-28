@@ -1,7 +1,5 @@
 import { Body1, Caption1, Combobox, Field, Option, Title2, makeStyles, tokens } from '@fluentui/react-components'
-import { mockDataset } from '../../mock-data'
-import type { ChiTietData } from './useChiTietData'
-import type { ChiTietFiltersApi } from './useChiTietFilters'
+import { mockDataset, type PhuongXa, type Truong } from '../mock-data'
 
 const useStyles = makeStyles({
   root: {
@@ -21,34 +19,37 @@ const useStyles = makeStyles({
   },
 })
 
-interface ChiTietHeaderProps {
-  data: ChiTietData
-  filters: ChiTietFiltersApi
+interface SchoolHeaderProps {
+  title: string
+  truong: Truong | undefined
+  phuongXa: PhuongXa | undefined
+  truongId: string
+  onSelectTruong: (truongId: string) => void
 }
 
-export function ChiTietHeader({ data, filters }: ChiTietHeaderProps) {
+export function SchoolHeader({ title, truong, phuongXa, truongId, onSelectTruong }: SchoolHeaderProps) {
   const styles = useStyles()
   const { truongList } = mockDataset
 
   return (
     <div className={styles.root}>
       <div className={styles.info}>
-        <Title2 as="h1">Danh mục Phí — Chi tiết theo trường</Title2>
-        {data.truong && (
+        <Title2 as="h1">{title}</Title2>
+        {truong && (
           <Body1 as="p">
-            {data.truong.tenTruong}
-            {data.phuongXa && ` — ${data.phuongXa.ten}`}
-            {` — ${data.truong.capHoc}`}
+            {truong.tenTruong}
+            {phuongXa && ` — ${phuongXa.ten}`}
+            {` — ${truong.capHoc}`}
           </Body1>
         )}
-        <Caption1 as="p">{`Mã trường: ${data.truong?.maTruong ?? '—'}`}</Caption1>
+        <Caption1 as="p">{`Mã trường: ${truong?.maTruong ?? '—'}`}</Caption1>
       </div>
 
       <Field label="Chọn trường" className={styles.picker}>
         <Combobox
-          value={data.truong?.tenTruong ?? ''}
-          selectedOptions={[filters.truongId]}
-          onOptionSelect={(_, optionData) => optionData.optionValue && filters.setTruongId(optionData.optionValue)}
+          value={truong?.tenTruong ?? ''}
+          selectedOptions={[truongId]}
+          onOptionSelect={(_, data) => data.optionValue && onSelectTruong(data.optionValue)}
         >
           {truongList.map((t) => (
             <Option key={t.id} value={t.id}>

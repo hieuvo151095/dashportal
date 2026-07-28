@@ -6,31 +6,33 @@ import { ChiTietTable } from './ChiTietTable'
 import { useChiTietData } from './useChiTietData'
 import { useChiTietFilters } from './useChiTietFilters'
 
-export function DanhMucPhiChiTietPage() {
+export function ThuHocPhiChiTietPage() {
   const filters = useChiTietFilters()
   const data = useChiTietData(filters)
   const loading = useSkeletonDelay([
     filters.truongId,
-    filters.tenPhi,
-    filters.maPhi,
-    filters.nguonThu,
-    filters.nhomPhi,
-    filters.nienKhoa,
+    filters.q,
+    filters.lop,
+    filters.ky,
+    filters.trangThai,
+    filters.hinhThucThanhToan,
+    filters.hanTu,
+    filters.hanDen,
   ])
 
   return (
     <div>
       <SchoolHeader
-        title="Danh mục Phí — Chi tiết theo trường"
+        title="Thu Học phí — Chi tiết theo trường"
         truong={data.truong}
         phuongXa={data.phuongXa}
         truongId={filters.truongId}
         onSelectTruong={filters.setTruongId}
       />
 
-      <ChiTietFilterBar filters={filters} />
+      <ChiTietFilterBar filters={filters} lopOptions={data.lopOptions} />
 
-      {loading ? <TableSkeleton rows={6} /> : <ChiTietTable rows={data.rows} />}
+      {loading ? <TableSkeleton rows={8} /> : <ChiTietTable rows={data.rows} />}
     </div>
   )
 }
