@@ -6,6 +6,8 @@ export const TODAY = new Date('2026-07-27T00:00:00')
 
 export const NIEN_KHOA = '2025-2026'
 
+export const NIEN_KHOA_LIST = ['2023-2024', '2024-2025', NIEN_KHOA]
+
 // Tên Xã/Phường thật của TP.HCM theo mô hình chính quyền 2 cấp (Nghị quyết 1685/NQ-UBTVQH15,
 // hiệu lực 01/7/2025) — nguồn: tphcm.chinhphu.vn. Chỉ dùng tên Phường/Xã, không dùng tên Quận/Huyện cũ.
 export const PHUONG_XA_SEED: { ten: string; loai: 'Phường' | 'Xã' }[] = [

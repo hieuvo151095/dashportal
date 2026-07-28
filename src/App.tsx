@@ -1,4 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { DanhMucPhiChiTietPage } from './pages/DanhMucPhiChiTietPage'
+import { DanhMucPhiTongHopPage } from './pages/DanhMucPhiTongHopPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
 import { PlaceholderPage } from './pages/PlaceholderPage'
@@ -13,14 +15,8 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<PortalShell />}>
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route
-            path="/danh-muc-phi/tong-hop"
-            element={<PlaceholderPage title="Danh mục Phí — Tổng hợp toàn thành phố" />}
-          />
-          <Route
-            path="/danh-muc-phi/chi-tiet"
-            element={<PlaceholderPage title="Danh mục Phí — Chi tiết theo trường" />}
-          />
+          <Route path="/danh-muc-phi/tong-hop" element={<DanhMucPhiTongHopPage />} />
+          <Route path="/danh-muc-phi/chi-tiet" element={<DanhMucPhiChiTietPage />} />
           <Route
             path="/thu-hoc-phi/tong-hop"
             element={<PlaceholderPage title="Thu Học phí — Tổng hợp toàn thành phố" />}
