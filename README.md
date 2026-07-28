@@ -1,75 +1,21 @@
-# React + TypeScript + Vite
+# Portal Giám sát Thu Học phí
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Prototype **frontend-only** cho portal giám sát thu học phí dành cho lãnh đạo Sở GD&ĐT cấp Tỉnh/Thành phố (bối cảnh mẫu: TP. Hồ Chí Minh). Toàn bộ dữ liệu trong ứng dụng là **mock data**, sinh có seed cố định — **không kết nối backend/API thật**, không cần cấu hình gì thêm ngoài chạy dev server.
 
-Currently, two official plugins are available:
+Xem `docs/spec-portal-thu-hoc-phi.md` để biết đầy đủ yêu cầu sản phẩm, mô tả từng module và thuật ngữ nghiệp vụ.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Chạy local
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Mở trình duyệt tại địa chỉ Vite in ra (mặc định `http://localhost:5173`). Đăng nhập bằng bất kỳ email/mật khẩu hợp lệ nào — không có xác thực thật.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Tech stack
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
+- **React** + **TypeScript** + **Vite**
+- **Fluent UI React v9** (`@fluentui/react-components`, `@fluentui/react-icons`) — design system
+- **React Router** — routing
+- **Recharts** — biểu đồ (donut, line, bar)
