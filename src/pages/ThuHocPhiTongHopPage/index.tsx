@@ -1,4 +1,5 @@
-import { Tab, TabList, Title2, makeStyles, tokens, type SelectTabData, type SelectTabEvent } from '@fluentui/react-components'
+import { Tab, TabList, makeStyles, tokens, type SelectTabData, type SelectTabEvent } from '@fluentui/react-components'
+import { PageTitle } from '../../components/PageTitle'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
 import { useSkeletonDelay } from '../../utils/useSkeletonDelay'
@@ -10,9 +11,6 @@ import { useTongHopData } from './useTongHopData'
 import { useTongHopFilters, type TabId } from './useTongHopFilters'
 
 const useStyles = makeStyles({
-  title: {
-    marginBottom: tokens.spacingVerticalM,
-  },
   tabList: {
     marginBottom: tokens.spacingVerticalM,
   },
@@ -40,9 +38,7 @@ export function ThuHocPhiTongHopPage() {
 
   return (
     <div>
-      <Title2 as="h1" className={styles.title}>
-        Thu Học phí — Tổng hợp toàn thành phố
-      </Title2>
+      <PageTitle title="Thu Học phí — Tổng hợp toàn thành phố" />
 
       <TongHopFilterBar filters={filters} />
 

@@ -1,4 +1,5 @@
-import { Title2, makeStyles, tokens } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
+import { PageTitle } from '../../components/PageTitle'
 import { useSkeletonDelay } from '../../utils/useSkeletonDelay'
 import { DashboardFilterBar } from './DashboardFilterBar'
 import { DebtAgingChart } from './DebtAgingChart'
@@ -13,9 +14,6 @@ import { useDashboardData } from './useDashboardData'
 import { useDashboardFilters } from './useDashboardFilters'
 
 const useStyles = makeStyles({
-  title: {
-    marginBottom: tokens.spacingVerticalM,
-  },
   twoColRow: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
@@ -35,9 +33,7 @@ export function DashboardPage() {
 
   return (
     <div>
-      <Title2 as="h1" className={styles.title}>
-        Tổng quan Thu học phí
-      </Title2>
+      <PageTitle title="Tổng quan Thu học phí" />
 
       <DashboardFilterBar filters={filters} />
 

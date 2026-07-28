@@ -1,4 +1,5 @@
-import { Title2, makeStyles, tokens } from '@fluentui/react-components'
+import { makeStyles, tokens } from '@fluentui/react-components'
+import { PageTitle } from '../../components/PageTitle'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
 import { useSkeletonDelay } from '../../utils/useSkeletonDelay'
@@ -11,9 +12,6 @@ import { useTongHopData } from './useTongHopData'
 import { useTongHopFilters } from './useTongHopFilters'
 
 const useStyles = makeStyles({
-  title: {
-    marginBottom: tokens.spacingVerticalM,
-  },
   twoColRow: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
@@ -39,9 +37,7 @@ export function CongNoTongHopPage() {
 
   return (
     <div>
-      <Title2 as="h1" className={styles.title}>
-        Công nợ Học phí — Tổng hợp toàn thành phố
-      </Title2>
+      <PageTitle title="Công nợ Học phí — Tổng hợp toàn thành phố" />
 
       <TongHopFilterBar filters={filters} />
 

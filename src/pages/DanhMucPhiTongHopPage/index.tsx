@@ -1,4 +1,4 @@
-import { Title2, makeStyles, tokens } from '@fluentui/react-components'
+import { PageTitle } from '../../components/PageTitle'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
 import { useSkeletonDelay } from '../../utils/useSkeletonDelay'
@@ -7,14 +7,7 @@ import { TongHopTable } from './TongHopTable'
 import { useTongHopData } from './useTongHopData'
 import { useTongHopFilters } from './useTongHopFilters'
 
-const useStyles = makeStyles({
-  title: {
-    marginBottom: tokens.spacingVerticalM,
-  },
-})
-
 export function DanhMucPhiTongHopPage() {
-  const styles = useStyles()
   const filters = useTongHopFilters()
   const { rows } = useTongHopData(filters)
   const loading = useSkeletonDelay([
@@ -28,9 +21,7 @@ export function DanhMucPhiTongHopPage() {
 
   return (
     <div>
-      <Title2 as="h1" className={styles.title}>
-        Danh mục Phí — Tổng hợp toàn thành phố
-      </Title2>
+      <PageTitle title="Danh mục Phí — Tổng hợp toàn thành phố" />
 
       <TongHopFilterBar filters={filters} />
 

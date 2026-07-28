@@ -14,6 +14,14 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     rowGap: tokens.spacingVerticalXXS,
   },
+  titleRow: {
+    display: 'flex',
+    alignItems: 'baseline',
+    columnGap: tokens.spacingHorizontalM,
+  },
+  unit: {
+    color: tokens.colorNeutralForeground3,
+  },
   picker: {
     minWidth: '320px',
   },
@@ -34,7 +42,10 @@ export function SchoolHeader({ title, truong, phuongXa, truongId, onSelectTruong
   return (
     <div className={styles.root}>
       <div className={styles.info}>
-        <Title2 as="h1">{title}</Title2>
+        <div className={styles.titleRow}>
+          <Title2 as="h1">{title}</Title2>
+          <Caption1 className={styles.unit}>Đơn vị: Đồng</Caption1>
+        </div>
         {truong && (
           <Body1 as="p">
             {truong.tenTruong}
