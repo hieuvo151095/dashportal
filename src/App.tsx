@@ -1,9 +1,10 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { CongNoChiTietPage } from './pages/CongNoChiTietPage'
+import { CongNoTongHopPage } from './pages/CongNoTongHopPage'
 import { DanhMucPhiChiTietPage } from './pages/DanhMucPhiChiTietPage'
 import { DanhMucPhiTongHopPage } from './pages/DanhMucPhiTongHopPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
-import { PlaceholderPage } from './pages/PlaceholderPage'
 import { PortalShell } from './pages/PortalShell'
 import { ThuHocPhiChiTietPage } from './pages/ThuHocPhiChiTietPage'
 import { ThuHocPhiTongHopPage } from './pages/ThuHocPhiTongHopPage'
@@ -21,14 +22,8 @@ function App() {
           <Route path="/danh-muc-phi/chi-tiet" element={<DanhMucPhiChiTietPage />} />
           <Route path="/thu-hoc-phi/tong-hop" element={<ThuHocPhiTongHopPage />} />
           <Route path="/thu-hoc-phi/chi-tiet" element={<ThuHocPhiChiTietPage />} />
-          <Route
-            path="/cong-no/tong-hop"
-            element={<PlaceholderPage title="Công nợ Học phí — Tổng hợp toàn thành phố" />}
-          />
-          <Route
-            path="/cong-no/chi-tiet"
-            element={<PlaceholderPage title="Công nợ Học phí — Chi tiết theo trường" />}
-          />
+          <Route path="/cong-no/tong-hop" element={<CongNoTongHopPage />} />
+          <Route path="/cong-no/chi-tiet" element={<CongNoChiTietPage />} />
         </Route>
       </Route>
 

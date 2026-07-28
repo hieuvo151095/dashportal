@@ -28,12 +28,13 @@ const useStyles = makeStyles({
   },
 })
 
-export type KpiAccent = 'default' | 'success' | 'warning'
+export type KpiAccent = 'default' | 'success' | 'warning' | 'danger'
 
 const ACCENT_COLOR: Record<KpiAccent, string> = {
   default: tokens.colorNeutralForeground1,
   success: tokens.colorPaletteGreenForeground1,
   warning: tokens.colorPaletteDarkOrangeForeground1,
+  danger: tokens.colorPaletteRedForeground1,
 }
 
 interface KpiCardProps {
