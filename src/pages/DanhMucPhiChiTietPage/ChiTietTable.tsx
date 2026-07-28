@@ -3,15 +3,15 @@ import {
   DataGrid,
   DataGridBody,
   DataGridCell,
-  DataGridHeader,
-  DataGridHeaderCell,
   DataGridRow,
   createTableColumn,
   type TableColumnDefinition,
 } from '@fluentui/react-components'
 import { EmptyState } from '../../components/EmptyState'
+import { TableHeaderRow } from '../../components/TableHeaderRow'
 import type { KhoanPhi } from '../../mock-data'
 import { formatCurrency } from '../../utils/currency'
+import { COL_BADGE, COL_CAP_HOC, COL_MA, COL_SO_TIEN, COL_STT, COL_TEN } from '../../utils/tableColumnSizes'
 
 interface ChiTietTableProps {
   rows: KhoanPhi[]
@@ -71,18 +71,33 @@ export function ChiTietTable({ rows }: ChiTietTableProps) {
     }),
   ]
 
+  const columnSizingOptions = {
+    stt: COL_STT,
+    maPhi: COL_MA,
+    tenPhi: COL_TEN,
+    soTien: COL_SO_TIEN,
+    donViTinh: COL_CAP_HOC,
+    nguonThu: COL_BADGE,
+    nhomPhi: COL_BADGE,
+    nienKhoa: COL_MA,
+    thamChieuPhapLy: COL_TEN,
+    ghiChu: COL_TEN,
+  }
+
   if (rows.length === 0) {
     return <EmptyState />
   }
 
   return (
     <div>
-      <DataGrid items={rows} columns={columns} getRowId={(item: KhoanPhi) => item.id} resizableColumns>
-        <DataGridHeader>
-          <DataGridRow>
-            {({ renderHeaderCell }) => <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>}
-          </DataGridRow>
-        </DataGridHeader>
+      <DataGrid
+        items={rows}
+        columns={columns}
+        getRowId={(item: KhoanPhi) => item.id}
+        resizableColumns
+        columnSizingOptions={columnSizingOptions}
+      >
+        <TableHeaderRow />
         <DataGridBody<KhoanPhi>>
           {({ item, rowId }) => (
             <DataGridRow<KhoanPhi> key={rowId}>

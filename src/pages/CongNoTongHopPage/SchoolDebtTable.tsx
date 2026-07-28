@@ -5,8 +5,6 @@ import {
   DataGrid,
   DataGridBody,
   DataGridCell,
-  DataGridHeader,
-  DataGridHeaderCell,
   DataGridRow,
   createTableColumn,
   type TableColumnDefinition,
@@ -14,9 +12,21 @@ import {
 import { EyeRegular } from '@fluentui/react-icons'
 import { useNavigate } from 'react-router-dom'
 import { EmptyState } from '../../components/EmptyState'
+import { TableHeaderRow } from '../../components/TableHeaderRow'
 import type { NhomTuoiNo } from '../../mock-data'
 import { formatCurrency, formatNumber } from '../../utils/currency'
 import { formatDate } from '../../utils/date'
+import {
+  COL_BADGE,
+  COL_DIA_DIEM,
+  COL_HANH_DONG,
+  COL_MA,
+  COL_NGAY,
+  COL_SO_LUONG,
+  COL_SO_TIEN,
+  COL_STT,
+  COL_TEN,
+} from '../../utils/tableColumnSizes'
 import type { TongHopData } from './useTongHopData'
 
 const BADGE_COLOR: Record<NhomTuoiNo, 'informative' | 'warning' | 'severe' | 'danger'> = {
@@ -91,6 +101,7 @@ export function SchoolDebtTable({ rows }: SchoolDebtTableProps) {
         <Button
           appearance="subtle"
           icon={<EyeRegular />}
+          style={{ whiteSpace: 'nowrap' }}
           onClick={() => navigate(`/cong-no/chi-tiet?truong=${item.truong.id}`)}
         >
           Xem chi tiết
@@ -99,14 +110,28 @@ export function SchoolDebtTable({ rows }: SchoolDebtTableProps) {
     }),
   ]
 
+  const columnSizingOptions = {
+    stt: COL_STT,
+    maTruong: COL_MA,
+    tenTruong: COL_TEN,
+    phuongXa: COL_DIA_DIEM,
+    soHocSinh: COL_SO_LUONG,
+    soTien: COL_SO_TIEN,
+    nhomUuThe: COL_BADGE,
+    ngayCapNhat: COL_NGAY,
+    hanhDong: COL_HANH_DONG,
+  }
+
   return (
     <div>
-      <DataGrid items={rows} columns={columns} getRowId={(item: Row) => item.truong.id} resizableColumns>
-        <DataGridHeader>
-          <DataGridRow>
-            {({ renderHeaderCell }) => <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>}
-          </DataGridRow>
-        </DataGridHeader>
+      <DataGrid
+        items={rows}
+        columns={columns}
+        getRowId={(item: Row) => item.truong.id}
+        resizableColumns
+        columnSizingOptions={columnSizingOptions}
+      >
+        <TableHeaderRow />
         <DataGridBody<Row>>
           {({ item, rowId }) => (
             <DataGridRow<Row> key={rowId}>

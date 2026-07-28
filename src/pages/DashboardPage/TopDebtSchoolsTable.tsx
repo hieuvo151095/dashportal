@@ -3,8 +3,6 @@ import {
   DataGrid,
   DataGridBody,
   DataGridCell,
-  DataGridHeader,
-  DataGridHeaderCell,
   DataGridRow,
   createTableColumn,
   type TableColumnDefinition,
@@ -13,8 +11,10 @@ import { EyeRegular } from '@fluentui/react-icons'
 import { useNavigate } from 'react-router-dom'
 import { EmptyState } from '../../components/EmptyState'
 import { SectionCard } from '../../components/SectionCard'
+import { TableHeaderRow } from '../../components/TableHeaderRow'
 import { TableSkeleton } from '../../components/TableSkeleton'
 import { formatCurrency, formatNumber } from '../../utils/currency'
+import { COL_DIA_DIEM, COL_HANH_DONG, COL_SO_LUONG, COL_SO_TIEN, COL_STT, COL_TEN } from '../../utils/tableColumnSizes'
 import type { DashboardData } from './useDashboardData'
 
 type TopDebtRow = DashboardData['top20CongNo'][number]
@@ -60,6 +60,7 @@ export function TopDebtSchoolsTable({ data, loading }: TopDebtSchoolsTableProps)
         <Button
           appearance="subtle"
           icon={<EyeRegular />}
+          style={{ whiteSpace: 'nowrap' }}
           onClick={() => navigate(`/cong-no/chi-tiet?truong=${item.truong.id}`)}
         >
           Xem chi tiết
@@ -67,6 +68,15 @@ export function TopDebtSchoolsTable({ data, loading }: TopDebtSchoolsTableProps)
       ),
     }),
   ]
+
+  const columnSizingOptions = {
+    stt: COL_STT,
+    tenTruong: COL_TEN,
+    phuongXa: COL_DIA_DIEM,
+    congNo: COL_SO_TIEN,
+    soHocSinh: COL_SO_LUONG,
+    hanhDong: COL_HANH_DONG,
+  }
 
   return (
     <SectionCard title="Top 20 trường có công nợ cao nhất">
@@ -80,12 +90,9 @@ export function TopDebtSchoolsTable({ data, loading }: TopDebtSchoolsTableProps)
           columns={columns}
           getRowId={(item: TopDebtRow) => item.truong.id}
           resizableColumns
+          columnSizingOptions={columnSizingOptions}
         >
-          <DataGridHeader>
-            <DataGridRow>
-              {({ renderHeaderCell }) => <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>}
-            </DataGridRow>
-          </DataGridHeader>
+          <TableHeaderRow />
           <DataGridBody<TopDebtRow>>
             {({ item, rowId }) => (
               <DataGridRow<TopDebtRow> key={rowId}>

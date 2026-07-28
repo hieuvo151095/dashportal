@@ -5,8 +5,6 @@ import {
   DataGrid,
   DataGridBody,
   DataGridCell,
-  DataGridHeader,
-  DataGridHeaderCell,
   DataGridRow,
   createTableColumn,
   makeStyles,
@@ -15,9 +13,21 @@ import {
 } from '@fluentui/react-components'
 import { SendRegular } from '@fluentui/react-icons'
 import { EmptyState } from '../../components/EmptyState'
+import { TableHeaderRow } from '../../components/TableHeaderRow'
 import type { NhomTuoiNo } from '../../mock-data'
 import { formatCurrency } from '../../utils/currency'
 import { formatDate } from '../../utils/date'
+import {
+  COL_BADGE,
+  COL_CAP_HOC,
+  COL_HANH_DONG,
+  COL_MA,
+  COL_NGAY,
+  COL_SO_LUONG,
+  COL_SO_TIEN,
+  COL_STT,
+  COL_TEN,
+} from '../../utils/tableColumnSizes'
 import type { DebtRow } from './useChiTietData'
 
 const BADGE_COLOR: Record<NhomTuoiNo, 'informative' | 'warning' | 'severe' | 'danger'> = {
@@ -34,17 +44,17 @@ const useStyles = makeStyles({
 })
 
 const COLUMN_SIZING_OPTIONS = {
-  stt: { minWidth: 48, defaultWidth: 48 },
-  maHocSinh: { minWidth: 110, defaultWidth: 120 },
-  hoTen: { minWidth: 140, defaultWidth: 160 },
-  lop: { minWidth: 90, defaultWidth: 100 },
-  kyNo: { minWidth: 90, defaultWidth: 100 },
-  soTienNo: { minWidth: 120, defaultWidth: 130 },
-  hanThanhToan: { minWidth: 120, defaultWidth: 130 },
-  soNgayQuaHan: { minWidth: 130, defaultWidth: 140 },
-  nhomTuoiNo: { minWidth: 110, defaultWidth: 120 },
-  lyDoNo: { minWidth: 180, defaultWidth: 200 },
-  hanhDong: { minWidth: 150, defaultWidth: 160 },
+  stt: COL_STT,
+  maHocSinh: COL_MA,
+  hoTen: COL_TEN,
+  lop: COL_CAP_HOC,
+  kyNo: COL_CAP_HOC,
+  soTienNo: COL_SO_TIEN,
+  hanThanhToan: COL_NGAY,
+  soNgayQuaHan: COL_SO_LUONG,
+  nhomTuoiNo: COL_BADGE,
+  lyDoNo: COL_TEN,
+  hanhDong: COL_HANH_DONG,
 }
 
 function mauSoNgayQuaHan(soNgay: number): string {
@@ -127,7 +137,7 @@ export function ChiTietTable({ rows }: ChiTietTableProps) {
       columnId: 'hanhDong',
       renderHeaderCell: () => 'Hành động',
       renderCell: () => (
-        <Button appearance="subtle" icon={<SendRegular />} onClick={() => {}}>
+        <Button appearance="subtle" icon={<SendRegular />} style={{ whiteSpace: 'nowrap' }} onClick={() => {}}>
           Gửi nhắc nợ
         </Button>
       ),
@@ -144,11 +154,7 @@ export function ChiTietTable({ rows }: ChiTietTableProps) {
           resizableColumns
           columnSizingOptions={COLUMN_SIZING_OPTIONS}
         >
-          <DataGridHeader>
-            <DataGridRow>
-              {({ renderHeaderCell }) => <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>}
-            </DataGridRow>
-          </DataGridHeader>
+          <TableHeaderRow />
           <DataGridBody<DebtRow>>
             {({ item, rowId }) => (
               <DataGridRow<DebtRow> key={rowId}>

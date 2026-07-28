@@ -5,8 +5,6 @@ import {
   DataGrid,
   DataGridBody,
   DataGridCell,
-  DataGridHeader,
-  DataGridHeaderCell,
   DataGridRow,
   createTableColumn,
   makeStyles,
@@ -16,8 +14,19 @@ import { EyeRegular } from '@fluentui/react-icons'
 import { useNavigate } from 'react-router-dom'
 import { EmptyState } from '../../components/EmptyState'
 import { Pagination } from '../../components/Pagination'
+import { TableHeaderRow } from '../../components/TableHeaderRow'
 import { formatCurrency } from '../../utils/currency'
 import { formatDate } from '../../utils/date'
+import {
+  COL_BADGE,
+  COL_CAP_HOC,
+  COL_HANH_DONG,
+  COL_MA,
+  COL_NGAY,
+  COL_SO_TIEN,
+  COL_STT,
+  COL_TEN,
+} from '../../utils/tableColumnSizes'
 import type { InvoiceRow } from './useTongHopData'
 import type { TongHopFiltersApi } from './useTongHopFilters'
 
@@ -30,17 +39,17 @@ const useStyles = makeStyles({
 const PAGE_SIZE = 15
 
 const COLUMN_SIZING_OPTIONS = {
-  stt: { minWidth: 48, defaultWidth: 48 },
-  maTruong: { minWidth: 90, defaultWidth: 100 },
-  tenTruong: { minWidth: 160, defaultWidth: 180 },
-  hocSinh: { minWidth: 160, defaultWidth: 180 },
-  soHoaDon: { minWidth: 150, defaultWidth: 160 },
-  ky: { minWidth: 80, defaultWidth: 90 },
-  hanThanhToan: { minWidth: 110, defaultWidth: 120 },
-  hinhThuc: { minWidth: 110, defaultWidth: 120 },
-  soTien: { minWidth: 140, defaultWidth: 150 },
-  trangThai: { minWidth: 130, defaultWidth: 140 },
-  hanhDong: { minWidth: 150, defaultWidth: 160 },
+  stt: COL_STT,
+  maTruong: COL_MA,
+  tenTruong: COL_TEN,
+  hocSinh: COL_TEN,
+  soHoaDon: COL_TEN,
+  ky: COL_CAP_HOC,
+  hanThanhToan: COL_NGAY,
+  hinhThuc: COL_BADGE,
+  soTien: COL_SO_TIEN,
+  trangThai: COL_BADGE,
+  hanhDong: COL_HANH_DONG,
 }
 
 interface InvoiceTableProps {
@@ -139,6 +148,7 @@ export function InvoiceTable({ rows, filters }: InvoiceTableProps) {
         <Button
           appearance="subtle"
           icon={<EyeRegular />}
+          style={{ whiteSpace: 'nowrap' }}
           onClick={() =>
             navigate(`/thu-hoc-phi/chi-tiet?truong=${item.truong.id}&q=${encodeURIComponent(item.hocSinh.maHocSinh)}`)
           }
@@ -159,11 +169,7 @@ export function InvoiceTable({ rows, filters }: InvoiceTableProps) {
           resizableColumns
           columnSizingOptions={COLUMN_SIZING_OPTIONS}
         >
-          <DataGridHeader>
-            <DataGridRow>
-              {({ renderHeaderCell }) => <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>}
-            </DataGridRow>
-          </DataGridHeader>
+          <TableHeaderRow />
           <DataGridBody<InvoiceRow>>
             {({ item, rowId }) => (
               <DataGridRow<InvoiceRow> key={rowId}>

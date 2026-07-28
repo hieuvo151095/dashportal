@@ -6,8 +6,6 @@ import {
   DataGrid,
   DataGridBody,
   DataGridCell,
-  DataGridHeader,
-  DataGridHeaderCell,
   DataGridRow,
   createTableColumn,
   type TableColumnDefinition,
@@ -18,8 +16,20 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { EmptyState } from '../../components/EmptyState'
 import { Pagination } from '../../components/Pagination'
+import { TableHeaderRow } from '../../components/TableHeaderRow'
 import type { HeThongDoiTac } from '../../mock-data'
 import { formatDate } from '../../utils/date'
+import {
+  COL_BADGE,
+  COL_CAP_HOC,
+  COL_DIA_DIEM,
+  COL_HANH_DONG,
+  COL_MA,
+  COL_NGAY,
+  COL_SO_LUONG,
+  COL_STT,
+  COL_TEN,
+} from '../../utils/tableColumnSizes'
 import type { TongHopRow } from './useTongHopData'
 import type { TongHopFiltersApi } from './useTongHopFilters'
 
@@ -130,6 +140,7 @@ export function TongHopTable({ rows, filters }: TongHopTableProps) {
         <Button
           appearance="subtle"
           icon={<EyeRegular />}
+          style={{ whiteSpace: 'nowrap' }}
           onClick={() => navigate(`/danh-muc-phi/chi-tiet?truong=${item.truong.id}`)}
         >
           Xem chi tiết
@@ -138,6 +149,18 @@ export function TongHopTable({ rows, filters }: TongHopTableProps) {
       compare: () => 0,
     }),
   ]
+
+  const columnSizingOptions = {
+    stt: COL_STT,
+    maTruong: COL_MA,
+    tenTruong: COL_TEN,
+    phuongXa: COL_DIA_DIEM,
+    capHoc: COL_CAP_HOC,
+    soMucPhi: COL_SO_LUONG,
+    heThongDoiTac: COL_BADGE,
+    ngayCapNhat: COL_NGAY,
+    hanhDong: COL_HANH_DONG,
+  }
 
   if (rows.length === 0) {
     return <EmptyState />
@@ -150,15 +173,12 @@ export function TongHopTable({ rows, filters }: TongHopTableProps) {
         columns={columns}
         getRowId={(item: TongHopRow) => item.truong.id}
         resizableColumns
+        columnSizingOptions={columnSizingOptions}
         sortable
         sortState={sortState}
         onSortChange={(_, nextSortState) => setSortState(nextSortState)}
       >
-        <DataGridHeader>
-          <DataGridRow>
-            {({ renderHeaderCell }) => <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>}
-          </DataGridRow>
-        </DataGridHeader>
+        <TableHeaderRow />
         <DataGridBody<TongHopRow>>
           {({ item, rowId }) => (
             <DataGridRow<TongHopRow> key={rowId}>

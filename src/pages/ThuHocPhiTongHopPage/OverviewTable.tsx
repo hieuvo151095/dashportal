@@ -4,8 +4,6 @@ import {
   DataGrid,
   DataGridBody,
   DataGridCell,
-  DataGridHeader,
-  DataGridHeaderCell,
   DataGridRow,
   createTableColumn,
   makeStyles,
@@ -15,7 +13,19 @@ import {
 import { EyeRegular } from '@fluentui/react-icons'
 import { useNavigate } from 'react-router-dom'
 import { EmptyState } from '../../components/EmptyState'
+import { TableHeaderRow } from '../../components/TableHeaderRow'
 import { formatCurrency, formatNumber } from '../../utils/currency'
+import {
+  COL_BADGE,
+  COL_DIA_DIEM,
+  COL_HANH_DONG,
+  COL_MA,
+  COL_NGAY,
+  COL_SO_LUONG,
+  COL_SO_TIEN,
+  COL_STT,
+  COL_TEN,
+} from '../../utils/tableColumnSizes'
 import type { OverviewRow } from './useTongHopData'
 
 const useStyles = makeStyles({
@@ -127,6 +137,7 @@ export function OverviewTable({ rows }: OverviewTableProps) {
           <Button
             appearance="subtle"
             icon={<EyeRegular />}
+            style={{ whiteSpace: 'nowrap' }}
             onClick={() => navigate(`/thu-hoc-phi/chi-tiet?truong=${item.truong.id}`)}
           >
             Xem chi tiết
@@ -135,15 +146,32 @@ export function OverviewTable({ rows }: OverviewTableProps) {
     }),
   ]
 
+  const columnSizingOptions = {
+    stt: COL_STT,
+    maTruong: COL_MA,
+    tenTruong: COL_TEN,
+    phuongXa: COL_DIA_DIEM,
+    heThong: COL_BADGE,
+    tienMat: COL_SO_TIEN,
+    chuyenKhoan: COL_SO_TIEN,
+    tongThu: COL_SO_TIEN,
+    conLai: COL_SO_TIEN,
+    tyLeThu: COL_SO_LUONG,
+    ngayCapNhat: COL_NGAY,
+    hanhDong: COL_HANH_DONG,
+  }
+
   return (
     <div>
       <div className={styles.scroll}>
-        <DataGrid items={items} columns={columns} getRowId={(item: GridRow) => (item.isTotal ? 'total' : item.truong.id)} resizableColumns>
-          <DataGridHeader>
-            <DataGridRow>
-              {({ renderHeaderCell }) => <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>}
-            </DataGridRow>
-          </DataGridHeader>
+        <DataGrid
+          items={items}
+          columns={columns}
+          getRowId={(item: GridRow) => (item.isTotal ? 'total' : item.truong.id)}
+          resizableColumns
+          columnSizingOptions={columnSizingOptions}
+        >
+          <TableHeaderRow />
           <DataGridBody<GridRow>>
             {({ item, rowId }) => (
               <DataGridRow<GridRow> key={rowId} className={item.isTotal ? styles.totalRow : undefined}>

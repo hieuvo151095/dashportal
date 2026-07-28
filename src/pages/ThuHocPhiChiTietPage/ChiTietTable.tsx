@@ -7,8 +7,6 @@ import {
   DataGrid,
   DataGridBody,
   DataGridCell,
-  DataGridHeader,
-  DataGridHeaderCell,
   DataGridRow,
   createTableColumn,
   makeStyles,
@@ -17,9 +15,11 @@ import {
 } from '@fluentui/react-components'
 import { ArrowDownloadRegular, ClockRegular, DismissCircleRegular, HistoryRegular } from '@fluentui/react-icons'
 import { EmptyState } from '../../components/EmptyState'
+import { TableHeaderRow } from '../../components/TableHeaderRow'
 import { TODAY } from '../../mock-data'
 import { formatCurrency } from '../../utils/currency'
 import { formatDate } from '../../utils/date'
+import { COL_BADGE, COL_HANH_DONG, COL_NGAY, COL_SO_TIEN, COL_TEN } from '../../utils/tableColumnSizes'
 import type { ChiTietRow } from './useChiTietData'
 
 const useStyles = makeStyles({
@@ -170,6 +170,17 @@ export function ChiTietTable({ rows }: ChiTietTableProps) {
     }),
   ]
 
+  const columnSizingOptions = {
+    hocSinh: COL_TEN,
+    tenHoaDon: COL_TEN,
+    hanThanhToan: COL_NGAY,
+    hinhThuc: COL_BADGE,
+    taoXacNhan: COL_TEN,
+    trangThai: COL_BADGE,
+    soTien: COL_SO_TIEN,
+    hanhDong: COL_HANH_DONG,
+  }
+
   return (
     <div>
       <DataGrid
@@ -177,12 +188,9 @@ export function ChiTietTable({ rows }: ChiTietTableProps) {
         columns={columns}
         getRowId={(item: ChiTietRow) => item.hoaDon?.id ?? `empty-${item.hocSinh.id}`}
         resizableColumns
+        columnSizingOptions={columnSizingOptions}
       >
-        <DataGridHeader>
-          <DataGridRow>
-            {({ renderHeaderCell }) => <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>}
-          </DataGridRow>
-        </DataGridHeader>
+        <TableHeaderRow />
         <DataGridBody<ChiTietRow>>
           {({ item, rowId }) => (
             <DataGridRow<ChiTietRow> key={rowId}>
