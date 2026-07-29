@@ -54,6 +54,7 @@ export function RegionHeatmap({ data, onSelectPhuongXa, loading }: RegionHeatmap
                 <Tooltip formatter={(value) => `${value}%`} />
                 <Bar
                   dataKey="tyLePercent"
+                  name="Tỷ lệ"
                   radius={[4, 4, 0, 0]}
                   onClick={(entry) => onSelectPhuongXa((entry.payload as (typeof chartData)[number]).phuongXaId)}
                   cursor="pointer"

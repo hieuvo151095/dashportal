@@ -26,12 +26,16 @@ import {
   COL_NGAY,
   COL_SO_LUONG,
   COL_STT,
-  COL_TEN,
 } from '../../utils/tableColumnSizes'
 import type { TongHopRow } from './useTongHopData'
 import type { TongHopFiltersApi } from './useTongHopFilters'
 
 const PAGE_SIZE = 15
+
+// Bảng này có nhiều khoảng trống bên phải (ít cột hơn các bảng khác trong app) khiến cột
+// Tên trường bị co hẹp và xuống dòng dù còn dư chỗ — nới rộng cục bộ cho riêng bảng này,
+// không đổi hằng số COL_TEN dùng chung (sẽ ảnh hưởng mọi bảng khác).
+const COL_TEN_RONG = { minWidth: 220, defaultWidth: 280 }
 
 type CompareFn = (a: TongHopRow, b: TongHopRow) => number
 
@@ -137,7 +141,7 @@ export function TongHopTable({ rows, filters }: TongHopTableProps) {
   const columnSizingOptions = {
     stt: COL_STT,
     maTruong: COL_MA,
-    tenTruong: COL_TEN,
+    tenTruong: COL_TEN_RONG,
     phuongXa: COL_DIA_DIEM,
     capHoc: COL_CAP_HOC,
     soMucPhi: COL_SO_LUONG,

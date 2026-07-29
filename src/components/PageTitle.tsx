@@ -16,17 +16,19 @@ const useStyles = makeStyles({
 
 interface PageTitleProps {
   title: string
+  showUnit?: boolean
 }
 
-// Tiêu đề trang dùng chung — luôn kèm ghi chú đơn vị tiền tệ ở góc phải cùng hàng,
-// vì toàn bộ số tiền trong app đã bỏ hậu tố "đ" (formatCurrency chỉ trả số thô).
-export function PageTitle({ title }: PageTitleProps) {
+// Tiêu đề trang dùng chung — kèm ghi chú đơn vị tiền tệ ở góc phải cùng hàng cho trang có
+// cột tiền dạng bảng (case c). showUnit={false} cho trang không có số liệu tiền nào (case a
+// — vd Danh mục Phí Tổng hợp, chỉ có "Số mục phí").
+export function PageTitle({ title, showUnit = true }: PageTitleProps) {
   const styles = useStyles()
 
   return (
     <div className={styles.root}>
       <Title2 as="h1">{title}</Title2>
-      <Caption1 className={styles.unit}>Đơn vị: Đồng</Caption1>
+      {showUnit && <Caption1 className={styles.unit}>Đơn vị: Đồng</Caption1>}
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { makeStyles, tokens } from '@fluentui/react-components'
 import { CheckmarkCircleRegular, ClockRegular, ReceiptRegular } from '@fluentui/react-icons'
 import { KpiCard } from '../../components/KpiCard'
-import { formatCurrency, formatNumber } from '../../utils/currency'
+import { formatCurrencyWithUnit, formatNumber } from '../../utils/currency'
 import { MiniProgressRing } from './MiniProgressRing'
 import type { DashboardData } from './useDashboardData'
 
@@ -28,20 +28,20 @@ export function KpiRow({ data }: KpiRowProps) {
         icon={ReceiptRegular}
         label="Tổng hoá đơn"
         value={`${formatNumber(kpi.tongSoHoaDon)} hoá đơn`}
-        subValue={formatCurrency(kpi.tongTien)}
+        subValue={formatCurrencyWithUnit(kpi.tongTien)}
       />
       <KpiCard
         icon={CheckmarkCircleRegular}
         label="Đã thu"
         value={`${formatNumber(kpi.soDaThanhToan)} hoá đơn`}
-        subValue={formatCurrency(kpi.daThuTien)}
+        subValue={formatCurrencyWithUnit(kpi.daThuTien)}
         accent="success"
       />
       <KpiCard
         icon={ClockRegular}
         label="Cần thu (còn lại)"
         value={`${formatNumber(kpi.soCanThu)} hoá đơn`}
-        subValue={formatCurrency(kpi.canThuTien)}
+        subValue={formatCurrencyWithUnit(kpi.canThuTien)}
         accent="warning"
       />
       <KpiCard

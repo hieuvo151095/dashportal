@@ -1,25 +1,30 @@
-import { Body1, Caption1, Combobox, Field, Option, Title2, makeStyles, tokens } from '@fluentui/react-components'
+import { Body1, Caption1, Card, Combobox, Field, Option, Title2, makeStyles, tokens } from '@fluentui/react-components'
 import { mockDataset, type PhuongXa, type Truong } from '../mock-data'
 
 const useStyles = makeStyles({
-  root: {
+  card: {
     display: 'flex',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
     columnGap: tokens.spacingHorizontalM,
     marginBottom: tokens.spacingVerticalL,
+    padding: tokens.spacingHorizontalL,
   },
   info: {
     display: 'flex',
     flexDirection: 'column',
     rowGap: tokens.spacingVerticalXXS,
   },
-  titleRow: {
+  moduleRow: {
     display: 'flex',
     alignItems: 'baseline',
+    justifyContent: 'space-between',
     columnGap: tokens.spacingHorizontalM,
   },
   unit: {
+    color: tokens.colorNeutralForeground3,
+  },
+  pageTitle: {
     color: tokens.colorNeutralForeground3,
   },
   picker: {
@@ -32,24 +37,28 @@ const useStyles = makeStyles({
 })
 
 interface SchoolHeaderProps {
-  title: string
+  moduleTitle: string
+  pageTitle: string
   truong: Truong | undefined
   phuongXa: PhuongXa | undefined
   truongId: string
   onSelectTruong: (truongId: string) => void
 }
 
-export function SchoolHeader({ title, truong, phuongXa, truongId, onSelectTruong }: SchoolHeaderProps) {
+export function SchoolHeader({ moduleTitle, pageTitle, truong, phuongXa, truongId, onSelectTruong }: SchoolHeaderProps) {
   const styles = useStyles()
   const { truongList } = mockDataset
 
   return (
-    <div className={styles.root}>
+    <Card className={styles.card}>
       <div className={styles.info}>
-        <div className={styles.titleRow}>
-          <Title2 as="h1">{title}</Title2>
+        <div className={styles.moduleRow}>
+          <Title2 as="h1">{moduleTitle}</Title2>
           <Caption1 className={styles.unit}>Đơn vị: Đồng</Caption1>
         </div>
+        <Caption1 as="p" className={styles.pageTitle}>
+          {pageTitle}
+        </Caption1>
         {truong && (
           <Body1 as="p" className={styles.truongInfo}>
             {truong.tenTruong}
@@ -73,6 +82,6 @@ export function SchoolHeader({ title, truong, phuongXa, truongId, onSelectTruong
           ))}
         </Combobox>
       </Field>
-    </div>
+    </Card>
   )
 }

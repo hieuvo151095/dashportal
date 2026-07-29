@@ -11,7 +11,7 @@ import {
 } from 'recharts'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
-import { formatCurrency, formatNumber } from '../../utils/currency'
+import { formatCurrencyWithUnit, formatNumber } from '../../utils/currency'
 import type { TongHopData } from './useTongHopData'
 
 interface TrendChartProps {
@@ -49,7 +49,7 @@ export function TrendChart({ data, loading }: TrendChartProps) {
             <YAxis yAxisId="soLuong" orientation="right" stroke={tokens.colorNeutralForeground3} />
             <Tooltip
               formatter={(value, name) =>
-                name === 'Công nợ' ? formatCurrency(Number(value)) : `${formatNumber(Number(value))} học sinh`
+                name === 'Công nợ' ? formatCurrencyWithUnit(Number(value)) : `${formatNumber(Number(value))} học sinh`
               }
             />
             <Bar yAxisId="soLuong" dataKey="HS nợ mới phát sinh" fill={tokens.colorPaletteMarigoldBackground2} radius={[4, 4, 0, 0]} />

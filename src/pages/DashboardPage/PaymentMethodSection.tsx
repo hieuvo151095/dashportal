@@ -4,7 +4,7 @@ import { EmptyState } from '../../components/EmptyState'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
 import type { HinhThucThanhToan } from '../../mock-data'
-import { formatCurrency } from '../../utils/currency'
+import { formatCurrencyWithUnit } from '../../utils/currency'
 import type { DashboardData } from './useDashboardData'
 
 const MAU_THEO_HINH_THUC: Record<HinhThucThanhToan, string> = {
@@ -33,7 +33,7 @@ export function PaymentMethodSection({ data, loading }: PaymentMethodSectionProp
             value: item.value,
             color: MAU_THEO_HINH_THUC[item.label],
           }))}
-          valueFormatter={formatCurrency}
+          valueFormatter={formatCurrencyWithUnit}
         />
       )}
     </SectionCard>

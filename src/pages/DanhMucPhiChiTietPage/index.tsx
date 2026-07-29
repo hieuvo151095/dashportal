@@ -1,4 +1,5 @@
 import { SchoolHeader } from '../../components/SchoolHeader'
+import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
 import { useFilterDraft } from '../../utils/useFilterDraft'
 import { useSkeletonDelay } from '../../utils/useSkeletonDelay'
@@ -27,7 +28,8 @@ export function DanhMucPhiChiTietPage() {
   return (
     <div>
       <SchoolHeader
-        title="Danh mục Phí — Chi tiết theo trường"
+        moduleTitle="Danh mục Phí"
+        pageTitle="Chi tiết theo trường"
         truong={data.truong}
         phuongXa={data.phuongXa}
         truongId={filters.truongId}
@@ -36,7 +38,9 @@ export function DanhMucPhiChiTietPage() {
 
       <ChiTietFilterBar draft={draft} setDraft={setDraft} onApply={() => filters.apply(draft)} onReset={filters.reset} />
 
-      {loading ? <TableSkeleton rows={6} /> : <ChiTietTable rows={data.rows} />}
+      <SectionCard title="Danh sách khoản phí">
+        {loading ? <TableSkeleton rows={6} /> : <ChiTietTable rows={data.rows} />}
+      </SectionCard>
     </div>
   )
 }

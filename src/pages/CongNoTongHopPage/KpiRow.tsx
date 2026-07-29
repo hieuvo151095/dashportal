@@ -1,7 +1,7 @@
 import { makeStyles, tokens } from '@fluentui/react-components'
 import { AlertRegular, MoneyRegular, PeopleRegular, WarningRegular } from '@fluentui/react-icons'
 import { KpiCard } from '../../components/KpiCard'
-import { formatCurrency, formatNumber } from '../../utils/currency'
+import { formatCurrencyWithUnit, formatNumber } from '../../utils/currency'
 import type { TongHopData } from './useTongHopData'
 
 const useStyles = makeStyles({
@@ -23,7 +23,7 @@ export function KpiRow({ data }: KpiRowProps) {
 
   return (
     <div className={styles.root}>
-      <KpiCard icon={MoneyRegular} label="Tổng công nợ" value={formatCurrency(kpi.tongCongNo)} accent="warning" />
+      <KpiCard icon={MoneyRegular} label="Tổng công nợ" value={formatCurrencyWithUnit(kpi.tongCongNo)} accent="warning" />
       <KpiCard
         icon={PeopleRegular}
         label="Số học sinh chưa đóng"
@@ -33,7 +33,7 @@ export function KpiRow({ data }: KpiRowProps) {
       <KpiCard
         icon={WarningRegular}
         label="Công nợ quá hạn > 90 ngày"
-        value={formatCurrency(kpi.congNoQuaHan90)}
+        value={formatCurrencyWithUnit(kpi.congNoQuaHan90)}
         accent="danger"
       />
     </div>

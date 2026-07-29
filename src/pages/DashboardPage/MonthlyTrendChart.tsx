@@ -11,7 +11,7 @@ import {
 } from 'recharts'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
-import { formatCurrency } from '../../utils/currency'
+import { formatCurrencyWithUnit } from '../../utils/currency'
 import type { DashboardData } from './useDashboardData'
 
 interface MonthlyTrendChartProps {
@@ -48,7 +48,7 @@ export function MonthlyTrendChart({ data, loading }: MonthlyTrendChartProps) {
             />
             <YAxis yAxisId="tyLe" orientation="right" domain={[0, 100]} stroke={tokens.colorNeutralForeground3} />
             <Tooltip
-              formatter={(value, name) => (name === 'Đã thu' ? formatCurrency(Number(value)) : `${value}%`)}
+              formatter={(value, name) => (name === 'Đã thu' ? formatCurrencyWithUnit(Number(value)) : `${value}%`)}
             />
             <Bar yAxisId="tien" dataKey="Đã thu" fill={tokens.colorBrandBackground} radius={[4, 4, 0, 0]} />
             <Line

@@ -4,7 +4,7 @@ import { EmptyState } from '../../components/EmptyState'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
 import type { DanhMucKhoanThu } from '../../mock-data'
-import { formatCurrency } from '../../utils/currency'
+import { formatCurrencyWithUnit } from '../../utils/currency'
 import type { DashboardData } from './useDashboardData'
 
 const MAU_THEO_DANH_MUC: Record<DanhMucKhoanThu, string> = {
@@ -36,7 +36,7 @@ export function RevenueCompositionSection({ data, loading }: RevenueCompositionS
             value: item.value,
             color: MAU_THEO_DANH_MUC[item.label],
           }))}
-          valueFormatter={formatCurrency}
+          valueFormatter={formatCurrencyWithUnit}
         />
       )}
     </SectionCard>

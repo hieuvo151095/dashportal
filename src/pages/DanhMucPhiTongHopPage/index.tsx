@@ -30,7 +30,7 @@ export function DanhMucPhiTongHopPage() {
 
   return (
     <div>
-      <PageTitle title="Danh mục Phí — Tổng hợp toàn thành phố" />
+      <PageTitle title="Danh mục Phí — Tổng hợp toàn thành phố" showUnit={false} />
 
       <TongHopFilterBar draft={draft} setDraft={setDraft} onApply={() => filters.apply(draft)} onReset={filters.reset} />
 

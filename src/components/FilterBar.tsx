@@ -4,10 +4,13 @@ import type { ReactNode } from 'react'
 
 const useStyles = makeStyles({
   card: {
+    // flexDirection: column thay vì row+wrap — khối field và khối nút luôn là 2 "dòng"
+    // riêng biệt, tách bạch. Với row+wrap, khi field ít/ngắn đủ để nằm chung 1 dòng với
+    // nút (vd Dashboard chỉ 3 field), phép tính flex-shrink của trình duyệt co khối field
+    // lại và đẩy lệch phải một cách khó đoán. column loại bỏ hẳn sự phụ thuộc vào số
+    // lượng/độ dài field — field luôn căn trái, chiếm trọn chiều rộng.
     display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'flex-end',
-    columnGap: tokens.spacingHorizontalM,
+    flexDirection: 'column',
     rowGap: tokens.spacingVerticalS,
     marginBottom: tokens.spacingVerticalL,
     padding: tokens.spacingHorizontalL,
@@ -18,7 +21,7 @@ const useStyles = makeStyles({
     alignItems: 'flex-end',
     columnGap: tokens.spacingHorizontalM,
     rowGap: tokens.spacingVerticalS,
-    flexGrow: 1,
+    width: '100%',
     // Field width cố định theo nội dung field (không theo giá trị đang chọn) — tránh
     // khung filter tự giãn/co khi chọn 1 giá trị dài/ngắn khác nhau.
     '& > .fui-Field': {
@@ -29,7 +32,7 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     columnGap: tokens.spacingHorizontalS,
-    flexShrink: 0,
+    alignSelf: 'flex-end',
   },
 })
 

@@ -3,7 +3,7 @@ import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
 import type { NhomTuoiNo } from '../../mock-data'
-import { formatCurrency, formatNumber } from '../../utils/currency'
+import { formatCurrencyWithUnit, formatNumber } from '../../utils/currency'
 import type { TongHopData } from './useTongHopData'
 
 const MAU_THEO_NHOM: Record<NhomTuoiNo, string> = {
@@ -55,7 +55,7 @@ export function AgingChart({ data, loading }: AgingChartProps) {
                     }}
                   >
                     <div>{item.nhom}</div>
-                    <div>{formatCurrency(item.tongTien)}</div>
+                    <div>{formatCurrencyWithUnit(item.tongTien)}</div>
                     <div>{formatNumber(item.soHocSinh)} học sinh</div>
                   </div>
                 )
