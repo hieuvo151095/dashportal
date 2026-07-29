@@ -13,6 +13,12 @@ import type { KhoanPhi } from '../../mock-data'
 import { formatCurrency } from '../../utils/currency'
 import { COL_BADGE, COL_CAP_HOC, COL_MA, COL_SO_TIEN, COL_STT, COL_TEN } from '../../utils/tableColumnSizes'
 
+// Mã phí (vd "KP-79164762-01") và Tham chiếu pháp lý (vd "TT 55/2011/TTLT-BGDĐT-BTC") dài
+// hơn hằng số dùng chung — nới rộng cục bộ cho riêng bảng này, không đổi COL_MA/COL_TEN
+// (sẽ ảnh hưởng mọi bảng khác).
+const COL_MA_PHI_RONG = { minWidth: 140, defaultWidth: 150 }
+const COL_THAM_CHIEU_RONG = { minWidth: 220, defaultWidth: 260 }
+
 interface ChiTietTableProps {
   rows: KhoanPhi[]
 }
@@ -73,14 +79,14 @@ export function ChiTietTable({ rows }: ChiTietTableProps) {
 
   const columnSizingOptions = {
     stt: COL_STT,
-    maPhi: COL_MA,
+    maPhi: COL_MA_PHI_RONG,
     tenPhi: COL_TEN,
     soTien: COL_SO_TIEN,
     donViTinh: COL_CAP_HOC,
     nguonThu: COL_BADGE,
     nhomPhi: COL_BADGE,
     nienKhoa: COL_MA,
-    thamChieuPhapLy: COL_TEN,
+    thamChieuPhapLy: COL_THAM_CHIEU_RONG,
     ghiChu: COL_TEN,
   }
 

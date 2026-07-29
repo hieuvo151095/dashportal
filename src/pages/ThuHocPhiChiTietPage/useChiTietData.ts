@@ -5,7 +5,6 @@ import type { ChiTietFiltersApi } from './useChiTietFilters'
 export interface ChiTietRow {
   hocSinh: HocSinh
   hoaDon: HoaDon | null
-  isFirstOfStudent: boolean
 }
 
 export function tenHoaDon(ky: string): string {
@@ -61,11 +60,11 @@ export function useChiTietData(filters: ChiTietFiltersApi) {
         .sort((a, b) => new Date(a.ngayLap).getTime() - new Date(b.ngayLap).getTime())
 
       if (hoaDonHocSinh.length === 0) {
-        rows.push({ hocSinh, hoaDon: null, isFirstOfStudent: true })
+        rows.push({ hocSinh, hoaDon: null })
       } else {
-        hoaDonHocSinh.forEach((hoaDon, index) => {
-          rows.push({ hocSinh, hoaDon, isFirstOfStudent: index === 0 })
-        })
+        for (const hoaDon of hoaDonHocSinh) {
+          rows.push({ hocSinh, hoaDon })
+        }
       }
     }
 

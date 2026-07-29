@@ -51,7 +51,7 @@ export function ThuHocPhiChiTietPage() {
       />
 
       <SectionCard title="Danh sách hoá đơn">
-        {loading ? <TableSkeleton rows={8} /> : <ChiTietTable rows={data.rows} />}
+        {loading ? <TableSkeleton rows={8} /> : <ChiTietTable rows={data.rows} filters={filters} />}
       </SectionCard>
     </div>
   )

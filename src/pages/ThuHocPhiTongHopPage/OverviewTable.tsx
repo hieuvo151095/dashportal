@@ -35,6 +35,9 @@ import type { OverviewRow } from './useTongHopData'
 // không đụng hằng số COL_STT dùng chung (sẽ ảnh hưởng mọi bảng khác).
 const COL_STT_HEP = { minWidth: 32, defaultWidth: 32 }
 
+// "Thanh toán một phần" dài hơn COL_BADGE dùng chung — nới rộng cục bộ cho riêng cột này.
+const COL_TRANG_THAI_RONG = { minWidth: 170, defaultWidth: 190 }
+
 const TRANG_THAI_BADGE_COLOR: Record<OverviewRow['trangThaiTongHop'], 'success' | 'warning' | 'informative'> = {
   'Đã thanh toán': 'success',
   'Thanh toán một phần': 'warning',
@@ -202,7 +205,7 @@ export function OverviewTable({ rows }: OverviewTableProps) {
     tongThu: COL_SO_TIEN,
     hdConLai: COL_SO_LUONG,
     phiConLai: COL_SO_TIEN,
-    trangThai: COL_BADGE,
+    trangThai: COL_TRANG_THAI_RONG,
     tyLeThu: COL_SO_LUONG,
     ngayCapNhat: COL_NGAY,
     hanhDong: COL_HANH_DONG,

@@ -14,12 +14,16 @@ import {
 } from '@fluentui/react-components'
 import { ClockRegular } from '@fluentui/react-icons'
 import { EmptyState } from '../../components/EmptyState'
+import { Pagination } from '../../components/Pagination'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
 import { TODAY } from '../../mock-data'
 import { formatCurrency } from '../../utils/currency'
 import { formatDate } from '../../utils/date'
 import { COL_BADGE, COL_NGAY, COL_SO_TIEN, COL_TEN } from '../../utils/tableColumnSizes'
 import { tenHoaDon, type ChiTietRow } from './useChiTietData'
+import type { ChiTietFiltersApi } from './useChiTietFilters'
+
+const PAGE_SIZE = 50
 
 const useStyles = makeStyles({
   studentCell: {
@@ -42,31 +46,33 @@ const useStyles = makeStyles({
 
 interface ChiTietTableProps {
   rows: ChiTietRow[]
+  filters: ChiTietFiltersApi
 }
 
-export function ChiTietTable({ rows }: ChiTietTableProps) {
+export function ChiTietTable({ rows, filters }: ChiTietTableProps) {
   const styles = useStyles()
 
   if (rows.length === 0) {
     return <EmptyState />
   }
 
+  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE))
+  const page = Math.min(Math.max(1, filters.page), totalPages)
+  const paginated = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
   const columns: TableColumnDefinition<ChiTietRow>[] = [
     createTableColumn<ChiTietRow>({
       columnId: 'hocSinh',
       renderHeaderCell: () => 'Học sinh',
-      renderCell: (item) =>
-        item.isFirstOfStudent ? (
-          <div className={styles.studentCell}>
-            <Avatar name={item.hocSinh.hoTen} color="colorful" />
-            <div className={styles.studentInfo}>
-              <Body1>{item.hocSinh.hoTen}</Body1>
-              <Caption1 className={styles.muted}>{item.hocSinh.maHocSinh}</Caption1>
-            </div>
+      renderCell: (item) => (
+        <div className={styles.studentCell}>
+          <Avatar name={item.hocSinh.hoTen} color="colorful" />
+          <div className={styles.studentInfo}>
+            <Body1>{item.hocSinh.hoTen}</Body1>
+            <Caption1 className={styles.muted}>{item.hocSinh.maHocSinh}</Caption1>
           </div>
-        ) : (
-          ''
-        ),
+        </div>
+      ),
     }),
     createTableColumn<ChiTietRow>({
       columnId: 'tenHoaDon',
@@ -160,7 +166,7 @@ export function ChiTietTable({ rows }: ChiTietTableProps) {
   return (
     <div>
       <DataGrid
-        items={rows}
+        items={paginated}
         columns={columns}
         getRowId={(item: ChiTietRow) => item.hoaDon?.id ?? `empty-${item.hocSinh.id}`}
         resizableColumns
@@ -176,6 +182,7 @@ export function ChiTietTable({ rows }: ChiTietTableProps) {
         </DataGridBody>
       </DataGrid>
       <Body1 as="p">{`Tổng số dòng: ${rows.length}`}</Body1>
+      <Pagination page={page} totalPages={totalPages} totalItems={rows.length} pageSize={PAGE_SIZE} onPageChange={filters.setPage} />
     </div>
   )
 }

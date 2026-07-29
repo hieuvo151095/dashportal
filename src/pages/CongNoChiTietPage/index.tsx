@@ -50,7 +50,7 @@ export function CongNoChiTietPage() {
       />
 
       <SectionCard title="Danh sách công nợ">
-        {loading ? <TableSkeleton rows={8} /> : <ChiTietTable rows={data.rows} />}
+        {loading ? <TableSkeleton rows={8} /> : <ChiTietTable rows={data.rows} filters={filters} />}
       </SectionCard>
     </div>
   )

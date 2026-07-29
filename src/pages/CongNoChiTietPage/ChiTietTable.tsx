@@ -11,6 +11,7 @@ import {
   type TableColumnDefinition,
 } from '@fluentui/react-components'
 import { EmptyState } from '../../components/EmptyState'
+import { Pagination } from '../../components/Pagination'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
 import type { NhomTuoiNo } from '../../mock-data'
 import { formatCurrency } from '../../utils/currency'
@@ -26,6 +27,9 @@ import {
   COL_TEN,
 } from '../../utils/tableColumnSizes'
 import type { DebtRow } from './useChiTietData'
+import type { ChiTietFiltersApi } from './useChiTietFilters'
+
+const PAGE_SIZE = 50
 
 const BADGE_COLOR: Record<NhomTuoiNo, 'informative' | 'warning' | 'severe' | 'danger'> = {
   '≤30 ngày': 'informative',
@@ -61,20 +65,25 @@ function mauSoNgayQuaHan(soNgay: number): string {
 
 interface ChiTietTableProps {
   rows: DebtRow[]
+  filters: ChiTietFiltersApi
 }
 
-export function ChiTietTable({ rows }: ChiTietTableProps) {
+export function ChiTietTable({ rows, filters }: ChiTietTableProps) {
   const styles = useStyles()
 
   if (rows.length === 0) {
     return <EmptyState />
   }
 
+  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE))
+  const page = Math.min(Math.max(1, filters.page), totalPages)
+  const paginated = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
   const columns: TableColumnDefinition<DebtRow>[] = [
     createTableColumn<DebtRow>({
       columnId: 'stt',
       renderHeaderCell: () => 'STT',
-      renderCell: (item) => rows.indexOf(item) + 1,
+      renderCell: (item) => (page - 1) * PAGE_SIZE + paginated.indexOf(item) + 1,
     }),
     createTableColumn<DebtRow>({
       columnId: 'maHocSinh',
@@ -135,7 +144,7 @@ export function ChiTietTable({ rows }: ChiTietTableProps) {
     <div>
       <div className={styles.scroll}>
         <DataGrid
-          items={rows}
+          items={paginated}
           columns={columns}
           getRowId={(item: DebtRow) => item.hoaDon.id}
           resizableColumns
@@ -152,6 +161,7 @@ export function ChiTietTable({ rows }: ChiTietTableProps) {
         </DataGrid>
       </div>
       <Body1 as="p">{`Tổng số dòng: ${rows.length}`}</Body1>
+      <Pagination page={page} totalPages={totalPages} totalItems={rows.length} pageSize={PAGE_SIZE} onPageChange={filters.setPage} />
     </div>
   )
 }
