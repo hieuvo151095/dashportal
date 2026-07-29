@@ -36,10 +36,12 @@ export function useTongHopData(filters: TongHopFiltersApi) {
     const { phuongXaList, truongList, hoaDonList } = mockDataset
     const phuongXaById = new Map<string, PhuongXa>(phuongXaList.map((p) => [p.id, p]))
 
+    const q = filters.q.trim().toLowerCase()
     const scopedTruongList = truongList.filter(
       (t) =>
         (filters.phuongXaId === 'all' || t.phuongXaId === filters.phuongXaId) &&
-        (filters.truongId === 'all' || t.id === filters.truongId),
+        (filters.truongId === 'all' || t.id === filters.truongId) &&
+        (!q || t.tenTruong.toLowerCase().includes(q) || t.maTruong.toLowerCase().includes(q)),
     )
     const scopedTruongIds = new Set(scopedTruongList.map((t) => t.id))
 
@@ -126,7 +128,7 @@ export function useTongHopData(filters: TongHopFiltersApi) {
       .sort((a, b) => b.soTienChuaThu - a.soTienChuaThu)
 
     return { kpi, congNoTheoTuoiNo, xuHuongThang, rows }
-  }, [filters.phuongXaId, filters.truongId, filters.kyTu, filters.kyDen, filters.nhomTuoiNo])
+  }, [filters.phuongXaId, filters.truongId, filters.kyTu, filters.kyDen, filters.nhomTuoiNo, filters.q])
 }
 
 export type TongHopData = ReturnType<typeof useTongHopData>

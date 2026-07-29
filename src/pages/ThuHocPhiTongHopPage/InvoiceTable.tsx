@@ -1,5 +1,4 @@
 import {
-  Badge,
   Body1,
   Button,
   DataGrid,
@@ -48,7 +47,6 @@ const COLUMN_SIZING_OPTIONS = {
   hanThanhToan: COL_NGAY,
   hinhThuc: COL_BADGE,
   soTien: COL_SO_TIEN,
-  trangThai: COL_BADGE,
   hanhDong: COL_HANH_DONG,
 }
 
@@ -122,24 +120,6 @@ export function InvoiceTable({ rows, filters }: InvoiceTableProps) {
         ) : (
           formatCurrency(item.hoaDon.soTien)
         ),
-    }),
-    createTableColumn<InvoiceRow>({
-      columnId: 'trangThai',
-      renderHeaderCell: () => 'Trạng thái',
-      renderCell: (item) => (
-        <Badge
-          appearance="tint"
-          color={
-            item.hoaDon.trangThai === 'Đã thanh toán'
-              ? 'success'
-              : item.hoaDon.trangThai === 'Thanh toán một phần'
-                ? 'warning'
-                : 'informative'
-          }
-        >
-          {item.hoaDon.trangThai}
-        </Badge>
-      ),
     }),
     createTableColumn<InvoiceRow>({
       columnId: 'hanhDong',

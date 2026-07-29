@@ -5,9 +5,9 @@ import { useUrlFilters } from '../../utils/useUrlFilters'
 const KY_OPTIONS = getKyOptions()
 const DEFAULT_TRUONG_ID = mockDataset.truongList[0]?.id ?? ''
 
-const DEFAULTS: Record<'truong' | 'maHocSinh' | 'khoi' | 'lop' | 'kyTu' | 'kyDen' | 'nhomTuoiNo', string> = {
+const DEFAULTS: Record<'truong' | 'q' | 'khoi' | 'lop' | 'kyTu' | 'kyDen' | 'nhomTuoiNo', string> = {
   truong: DEFAULT_TRUONG_ID,
-  maHocSinh: '',
+  q: '',
   khoi: 'all',
   lop: 'all',
   kyTu: KY_OPTIONS[0],
@@ -16,7 +16,7 @@ const DEFAULTS: Record<'truong' | 'maHocSinh' | 'khoi' | 'lop' | 'kyTu' | 'kyDen
 }
 
 export interface ChiTietFilters {
-  maHocSinh: string
+  q: string
   khoi: string
   lop: string
   kyTu: string
@@ -27,7 +27,7 @@ export interface ChiTietFilters {
 export interface ChiTietFiltersApi extends ChiTietFilters {
   truongId: string
   setTruongId: (value: string) => void
-  setMaHocSinh: (value: string) => void
+  setQ: (value: string) => void
   setKhoi: (value: string) => void
   setLop: (value: string) => void
   setKyTu: (value: string) => void
@@ -44,7 +44,7 @@ export function useChiTietFilters(): ChiTietFiltersApi {
 
   return {
     truongId: get('truong'),
-    maHocSinh: get('maHocSinh'),
+    q: get('q'),
     khoi: get('khoi'),
     lop: get('lop'),
     kyTu: get('kyTu'),
@@ -52,7 +52,7 @@ export function useChiTietFilters(): ChiTietFiltersApi {
     nhomTuoiNo: get('nhomTuoiNo'),
     // Chọn trường (SchoolHeader) là điều hướng ngữ cảnh trang, áp dụng ngay — không qua draft.
     setTruongId: (value) => update({ truong: value, khoi: DEFAULTS.khoi, lop: DEFAULTS.lop }),
-    setMaHocSinh: (value) => update({ maHocSinh: value }),
+    setQ: (value) => update({ q: value }),
     setKhoi: (value) => update({ khoi: value, lop: DEFAULTS.lop }),
     setLop: (value) => update({ lop: value }),
     setKyTu: (value) => update({ kyTu: value }),
@@ -60,7 +60,7 @@ export function useChiTietFilters(): ChiTietFiltersApi {
     setNhomTuoiNo: (value) => update({ nhomTuoiNo: value }),
     apply: (draft) =>
       update({
-        maHocSinh: draft.maHocSinh,
+        q: draft.q,
         khoi: draft.khoi,
         lop: draft.lop,
         kyTu: draft.kyTu,
@@ -70,7 +70,7 @@ export function useChiTietFilters(): ChiTietFiltersApi {
     // "Làm mới" chỉ reset field của FilterBar — không đụng trường đang chọn (truongId).
     reset: () =>
       update({
-        maHocSinh: DEFAULTS.maHocSinh,
+        q: DEFAULTS.q,
         khoi: DEFAULTS.khoi,
         lop: DEFAULTS.lop,
         kyTu: DEFAULTS.kyTu,

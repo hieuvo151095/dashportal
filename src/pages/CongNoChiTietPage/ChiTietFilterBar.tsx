@@ -20,8 +20,8 @@ interface ChiTietFilterBarProps {
 export function ChiTietFilterBar({ draft, setDraft, onApply, onReset, khoiOptions, lopOptions }: ChiTietFilterBarProps) {
   return (
     <FilterBar onApply={onApply} onReset={onReset}>
-      <Field label="Mã học sinh">
-        <SearchInput value={draft.maHocSinh} onChange={(value) => setDraft({ maHocSinh: value })} placeholder="Tìm theo mã học sinh" />
+      <Field label="Tìm kiếm">
+        <SearchInput value={draft.q} onChange={(value) => setDraft({ q: value })} placeholder="Tìm theo mã và tên học sinh" />
       </Field>
 
       <Field label="Khối">

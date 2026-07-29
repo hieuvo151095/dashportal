@@ -10,7 +10,7 @@ import { useChiTietFilters, type ChiTietFilters } from './useChiTietFilters'
 export function CongNoChiTietPage() {
   const filters = useChiTietFilters()
   const [draft, setDraft] = useFilterDraft<ChiTietFilters>({
-    maHocSinh: filters.maHocSinh,
+    q: filters.q,
     khoi: filters.khoi,
     lop: filters.lop,
     kyTu: filters.kyTu,
@@ -20,7 +20,7 @@ export function CongNoChiTietPage() {
   const data = useChiTietData(filters)
   const loading = useSkeletonDelay([
     filters.truongId,
-    filters.maHocSinh,
+    filters.q,
     filters.khoi,
     filters.lop,
     filters.kyTu,

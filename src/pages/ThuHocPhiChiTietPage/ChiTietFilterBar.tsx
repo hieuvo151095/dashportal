@@ -1,6 +1,4 @@
-import { Button, Dropdown, Field, Input, Option } from '@fluentui/react-components'
-import { FilterRegular } from '@fluentui/react-icons'
-import { useState } from 'react'
+import { Dropdown, Field, Input, Option } from '@fluentui/react-components'
 import { FilterBar } from '../../components/FilterBar'
 import { SearchInput } from '../../components/SearchInput'
 import { HINH_THUC_THANH_TOAN_LIST, NIEN_KHOA, type TrangThaiHoaDon } from '../../mock-data'
@@ -9,6 +7,11 @@ import type { ChiTietFilters } from './useChiTietFilters'
 
 const KY_OPTIONS = [...getKyOptions(), NIEN_KHOA]
 const TRANG_THAI_LIST: TrangThaiHoaDon[] = ['Đã gửi', 'Thanh toán một phần', 'Đã thanh toán']
+const TRANG_THAI_LABEL: Record<TrangThaiHoaDon, string> = {
+  'Đã gửi': 'Chưa thanh toán',
+  'Thanh toán một phần': 'Thanh toán một phần',
+  'Đã thanh toán': 'Đã thanh toán',
+}
 const TAT_CA = 'all'
 
 interface ChiTietFilterBarProps {
@@ -20,20 +23,14 @@ interface ChiTietFilterBarProps {
 }
 
 export function ChiTietFilterBar({ draft, setDraft, onApply, onReset, lopOptions }: ChiTietFilterBarProps) {
-  const [advancedOpen, setAdvancedOpen] = useState(false)
-
   return (
-    <FilterBar
-      onApply={onApply}
-      onReset={onReset}
-      action={
-        <Button icon={<FilterRegular />} appearance="subtle" onClick={() => setAdvancedOpen((v) => !v)}>
-          Lọc mở rộng
-        </Button>
-      }
-    >
-      <Field label="Tìm học sinh">
-        <SearchInput value={draft.q} onChange={(value) => setDraft({ q: value })} placeholder="Tên hoặc mã học sinh" />
+    <FilterBar onApply={onApply} onReset={onReset}>
+      <Field label="Tìm kiếm">
+        <SearchInput
+          value={draft.q}
+          onChange={(value) => setDraft({ q: value })}
+          placeholder="Tìm theo học sinh và tên hoá đơn"
+        />
       </Field>
 
       <Field label="Lớp">
@@ -66,16 +63,16 @@ export function ChiTietFilterBar({ draft, setDraft, onApply, onReset, lopOptions
         </Dropdown>
       </Field>
 
-      <Field label="Trạng thái hoá đơn">
+      <Field label="Trạng thái">
         <Dropdown
-          value={draft.trangThai === TAT_CA ? 'Tất cả trạng thái' : draft.trangThai}
+          value={draft.trangThai === TAT_CA ? 'Tất cả trạng thái' : TRANG_THAI_LABEL[draft.trangThai as TrangThaiHoaDon]}
           selectedOptions={[draft.trangThai]}
           onOptionSelect={(_, data) => data.optionValue && setDraft({ trangThai: data.optionValue })}
         >
           <Option value={TAT_CA}>Tất cả trạng thái</Option>
           {TRANG_THAI_LIST.map((tt) => (
             <Option key={tt} value={tt}>
-              {tt}
+              {TRANG_THAI_LABEL[tt]}
             </Option>
           ))}
         </Dropdown>
@@ -96,16 +93,12 @@ export function ChiTietFilterBar({ draft, setDraft, onApply, onReset, lopOptions
         </Dropdown>
       </Field>
 
-      {advancedOpen && (
-        <>
-          <Field label="Hạn thanh toán từ ngày">
-            <Input type="date" value={draft.hanTu} onChange={(_, data) => setDraft({ hanTu: data.value })} />
-          </Field>
-          <Field label="đến ngày">
-            <Input type="date" value={draft.hanDen} onChange={(_, data) => setDraft({ hanDen: data.value })} />
-          </Field>
-        </>
-      )}
+      <Field label="Hạn thanh toán từ ngày">
+        <Input type="date" value={draft.hanTu} onChange={(_, data) => setDraft({ hanTu: data.value })} />
+      </Field>
+      <Field label="đến ngày">
+        <Input type="date" value={draft.hanDen} onChange={(_, data) => setDraft({ hanDen: data.value })} />
+      </Field>
     </FilterBar>
   )
 }

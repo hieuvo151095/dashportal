@@ -60,7 +60,7 @@ export function useChiTietData(filters: ChiTietFiltersApi) {
     ].sort((a, b) => a.localeCompare(b, 'vi'))
 
     const hocSinhById = new Map<string, HocSinh>(hocSinhTruong.map((hs) => [hs.id, hs]))
-    const maHocSinhQuery = filters.maHocSinh.trim().toLowerCase()
+    const q = filters.q.trim().toLowerCase()
 
     const rows: DebtRow[] = hoaDonList
       .filter((hd) => hd.truongId === filters.truongId && hd.trangThai !== 'Đã thanh toán')
@@ -69,7 +69,10 @@ export function useChiTietData(filters: ChiTietFiltersApi) {
       .filter((row): row is { hoaDon: HoaDon; hocSinh: HocSinh } => Boolean(row.hocSinh))
       .filter((row) => filters.khoi === 'all' || row.hocSinh.khoi === filters.khoi)
       .filter((row) => filters.lop === 'all' || row.hocSinh.lop === filters.lop)
-      .filter((row) => !maHocSinhQuery || row.hocSinh.maHocSinh.toLowerCase().includes(maHocSinhQuery))
+      .filter(
+        (row) =>
+          !q || row.hocSinh.maHocSinh.toLowerCase().includes(q) || row.hocSinh.hoTen.toLowerCase().includes(q),
+      )
       .map((row) => ({
         hocSinh: row.hocSinh,
         hoaDon: row.hoaDon,
@@ -83,7 +86,7 @@ export function useChiTietData(filters: ChiTietFiltersApi) {
     return { truong, phuongXa, khoiOptions, lopOptions, rows }
   }, [
     filters.truongId,
-    filters.maHocSinh,
+    filters.q,
     filters.khoi,
     filters.lop,
     filters.kyTu,

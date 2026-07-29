@@ -10,8 +10,7 @@ import { useChiTietFilters, type ChiTietFilters } from './useChiTietFilters'
 export function DanhMucPhiChiTietPage() {
   const filters = useChiTietFilters()
   const [draft, setDraft] = useFilterDraft<ChiTietFilters>({
-    tenPhi: filters.tenPhi,
-    maPhi: filters.maPhi,
+    q: filters.q,
     nguonThu: filters.nguonThu,
     nhomPhi: filters.nhomPhi,
     nienKhoa: filters.nienKhoa,
@@ -19,8 +18,7 @@ export function DanhMucPhiChiTietPage() {
   const data = useChiTietData(filters)
   const loading = useSkeletonDelay([
     filters.truongId,
-    filters.tenPhi,
-    filters.maPhi,
+    filters.q,
     filters.nguonThu,
     filters.nhomPhi,
     filters.nienKhoa,

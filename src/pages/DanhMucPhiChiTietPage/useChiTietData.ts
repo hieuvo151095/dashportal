@@ -9,19 +9,17 @@ export function useChiTietData(filters: ChiTietFiltersApi) {
     const truong = truongList.find((t) => t.id === filters.truongId)
     const phuongXa = truong ? phuongXaList.find((px) => px.id === truong.phuongXaId) : undefined
 
-    const tenPhiQuery = filters.tenPhi.trim().toLowerCase()
-    const maPhiQuery = filters.maPhi.trim().toLowerCase()
+    const q = filters.q.trim().toLowerCase()
 
     const rows = khoanPhiList
       .filter((k) => k.truongId === filters.truongId)
       .filter((k) => k.nienKhoa === filters.nienKhoa)
       .filter((k) => filters.nguonThu === 'all' || k.nguonThu === filters.nguonThu)
       .filter((k) => filters.nhomPhi === 'all' || k.nhomPhi === filters.nhomPhi)
-      .filter((k) => !tenPhiQuery || k.tenPhi.toLowerCase().includes(tenPhiQuery))
-      .filter((k) => !maPhiQuery || k.maPhi.toLowerCase().includes(maPhiQuery))
+      .filter((k) => !q || k.tenPhi.toLowerCase().includes(q) || k.maPhi.toLowerCase().includes(q))
 
     return { truong, phuongXa, rows }
-  }, [filters.truongId, filters.tenPhi, filters.maPhi, filters.nguonThu, filters.nhomPhi, filters.nienKhoa])
+  }, [filters.truongId, filters.q, filters.nguonThu, filters.nhomPhi, filters.nienKhoa])
 }
 
 export type ChiTietData = ReturnType<typeof useChiTietData>

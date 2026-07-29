@@ -1,7 +1,6 @@
 import {
   Badge,
   Body1,
-  Button,
   DataGrid,
   DataGridBody,
   DataGridCell,
@@ -11,7 +10,6 @@ import {
   tokens,
   type TableColumnDefinition,
 } from '@fluentui/react-components'
-import { SendRegular } from '@fluentui/react-icons'
 import { EmptyState } from '../../components/EmptyState'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
 import type { NhomTuoiNo } from '../../mock-data'
@@ -20,7 +18,6 @@ import { formatDate } from '../../utils/date'
 import {
   COL_BADGE,
   COL_CAP_HOC,
-  COL_HANH_DONG,
   COL_MA,
   COL_NGAY,
   COL_SO_LUONG,
@@ -54,7 +51,6 @@ const COLUMN_SIZING_OPTIONS = {
   soNgayQuaHan: COL_SO_LUONG,
   nhomTuoiNo: COL_BADGE,
   lyDoNo: COL_TEN,
-  hanhDong: COL_HANH_DONG,
 }
 
 function mauSoNgayQuaHan(soNgay: number): string {
@@ -132,15 +128,6 @@ export function ChiTietTable({ rows }: ChiTietTableProps) {
       columnId: 'lyDoNo',
       renderHeaderCell: () => 'Lý do nợ/Ghi chú',
       renderCell: (item) => item.lyDoNo,
-    }),
-    createTableColumn<DebtRow>({
-      columnId: 'hanhDong',
-      renderHeaderCell: () => 'Hành động',
-      renderCell: () => (
-        <Button appearance="subtle" icon={<SendRegular />} style={{ whiteSpace: 'nowrap' }} onClick={() => {}}>
-          Gửi nhắc nợ
-        </Button>
-      ),
     }),
   ]
 

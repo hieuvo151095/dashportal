@@ -2,7 +2,6 @@ import {
   Avatar,
   Badge,
   Body1,
-  Button,
   Caption1,
   DataGrid,
   DataGridBody,
@@ -13,14 +12,14 @@ import {
   tokens,
   type TableColumnDefinition,
 } from '@fluentui/react-components'
-import { ArrowDownloadRegular, ClockRegular, DismissCircleRegular, HistoryRegular } from '@fluentui/react-icons'
+import { ClockRegular } from '@fluentui/react-icons'
 import { EmptyState } from '../../components/EmptyState'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
 import { TODAY } from '../../mock-data'
 import { formatCurrency } from '../../utils/currency'
 import { formatDate } from '../../utils/date'
-import { COL_BADGE, COL_HANH_DONG, COL_NGAY, COL_SO_TIEN, COL_TEN } from '../../utils/tableColumnSizes'
-import type { ChiTietRow } from './useChiTietData'
+import { COL_BADGE, COL_NGAY, COL_SO_TIEN, COL_TEN } from '../../utils/tableColumnSizes'
+import { tenHoaDon, type ChiTietRow } from './useChiTietData'
 
 const useStyles = makeStyles({
   studentCell: {
@@ -36,18 +35,10 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
   },
-  actions: {
-    display: 'flex',
-    columnGap: tokens.spacingHorizontalXXS,
-  },
   muted: {
     color: tokens.colorNeutralForeground3,
   },
 })
-
-function tenHoaDon(ky: string): string {
-  return /^\d{2}\/\d{4}$/.test(ky) ? `Hoá đơn tháng ${ky}` : `Hoá đơn niên khoá ${ky}`
-}
 
 interface ChiTietTableProps {
   rows: ChiTietRow[]
@@ -70,7 +61,7 @@ export function ChiTietTable({ rows }: ChiTietTableProps) {
             <Avatar name={item.hocSinh.hoTen} color="colorful" />
             <div className={styles.studentInfo}>
               <Body1>{item.hocSinh.hoTen}</Body1>
-              <Caption1 className={styles.muted}>{`${item.hocSinh.maHocSinh} — Lớp ${item.hocSinh.lop}`}</Caption1>
+              <Caption1 className={styles.muted}>{item.hocSinh.maHocSinh}</Caption1>
             </div>
           </div>
         ) : (
@@ -84,7 +75,7 @@ export function ChiTietTable({ rows }: ChiTietTableProps) {
         item.hoaDon ? (
           <div className={styles.twoLine}>
             <Body1>{tenHoaDon(item.hoaDon.ky)}</Body1>
-            <Caption1 className={styles.muted}>{`${item.hoaDon.soHoaDon} — ${formatDate(item.hoaDon.ngayLap)}`}</Caption1>
+            <Caption1 className={styles.muted}>{item.hoaDon.soHoaDon}</Caption1>
           </div>
         ) : (
           '—'
@@ -154,20 +145,6 @@ export function ChiTietTable({ rows }: ChiTietTableProps) {
         return formatCurrency(item.hoaDon.soTien)
       },
     }),
-    createTableColumn<ChiTietRow>({
-      columnId: 'hanhDong',
-      renderHeaderCell: () => 'Hành động',
-      renderCell: (item) =>
-        item.hoaDon ? (
-          <div className={styles.actions}>
-            <Button appearance="subtle" icon={<HistoryRegular />} aria-label="Xem lịch sử" onClick={() => {}} />
-            <Button appearance="subtle" icon={<DismissCircleRegular />} aria-label="Huỷ hoá đơn" onClick={() => {}} />
-            <Button appearance="subtle" icon={<ArrowDownloadRegular />} aria-label="Tải hoá đơn" onClick={() => {}} />
-          </div>
-        ) : (
-          ''
-        ),
-    }),
   ]
 
   const columnSizingOptions = {
@@ -178,7 +155,6 @@ export function ChiTietTable({ rows }: ChiTietTableProps) {
     taoXacNhan: COL_TEN,
     trangThai: COL_BADGE,
     soTien: COL_SO_TIEN,
-    hanhDong: COL_HANH_DONG,
   }
 
   return (

@@ -25,6 +25,10 @@ const useStyles = makeStyles({
   picker: {
     minWidth: '320px',
   },
+  truongInfo: {
+    fontSize: tokens.fontSizeBase500,
+    fontWeight: tokens.fontWeightSemibold,
+  },
 })
 
 interface SchoolHeaderProps {
@@ -47,7 +51,7 @@ export function SchoolHeader({ title, truong, phuongXa, truongId, onSelectTruong
           <Caption1 className={styles.unit}>Đơn vị: Đồng</Caption1>
         </div>
         {truong && (
-          <Body1 as="p">
+          <Body1 as="p" className={styles.truongInfo}>
             {truong.tenTruong}
             {phuongXa && ` — ${phuongXa.ten}`}
             {` — ${truong.capHoc}`}

@@ -33,6 +33,7 @@ export function CongNoTongHopPage() {
     kyTu: filters.kyTu,
     kyDen: filters.kyDen,
     nhomTuoiNo: filters.nhomTuoiNo,
+    q: filters.q,
   })
   const data = useTongHopData(filters)
   const loading = useSkeletonDelay([
@@ -41,6 +42,7 @@ export function CongNoTongHopPage() {
     filters.kyTu,
     filters.kyDen,
     filters.nhomTuoiNo,
+    filters.q,
   ])
 
   return (

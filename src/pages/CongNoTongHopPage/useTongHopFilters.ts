@@ -3,12 +3,13 @@ import { useUrlFilters } from '../../utils/useUrlFilters'
 
 const KY_OPTIONS = getKyOptions()
 
-const DEFAULTS: Record<'xa' | 'truong' | 'kyTu' | 'kyDen' | 'nhomTuoiNo', string> = {
+const DEFAULTS: Record<'xa' | 'truong' | 'kyTu' | 'kyDen' | 'nhomTuoiNo' | 'q', string> = {
   xa: 'all',
   truong: 'all',
   kyTu: KY_OPTIONS[0],
   kyDen: KY_OPTIONS[KY_OPTIONS.length - 1],
   nhomTuoiNo: 'all',
+  q: '',
 }
 
 export interface TongHopFilters {
@@ -17,6 +18,7 @@ export interface TongHopFilters {
   kyTu: string
   kyDen: string
   nhomTuoiNo: string
+  q: string
 }
 
 export interface TongHopFiltersApi extends TongHopFilters {
@@ -25,6 +27,7 @@ export interface TongHopFiltersApi extends TongHopFilters {
   setKyTu: (value: string) => void
   setKyDen: (value: string) => void
   setNhomTuoiNo: (value: string) => void
+  setQ: (value: string) => void
   apply: (draft: TongHopFilters) => void
   reset: () => void
 }
@@ -40,11 +43,13 @@ export function useTongHopFilters(): TongHopFiltersApi {
     kyTu: get('kyTu'),
     kyDen: get('kyDen'),
     nhomTuoiNo: get('nhomTuoiNo'),
+    q: get('q'),
     setPhuongXaId: (value) => update({ xa: value, truong: DEFAULTS.truong }),
     setTruongId: (value) => update({ truong: value }),
     setKyTu: (value) => update({ kyTu: value }),
     setKyDen: (value) => update({ kyDen: value }),
     setNhomTuoiNo: (value) => update({ nhomTuoiNo: value }),
+    setQ: (value) => update({ q: value }),
     apply: (draft) =>
       update({
         xa: draft.phuongXaId,
@@ -52,6 +57,7 @@ export function useTongHopFilters(): TongHopFiltersApi {
         kyTu: draft.kyTu,
         kyDen: draft.kyDen,
         nhomTuoiNo: draft.nhomTuoiNo,
+        q: draft.q,
       }),
     reset,
   }

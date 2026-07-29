@@ -1,5 +1,5 @@
 import { Button, Dropdown, Field, Option } from '@fluentui/react-components'
-import { ArrowDownloadRegular, AddRegular } from '@fluentui/react-icons'
+import { ArrowDownloadRegular } from '@fluentui/react-icons'
 import { FilterBar } from '../../components/FilterBar'
 import { SearchInput } from '../../components/SearchInput'
 import { NGUON_THU_LIST, NHOM_PHI_LIST, NIEN_KHOA_LIST } from '../../mock-data'
@@ -20,22 +20,13 @@ export function ChiTietFilterBar({ draft, setDraft, onApply, onReset }: ChiTietF
       onApply={onApply}
       onReset={onReset}
       action={
-        <>
-          <Button icon={<AddRegular />} onClick={() => {}}>
-            Thêm khoản phí
-          </Button>
-          <Button icon={<ArrowDownloadRegular />} onClick={() => {}}>
-            Xuất Excel
-          </Button>
-        </>
+        <Button icon={<ArrowDownloadRegular />} onClick={() => {}}>
+          Xuất Excel
+        </Button>
       }
     >
-      <Field label="Tên phí">
-        <SearchInput value={draft.tenPhi} onChange={(value) => setDraft({ tenPhi: value })} placeholder="Tìm theo tên phí" />
-      </Field>
-
-      <Field label="Mã phí">
-        <SearchInput value={draft.maPhi} onChange={(value) => setDraft({ maPhi: value })} placeholder="Tìm theo mã phí" />
+      <Field label="Tìm kiếm">
+        <SearchInput value={draft.q} onChange={(value) => setDraft({ q: value })} placeholder="Tìm theo mã và tên phí" />
       </Field>
 
       <Field label="Nguồn thu">

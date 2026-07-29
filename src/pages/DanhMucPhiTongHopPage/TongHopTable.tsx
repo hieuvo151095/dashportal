@@ -1,6 +1,4 @@
 import {
-  Badge,
-  type BadgeProps,
   Body1,
   Button,
   DataGrid,
@@ -15,9 +13,9 @@ import { EyeRegular } from '@fluentui/react-icons'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { EmptyState } from '../../components/EmptyState'
+import { HeThongBadge } from '../../components/HeThongBadge'
 import { Pagination } from '../../components/Pagination'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
-import type { HeThongDoiTac } from '../../mock-data'
 import { formatDate } from '../../utils/date'
 import {
   COL_BADGE,
@@ -34,16 +32,6 @@ import type { TongHopRow } from './useTongHopData'
 import type { TongHopFiltersApi } from './useTongHopFilters'
 
 const PAGE_SIZE = 15
-
-const HE_THONG_BADGE_COLOR: Record<HeThongDoiTac, BadgeProps['color']> = {
-  SSC: 'brand',
-  Misa: 'success',
-  Viettel: 'danger',
-  VNPT: 'informative',
-  eNetViet: 'warning',
-  YoYoSchool: 'severe',
-  'ECO School': 'important',
-}
 
 type CompareFn = (a: TongHopRow, b: TongHopRow) => number
 
@@ -120,11 +108,7 @@ export function TongHopTable({ rows, filters }: TongHopTableProps) {
     createTableColumn<TongHopRow>({
       columnId: 'heThongDoiTac',
       renderHeaderCell: () => 'Hệ thống đối tác',
-      renderCell: (item) => (
-        <Badge appearance="tint" color={HE_THONG_BADGE_COLOR[item.truong.heThongDoiTac]}>
-          {item.truong.heThongDoiTac}
-        </Badge>
-      ),
+      renderCell: (item) => <HeThongBadge value={item.truong.heThongDoiTac} />,
       compare: () => 0,
     }),
     createTableColumn<TongHopRow>({

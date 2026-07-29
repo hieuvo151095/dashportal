@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { mockDataset, type HocSinh, type PhuongXa, type Truong } from '../../mock-data'
-import type { TongHopFiltersApi } from './useTongHopFilters'
+import type { TongHopFiltersApi, TrangThaiTongHop } from './useTongHopFilters'
 
 function sum<T>(items: T[], pick: (item: T) => number): number {
   return items.reduce((total, item) => total + pick(item), 0)
@@ -24,6 +24,13 @@ export interface OverviewRow {
   conLaiTien: number
   tongSoTien: number
   tyLeThu: number
+  trangThaiTongHop: TrangThaiTongHop
+}
+
+function trangThaiTongHopCua(tongThu: number, tongSoTien: number): TrangThaiTongHop {
+  if (tongThu <= 0) return 'Chưa thanh toán'
+  if (tongThu >= tongSoTien) return 'Đã thanh toán'
+  return 'Thanh toán một phần'
 }
 
 export interface InvoiceRow {
@@ -44,7 +51,8 @@ export function useTongHopData(filters: TongHopFiltersApi) {
       (t) =>
         (filters.phuongXaId === 'all' || t.phuongXaId === filters.phuongXaId) &&
         (filters.truongId === 'all' || t.id === filters.truongId) &&
-        filters.capHocList.includes(t.capHoc),
+        filters.capHocList.includes(t.capHoc) &&
+        (filters.heThong === 'all' || t.heThongDoiTac === filters.heThong),
     )
     const scopedTruongIds = new Set(scopedTruongList.map((t) => t.id))
 
@@ -91,11 +99,20 @@ export function useTongHopData(filters: TongHopFiltersApi) {
           conLaiTien: sum(conLaiHds, (hd) => hd.conLai),
           tongSoTien,
           tyLeThu: tongSoTien === 0 ? 0 : tongThu / tongSoTien,
+          trangThaiTongHop: trangThaiTongHopCua(tongThu, tongSoTien),
         }
       })
+      .filter((row) => filters.trangThai === 'all' || row.trangThaiTongHop === filters.trangThai)
       .sort((a, b) => a.truong.tenTruong.localeCompare(b.truong.tenTruong, 'vi'))
 
     // ---- 3 tab hoá đơn theo trạng thái ----
+    // Filter "Trạng thái" áp thêm lên từng subset — vốn đã thuần 1 trạng thái/tab nên chỉ
+    // giữ nguyên (khớp) hoặc rỗng (không khớp), không ảnh hưởng KPI (tính từ hoaDonKy gốc).
+    const trangThaiHoaDonMapped = filters.trangThai === 'Chưa thanh toán' ? 'Đã gửi' : filters.trangThai
+    function locTheoTrangThai(list: typeof hoaDonKy): typeof hoaDonKy {
+      return filters.trangThai === 'all' ? list : list.filter((hd) => hd.trangThai === trangThaiHoaDonMapped)
+    }
+
     function toInvoiceRows(list: typeof hoaDonKy): InvoiceRow[] {
       return list
         .map((hoaDon) => ({
@@ -110,12 +127,20 @@ export function useTongHopData(filters: TongHopFiltersApi) {
       kpi,
       overviewRows,
       invoiceRowsByTab: {
-        'da-thanh-toan': toInvoiceRows(daThanhToan),
-        'mot-phan': toInvoiceRows(motPhan),
-        'chua-thanh-toan': toInvoiceRows(chuaThu),
+        'da-thanh-toan': toInvoiceRows(locTheoTrangThai(daThanhToan)),
+        'mot-phan': toInvoiceRows(locTheoTrangThai(motPhan)),
+        'chua-thanh-toan': toInvoiceRows(locTheoTrangThai(chuaThu)),
       },
     }
-  }, [filters.ky, filters.phuongXaId, filters.truongId, filters.capHocList, filters.hinhThucThanhToan])
+  }, [
+    filters.ky,
+    filters.phuongXaId,
+    filters.truongId,
+    filters.capHocList,
+    filters.hinhThucThanhToan,
+    filters.heThong,
+    filters.trangThai,
+  ])
 }
 
 export type TongHopData = ReturnType<typeof useTongHopData>

@@ -1,6 +1,8 @@
 import {
+  Badge,
   Body1,
   Button,
+  Caption1,
   DataGrid,
   DataGridBody,
   DataGridCell,
@@ -13,20 +15,31 @@ import {
 import { EyeRegular } from '@fluentui/react-icons'
 import { useNavigate } from 'react-router-dom'
 import { EmptyState } from '../../components/EmptyState'
+import { HeThongBadge } from '../../components/HeThongBadge'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
 import { formatCurrency, formatNumber } from '../../utils/currency'
 import {
   COL_BADGE,
+  COL_CAP_HOC,
   COL_DIA_DIEM,
   COL_HANH_DONG,
   COL_MA,
   COL_NGAY,
   COL_SO_LUONG,
   COL_SO_TIEN,
-  COL_STT,
   COL_TEN,
 } from '../../utils/tableColumnSizes'
 import type { OverviewRow } from './useTongHopData'
+
+// Cột STT ở bảng này chỉ cần rất hẹp — thu gọn khoảng cách với cột Mã trường ngay sau,
+// không đụng hằng số COL_STT dùng chung (sẽ ảnh hưởng mọi bảng khác).
+const COL_STT_HEP = { minWidth: 32, defaultWidth: 32 }
+
+const TRANG_THAI_BADGE_COLOR: Record<OverviewRow['trangThaiTongHop'], 'success' | 'warning' | 'informative'> = {
+  'Đã thanh toán': 'success',
+  'Thanh toán một phần': 'warning',
+  'Chưa thanh toán': 'informative',
+}
 
 const useStyles = makeStyles({
   scroll: {
@@ -38,6 +51,16 @@ const useStyles = makeStyles({
     bottom: 0,
     fontWeight: tokens.fontWeightSemibold,
     backgroundColor: tokens.colorNeutralBackground2,
+  },
+  twoLine: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  muted: {
+    color: tokens.colorNeutralForeground3,
+  },
+  tongThu: {
+    fontWeight: tokens.fontWeightSemibold,
   },
 })
 
@@ -97,27 +120,49 @@ export function OverviewTable({ rows }: OverviewTableProps) {
     createTableColumn<GridRow>({
       columnId: 'heThong',
       renderHeaderCell: () => 'Hệ thống',
-      renderCell: (item) => (item.isTotal ? '' : item.truong.heThongDoiTac),
+      renderCell: (item) => (item.isTotal ? '' : <HeThongBadge value={item.truong.heThongDoiTac} />),
     }),
     createTableColumn<GridRow>({
-      columnId: 'tienMat',
-      renderHeaderCell: () => 'Tiền mặt',
-      renderCell: (item) => formatCurrency(item.tienMat),
+      columnId: 'capHoc',
+      renderHeaderCell: () => 'Cấp học',
+      renderCell: (item) => (item.isTotal ? '' : item.truong.capHoc),
     }),
     createTableColumn<GridRow>({
-      columnId: 'chuyenKhoan',
-      renderHeaderCell: () => 'Chuyển khoản/Thu hộ',
-      renderCell: (item) => formatCurrency(item.chuyenKhoan),
+      columnId: 'chiTietThu',
+      renderHeaderCell: () => 'Chi tiết thu',
+      renderCell: (item) => (
+        <div className={styles.twoLine}>
+          <Caption1>{`Tiền mặt: ${formatCurrency(item.tienMat)}`}</Caption1>
+          <Caption1 className={styles.muted}>{`CK/Thu hộ: ${formatCurrency(item.chuyenKhoan)}`}</Caption1>
+        </div>
+      ),
     }),
     createTableColumn<GridRow>({
       columnId: 'tongThu',
       renderHeaderCell: () => 'Tổng thu',
-      renderCell: (item) => formatCurrency(item.tongThu),
+      renderCell: (item) => <span className={styles.tongThu}>{formatCurrency(item.tongThu)}</span>,
     }),
     createTableColumn<GridRow>({
-      columnId: 'conLai',
-      renderHeaderCell: () => 'Còn lại',
-      renderCell: (item) => `${formatNumber(item.conLaiSoLuong)} HĐ — ${formatCurrency(item.conLaiTien)}`,
+      columnId: 'hdConLai',
+      renderHeaderCell: () => 'HĐ còn lại',
+      renderCell: (item) => `${formatNumber(item.conLaiSoLuong)} HĐ`,
+    }),
+    createTableColumn<GridRow>({
+      columnId: 'phiConLai',
+      renderHeaderCell: () => 'Phí còn lại',
+      renderCell: (item) => formatCurrency(item.conLaiTien),
+    }),
+    createTableColumn<GridRow>({
+      columnId: 'trangThai',
+      renderHeaderCell: () => 'Trạng thái',
+      renderCell: (item) =>
+        item.isTotal ? (
+          ''
+        ) : (
+          <Badge appearance="tint" color={TRANG_THAI_BADGE_COLOR[item.trangThaiTongHop]}>
+            {item.trangThaiTongHop}
+          </Badge>
+        ),
     }),
     createTableColumn<GridRow>({
       columnId: 'tyLeThu',
@@ -147,15 +192,17 @@ export function OverviewTable({ rows }: OverviewTableProps) {
   ]
 
   const columnSizingOptions = {
-    stt: COL_STT,
+    stt: COL_STT_HEP,
     maTruong: COL_MA,
     tenTruong: COL_TEN,
     phuongXa: COL_DIA_DIEM,
     heThong: COL_BADGE,
-    tienMat: COL_SO_TIEN,
-    chuyenKhoan: COL_SO_TIEN,
+    capHoc: COL_CAP_HOC,
+    chiTietThu: COL_SO_TIEN,
     tongThu: COL_SO_TIEN,
-    conLai: COL_SO_TIEN,
+    hdConLai: COL_SO_LUONG,
+    phiConLai: COL_SO_TIEN,
+    trangThai: COL_BADGE,
     tyLeThu: COL_SO_LUONG,
     ngayCapNhat: COL_NGAY,
     hanhDong: COL_HANH_DONG,

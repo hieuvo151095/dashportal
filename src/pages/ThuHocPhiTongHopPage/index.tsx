@@ -33,6 +33,8 @@ export function ThuHocPhiTongHopPage() {
     truongId: filters.truongId,
     capHocList: filters.capHocList,
     hinhThucThanhToan: filters.hinhThucThanhToan,
+    heThong: filters.heThong,
+    trangThai: filters.trangThai,
   })
   const data = useTongHopData(filters)
   const loading = useSkeletonDelay([
@@ -41,6 +43,8 @@ export function ThuHocPhiTongHopPage() {
     filters.truongId,
     filters.capHocList,
     filters.hinhThucThanhToan,
+    filters.heThong,
+    filters.trangThai,
     filters.tab,
   ])
 

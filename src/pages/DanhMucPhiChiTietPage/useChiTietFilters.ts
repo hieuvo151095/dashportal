@@ -3,18 +3,16 @@ import { useUrlFilters } from '../../utils/useUrlFilters'
 
 const DEFAULT_TRUONG_ID = mockDataset.truongList[0]?.id ?? ''
 
-const DEFAULTS: Record<'truong' | 'tenPhi' | 'maPhi' | 'nguonThu' | 'nhomPhi' | 'nienKhoa', string> = {
+const DEFAULTS: Record<'truong' | 'q' | 'nguonThu' | 'nhomPhi' | 'nienKhoa', string> = {
   truong: DEFAULT_TRUONG_ID,
-  tenPhi: '',
-  maPhi: '',
+  q: '',
   nguonThu: 'all',
   nhomPhi: 'all',
   nienKhoa: NIEN_KHOA,
 }
 
 export interface ChiTietFilters {
-  tenPhi: string
-  maPhi: string
+  q: string
   nguonThu: string
   nhomPhi: string
   nienKhoa: string
@@ -23,8 +21,7 @@ export interface ChiTietFilters {
 export interface ChiTietFiltersApi extends ChiTietFilters {
   truongId: string
   setTruongId: (value: string) => void
-  setTenPhi: (value: string) => void
-  setMaPhi: (value: string) => void
+  setQ: (value: string) => void
   setNguonThu: (value: string) => void
   setNhomPhi: (value: string) => void
   setNienKhoa: (value: string) => void
@@ -37,22 +34,19 @@ export function useChiTietFilters(): ChiTietFiltersApi {
 
   return {
     truongId: get('truong'),
-    tenPhi: get('tenPhi'),
-    maPhi: get('maPhi'),
+    q: get('q'),
     nguonThu: get('nguonThu'),
     nhomPhi: get('nhomPhi'),
     nienKhoa: get('nienKhoa'),
     // Chọn trường (SchoolHeader) là điều hướng ngữ cảnh trang, áp dụng ngay — không qua draft.
     setTruongId: (value) => update({ truong: value }),
-    setTenPhi: (value) => update({ tenPhi: value }),
-    setMaPhi: (value) => update({ maPhi: value }),
+    setQ: (value) => update({ q: value }),
     setNguonThu: (value) => update({ nguonThu: value }),
     setNhomPhi: (value) => update({ nhomPhi: value }),
     setNienKhoa: (value) => update({ nienKhoa: value }),
     apply: (draft) =>
       update({
-        tenPhi: draft.tenPhi,
-        maPhi: draft.maPhi,
+        q: draft.q,
         nguonThu: draft.nguonThu,
         nhomPhi: draft.nhomPhi,
         nienKhoa: draft.nienKhoa,
@@ -61,8 +55,7 @@ export function useChiTietFilters(): ChiTietFiltersApi {
     // (truongId là ngữ cảnh trang, chọn ở SchoolHeader, không phải 1 filter).
     reset: () =>
       update({
-        tenPhi: DEFAULTS.tenPhi,
-        maPhi: DEFAULTS.maPhi,
+        q: DEFAULTS.q,
         nguonThu: DEFAULTS.nguonThu,
         nhomPhi: DEFAULTS.nhomPhi,
         nienKhoa: DEFAULTS.nienKhoa,

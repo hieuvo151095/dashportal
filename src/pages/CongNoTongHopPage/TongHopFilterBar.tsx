@@ -1,6 +1,7 @@
 import { Combobox, Dropdown, Field, Option } from '@fluentui/react-components'
 import { useMemo } from 'react'
 import { FilterBar } from '../../components/FilterBar'
+import { SearchInput } from '../../components/SearchInput'
 import { mockDataset } from '../../mock-data'
 import { NHOM_TUOI_NO_LIST } from '../../utils/congNo'
 import { getKyOptions } from '../../utils/ky'
@@ -37,6 +38,10 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
 
   return (
     <FilterBar onApply={onApply} onReset={onReset}>
+      <Field label="Tìm kiếm">
+        <SearchInput value={draft.q} onChange={(value) => setDraft({ q: value })} placeholder="Tìm theo tên và mã trường" />
+      </Field>
+
       <Field label="Xã/Phường">
         <Combobox
           value={phuongXaLabel}

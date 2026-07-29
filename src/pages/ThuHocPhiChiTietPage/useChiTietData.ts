@@ -8,6 +8,10 @@ export interface ChiTietRow {
   isFirstOfStudent: boolean
 }
 
+export function tenHoaDon(ky: string): string {
+  return /^\d{2}\/\d{4}$/.test(ky) ? `Hoá đơn tháng ${ky}` : `Hoá đơn niên khoá ${ky}`
+}
+
 export function useChiTietData(filters: ChiTietFiltersApi) {
   return useMemo(() => {
     const { truongList, phuongXaList, hocSinhList, hoaDonList } = mockDataset
@@ -17,12 +21,6 @@ export function useChiTietData(filters: ChiTietFiltersApi) {
 
     const hocSinhTruong = hocSinhList.filter((hs) => hs.truongId === filters.truongId)
     const lopOptions = [...new Set(hocSinhTruong.map((hs) => hs.lop))].sort((a, b) => a.localeCompare(b, 'vi'))
-
-    const q = filters.q.trim().toLowerCase()
-    const hocSinhScoped = hocSinhTruong
-      .filter((hs) => filters.lop === 'all' || hs.lop === filters.lop)
-      .filter((hs) => !q || hs.hoTen.toLowerCase().includes(q) || hs.maHocSinh.toLowerCase().includes(q))
-      .sort((a, b) => a.lop.localeCompare(b.lop, 'vi') || a.hoTen.localeCompare(b.hoTen, 'vi'))
 
     const hoaDonByHocSinh = new Map<string, HoaDon[]>()
     for (const hd of hoaDonList) {
@@ -40,6 +38,21 @@ export function useChiTietData(filters: ChiTietFiltersApi) {
       if (filters.hanDen && hd.hanThanhToan > `${filters.hanDen}T23:59:59`) return false
       return true
     }
+
+    // Tìm kiếm khớp theo Học sinh (tên/mã) HOẶC Tên hoá đơn (tên hiển thị/mã hoá đơn) —
+    // xét trên hoá đơn gốc của học sinh, không phụ thuộc các filter hoá đơn khác.
+    const q = filters.q.trim().toLowerCase()
+    const hocSinhScoped = hocSinhTruong
+      .filter((hs) => filters.lop === 'all' || hs.lop === filters.lop)
+      .filter((hs) => {
+        if (!q) return true
+        if (hs.hoTen.toLowerCase().includes(q) || hs.maHocSinh.toLowerCase().includes(q)) return true
+        const hoaDonHocSinh = hoaDonByHocSinh.get(hs.id) ?? []
+        return hoaDonHocSinh.some(
+          (hd) => tenHoaDon(hd.ky).toLowerCase().includes(q) || hd.soHoaDon.toLowerCase().includes(q),
+        )
+      })
+      .sort((a, b) => a.lop.localeCompare(b.lop, 'vi') || a.hoTen.localeCompare(b.hoTen, 'vi'))
 
     const rows: ChiTietRow[] = []
     for (const hocSinh of hocSinhScoped) {

@@ -2,13 +2,14 @@ import { Button, Combobox, Dropdown, Field, Option } from '@fluentui/react-compo
 import { ArrowDownloadRegular } from '@fluentui/react-icons'
 import { useMemo } from 'react'
 import { FilterBar } from '../../components/FilterBar'
-import { CAP_HOC_LIST, HINH_THUC_THANH_TOAN_LIST, mockDataset, type CapHoc } from '../../mock-data'
+import { CAP_HOC_LIST, HE_THONG_DOI_TAC_LIST, HINH_THUC_THANH_TOAN_LIST, mockDataset, type CapHoc } from '../../mock-data'
 import { getKyOptions } from '../../utils/ky'
-import type { TongHopFilters } from './useTongHopFilters'
+import type { TongHopFilters, TrangThaiTongHop } from './useTongHopFilters'
 
 const KY_OPTIONS = getKyOptions()
 const TOAN_THANH_PHO = 'all'
 const TAT_CA = 'all'
+const TRANG_THAI_LIST: TrangThaiTongHop[] = ['Đã thanh toán', 'Thanh toán một phần', 'Chưa thanh toán']
 
 interface TongHopFilterBarProps {
   draft: TongHopFilters
@@ -117,6 +118,36 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
           {HINH_THUC_THANH_TOAN_LIST.map((ht) => (
             <Option key={ht} value={ht}>
               {ht}
+            </Option>
+          ))}
+        </Dropdown>
+      </Field>
+
+      <Field label="Hệ thống">
+        <Dropdown
+          value={draft.heThong === TAT_CA ? 'Tất cả hệ thống' : draft.heThong}
+          selectedOptions={[draft.heThong]}
+          onOptionSelect={(_, data) => data.optionValue && setDraft({ heThong: data.optionValue })}
+        >
+          <Option value={TAT_CA}>Tất cả hệ thống</Option>
+          {HE_THONG_DOI_TAC_LIST.map((ht) => (
+            <Option key={ht} value={ht}>
+              {ht}
+            </Option>
+          ))}
+        </Dropdown>
+      </Field>
+
+      <Field label="Trạng thái">
+        <Dropdown
+          value={draft.trangThai === TAT_CA ? 'Tất cả trạng thái' : draft.trangThai}
+          selectedOptions={[draft.trangThai]}
+          onOptionSelect={(_, data) => data.optionValue && setDraft({ trangThai: data.optionValue })}
+        >
+          <Option value={TAT_CA}>Tất cả trạng thái</Option>
+          {TRANG_THAI_LIST.map((tt) => (
+            <Option key={tt} value={tt}>
+              {tt}
             </Option>
           ))}
         </Dropdown>
