@@ -8,14 +8,14 @@ const useStyles = makeStyles({
     columnGap: tokens.spacingHorizontalL,
   },
   chartBox: {
-    width: '160px',
-    height: '160px',
+    width: '240px',
+    height: '240px',
     flexShrink: 0,
   },
   legend: {
     display: 'flex',
     flexDirection: 'column',
-    rowGap: tokens.spacingVerticalS,
+    rowGap: tokens.spacingVerticalM,
     flexGrow: 1,
     minWidth: 0,
   },
@@ -25,8 +25,8 @@ const useStyles = makeStyles({
     columnGap: tokens.spacingHorizontalSNudge,
   },
   swatch: {
-    width: '10px',
-    height: '10px',
+    width: '12px',
+    height: '12px',
     borderRadius: tokens.borderRadiusCircular,
     flexShrink: 0,
   },
