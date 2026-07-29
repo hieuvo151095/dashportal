@@ -40,3 +40,4 @@ export {
   NIEN_KHOA_LIST,
   TODAY,
 } from './constants'
+export { TOA_DO_PHUONG_XA } from './toaDoPhuongXa'

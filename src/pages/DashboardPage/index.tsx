@@ -53,7 +53,7 @@ export function DashboardPage() {
       <KpiRow data={data} />
 
       <div className={styles.twoColRow}>
-        <GridMap data={data} loading={loading} />
+        <GridMap data={data} loading={loading} ky={filters.ky} />
         <TopRegionsRanking data={data} loading={loading} ky={filters.ky} />
       </div>
 

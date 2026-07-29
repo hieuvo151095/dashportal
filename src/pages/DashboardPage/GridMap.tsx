@@ -1,17 +1,14 @@
 import { Body1, Button, Caption1, makeStyles, tokens } from '@fluentui/react-components'
-import { AddRegular, SubtractRegular } from '@fluentui/react-icons'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 import { useMemo, useState } from 'react'
+import { CircleMarker, MapContainer, TileLayer, Tooltip as LeafletTooltip } from 'react-leaflet'
 import { useNavigate } from 'react-router-dom'
+import { TOA_DO_PHUONG_XA } from '../../mock-data'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
 import { formatCurrencyWithUnit } from '../../utils/currency'
 import type { DashboardData } from './useDashboardData'
-
-// Số cột lưới theo từng mức zoom, giảm dần khi phóng to (ô to hơn) — container cuộn dọc
-// khi số hàng vượt chiều cao hiển thị, thay vì scroll-wheel zoom (đơn giản, không xung đột
-// với thao tác cuộn trang của người dùng).
-const ZOOM_LEVELS = [20, 16, 12, 8]
-const DEFAULT_ZOOM_INDEX = 0
 
 type CellDatum = DashboardData['tyLeThuTheoPhuong'][number]
 
@@ -24,16 +21,12 @@ function mauTheoTyLe(tyLe: number, coDuLieu: boolean): string {
 }
 
 const useStyles = makeStyles({
-  toolbar: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: tokens.spacingVerticalM,
-  },
   legend: {
     display: 'flex',
     alignItems: 'center',
     columnGap: tokens.spacingHorizontalM,
+    flexWrap: 'wrap',
+    marginBottom: tokens.spacingVerticalM,
   },
   legendItem: {
     display: 'flex',
@@ -43,39 +36,13 @@ const useStyles = makeStyles({
   swatch: {
     width: '10px',
     height: '10px',
-    borderRadius: tokens.borderRadiusSmall,
+    borderRadius: tokens.borderRadiusCircular,
     flexShrink: 0,
   },
-  zoomControls: {
-    display: 'flex',
-    alignItems: 'center',
-    columnGap: tokens.spacingHorizontalXXS,
-  },
-  gridScroll: {
-    maxHeight: '420px',
-    overflowY: 'auto',
-    paddingRight: tokens.spacingHorizontalXS,
-  },
-  grid: {
-    display: 'grid',
-    gap: tokens.spacingHorizontalXS,
-  },
-  cell: {
-    aspectRatio: '1',
+  mapBox: {
+    height: '420px',
     borderRadius: tokens.borderRadiusMedium,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#fff',
-    fontWeight: tokens.fontWeightSemibold,
-    fontSize: tokens.fontSizeBase100,
-    border: 'none',
-    cursor: 'pointer',
-    padding: 0,
-    outlineOffset: '2px',
-  },
-  cellSelected: {
-    boxShadow: `0 0 0 2px ${tokens.colorNeutralForeground1}`,
+    overflow: 'hidden',
   },
   detailBar: {
     display: 'flex',
@@ -94,71 +61,46 @@ const useStyles = makeStyles({
   },
   footer: {
     marginTop: tokens.spacingVerticalS,
+    color: tokens.colorNeutralForeground3,
   },
 })
 
 interface GridMapProps {
   data: DashboardData
   loading?: boolean
+  ky: string
 }
 
-export function GridMap({ data, loading }: GridMapProps) {
+export function GridMap({ data, loading, ky }: GridMapProps) {
   const styles = useStyles()
   const navigate = useNavigate()
-  const [zoomIndex, setZoomIndex] = useState(DEFAULT_ZOOM_INDEX)
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
-  // Nhóm theo Địa bàn cũ (thứ tự nhóm theo lần xuất hiện đầu tiên, giữ nguyên thứ tự nguồn
-  // Excel — vốn đã gần liền kề theo quận/huyện cũ) rồi sắp xếp theo tên trong từng nhóm —
-  // vị trí ô ổn định qua mọi lần đổi filter/kỳ, không xáo trộn theo tỷ lệ thu.
-  const cells = useMemo(() => {
-    const theoDiaBan = new Map<string, CellDatum[]>()
-    for (const item of data.tyLeThuTheoPhuong) {
-      const list = theoDiaBan.get(item.phuongXa.diaBanCu) ?? []
-      list.push(item)
-      theoDiaBan.set(item.phuongXa.diaBanCu, list)
-    }
-    const result: CellDatum[] = []
-    for (const list of theoDiaBan.values()) {
-      list.sort((a, b) => a.phuongXa.ten.localeCompare(b.phuongXa.ten, 'vi'))
-      result.push(...list)
-    }
-    return result
-  }, [data.tyLeThuTheoPhuong])
-
-  const selected = cells.find((item) => item.phuongXa.id === selectedId)
-  const columns = ZOOM_LEVELS[zoomIndex]
-
-  const action = (
-    <div className={styles.zoomControls}>
-      <Button
-        appearance="subtle"
-        icon={<SubtractRegular />}
-        aria-label="Thu nhỏ"
-        disabled={zoomIndex === 0}
-        onClick={() => setZoomIndex((i) => Math.max(0, i - 1))}
-      />
-      <Button
-        appearance="subtle"
-        icon={<AddRegular />}
-        aria-label="Phóng to"
-        disabled={zoomIndex === ZOOM_LEVELS.length - 1}
-        onClick={() => setZoomIndex((i) => Math.min(ZOOM_LEVELS.length - 1, i + 1))}
-      />
-    </div>
+  // Ghép toạ độ GPS thật (tra theo tên đầy đủ, vd "Phường Bến Thành") vào từng dòng dữ liệu
+  // tỷ lệ thu — bỏ qua khu vực không tra được toạ độ (không nên xảy ra vì đã geocode đủ 168,
+  // nhưng phòng hờ dữ liệu Phường/Xã đổi trong tương lai mà quên geocode bổ sung).
+  const cells = useMemo(
+    () =>
+      data.tyLeThuTheoPhuong
+        .map((item) => ({ ...item, toaDo: TOA_DO_PHUONG_XA[item.phuongXa.ten] }))
+        .filter((item): item is CellDatum & { toaDo: { lat: number; lon: number } } => Boolean(item.toaDo)),
+    [data.tyLeThuTheoPhuong],
   )
+
+  const bounds = useMemo(() => L.latLngBounds(cells.map((c) => [c.toaDo.lat, c.toaDo.lon])), [cells])
+  const selected = cells.find((item) => item.phuongXa.id === selectedId)
 
   if (loading) {
     return (
-      <SectionCard title="Bản đồ tỷ lệ thu theo Phường/Xã" action={action}>
+      <SectionCard title="Bản đồ tỷ lệ thu theo Phường/Xã">
         <TableSkeleton rows={4} />
       </SectionCard>
     )
   }
 
   return (
-    <SectionCard title="Bản đồ tỷ lệ thu theo Phường/Xã" action={action}>
-      <div className={styles.legend} style={{ marginBottom: tokens.spacingVerticalM }}>
+    <SectionCard title="Bản đồ tỷ lệ thu theo Phường/Xã">
+      <div className={styles.legend}>
         <div className={styles.legendItem}>
           <span className={styles.swatch} style={{ backgroundColor: tokens.colorPaletteGreenForeground1 }} />
           <Caption1>{'>95%'}</Caption1>
@@ -200,31 +142,44 @@ export function GridMap({ data, loading }: GridMapProps) {
           <Button
             appearance="primary"
             disabled={!selected.coDuLieu}
-            onClick={() => navigate(`/thu-hoc-phi/tong-hop?xa=${selected.phuongXa.id}`)}
+            onClick={() =>
+              navigate(`/thu-hoc-phi/tong-hop?ky=${encodeURIComponent(ky)}&xa=${selected.phuongXa.id}`)
+            }
           >
             Xem chi tiết
           </Button>
         </div>
       )}
 
-      <div className={styles.gridScroll}>
-        <div className={styles.grid} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+      <div className={styles.mapBox}>
+        <MapContainer bounds={bounds} boundsOptions={{ padding: [16, 16] }} style={{ height: '100%', width: '100%' }}>
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
           {cells.map((item) => (
-            <button
+            <CircleMarker
               key={item.phuongXa.id}
-              type="button"
-              title={item.phuongXa.ten}
-              className={`${styles.cell} ${item.phuongXa.id === selectedId ? styles.cellSelected : ''}`}
-              style={{ backgroundColor: mauTheoTyLe(item.tyLe, item.coDuLieu) }}
-              onClick={() => setSelectedId(item.phuongXa.id)}
+              center={[item.toaDo.lat, item.toaDo.lon]}
+              radius={item.phuongXa.id === selectedId ? 9 : 6}
+              pathOptions={{
+                className: item.phuongXa.id,
+                color: '#fff',
+                weight: item.phuongXa.id === selectedId ? 2 : 1,
+                fillColor: mauTheoTyLe(item.tyLe, item.coDuLieu),
+                fillOpacity: 0.9,
+              }}
+              eventHandlers={{ click: () => setSelectedId(item.phuongXa.id) }}
             >
-              {item.coDuLieu ? `${Math.round(item.tyLe * 100)}%` : ''}
-            </button>
+              <LeafletTooltip direction="top" offset={[0, -6]}>
+                {`${item.phuongXa.ten}${item.coDuLieu ? ` — ${Math.round(item.tyLe * 100)}%` : ''}`}
+              </LeafletTooltip>
+            </CircleMarker>
           ))}
-        </div>
+        </MapContainer>
       </div>
       <Caption1 as="p" className={styles.footer}>
-        {`${data.soPhuongXaCoDuLieu}/${cells.length} Phường/Xã có trường trên địa bàn`}
+        {`${data.soPhuongXaCoDuLieu}/${cells.length} Phường/Xã có trường trên địa bàn. Toạ độ: geocode qua OpenStreetMap Nominatim. Bản đồ nền: © OpenStreetMap contributors.`}
       </Caption1>
     </SectionCard>
   )
