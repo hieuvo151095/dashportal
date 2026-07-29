@@ -30,7 +30,7 @@ export interface OverviewRow {
 // Ngưỡng tuyệt đối 0%/100% (bản gốc) gần như không bao giờ đúng ở quy mô tổng hợp: mỗi
 // trường có hàng trăm hoá đơn/kỳ với trạng thái xen kẽ, nên tỷ lệ thu cộng dồn theo trường
 // hầu như không bao giờ chạm đúng 0% hoặc 100% — mọi trường đều rơi vào "Một phần" (đã xác
-// nhận thực tế: 50/50 trường ra "Một phần" với ngưỡng 0/100). Đổi sang ngưỡng có khoảng đệm
+// nhận thực tế: 100% số trường ra "Một phần" với ngưỡng 0/100). Đổi sang ngưỡng có khoảng đệm
 // (đã verify trên dữ liệu thật: 42%/52% tách được cả 3 trạng thái ngay ở kỳ tập trung nhất).
 function trangThaiTongHopCua(tongThu: number, tongSoTien: number): TrangThaiTongHop {
   const tyLe = tongSoTien === 0 ? 0 : tongThu / tongSoTien

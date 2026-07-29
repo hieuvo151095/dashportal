@@ -33,7 +33,7 @@ export type NhomTuoiNo = '≤30 ngày' | '31–60 ngày' | '61–90 ngày' | '>9
 export interface PhuongXa {
   id: string
   ten: string
-  loai: 'Phường' | 'Xã'
+  loai: 'Phường' | 'Xã' | 'Đặc khu'
 }
 
 export interface Truong {
