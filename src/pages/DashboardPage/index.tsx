@@ -2,6 +2,7 @@ import { makeStyles, tokens } from '@fluentui/react-components'
 import { PageTitle } from '../../components/PageTitle'
 import { useFilterDraft } from '../../utils/useFilterDraft'
 import { useSkeletonDelay } from '../../utils/useSkeletonDelay'
+import { CapHocAnalysisTable } from './CapHocAnalysisTable'
 import { DashboardFilterBar } from './DashboardFilterBar'
 import { DebtAgingChart } from './DebtAgingChart'
 import { KpiRow } from './KpiRow'
@@ -9,6 +10,7 @@ import { MonthlyTrendChart } from './MonthlyTrendChart'
 import { PaymentMethodSection } from './PaymentMethodSection'
 import { RegionHeatmap } from './RegionHeatmap'
 import { RevenueCompositionSection } from './RevenueCompositionSection'
+import { SyncStatusTable } from './SyncStatusTable'
 import { TopDebtSchoolsTable } from './TopDebtSchoolsTable'
 import { TopRegionsRanking } from './TopRegionsRanking'
 import { useDashboardData } from './useDashboardData'
@@ -60,16 +62,21 @@ export function DashboardPage() {
         <PaymentMethodSection data={data} loading={loading} />
       </div>
 
+      <div className={styles.twoColRow}>
+        <MonthlyTrendChart data={data} loading={loading} />
+        <DebtAgingChart data={data} loading={loading} />
+      </div>
+
+      <div className={styles.fullRow}>
+        <CapHocAnalysisTable data={data} loading={loading} />
+      </div>
+
+      <div className={styles.fullRow}>
+        <SyncStatusTable data={data} loading={loading} />
+      </div>
+
       <div className={styles.fullRow}>
         <TopDebtSchoolsTable data={data} loading={loading} />
-      </div>
-
-      <div className={styles.fullRow}>
-        <MonthlyTrendChart data={data} loading={loading} />
-      </div>
-
-      <div className={styles.fullRow}>
-        <DebtAgingChart data={data} loading={loading} />
       </div>
     </div>
   )

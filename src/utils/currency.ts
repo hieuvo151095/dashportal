@@ -16,3 +16,11 @@ export function formatCurrencyWithUnit(amount: number): string {
 export function formatNumber(value: number): string {
   return numberFormatter.format(value)
 }
+
+const billionFormatter = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 1 })
+
+// Dạng viết tắt "X tỷ" cho nhãn/chart chật chỗ (giống cách trục biểu đồ rút gọn "Xtr") —
+// không thêm hậu tố "đ" vì "tỷ" đã ngầm định là tỷ đồng theo ngữ cảnh app.
+export function formatBillion(amount: number): string {
+  return `${billionFormatter.format(amount / 1_000_000_000)} tỷ`
+}

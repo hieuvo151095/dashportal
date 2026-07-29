@@ -1,6 +1,8 @@
 import { useMemo } from 'react'
 import {
+  CAP_HOC_LIST,
   DANH_MUC_KHOAN_THU_LIST,
+  HE_THONG_DOI_TAC_LIST,
   HINH_THUC_THANH_TOAN_LIST,
   TODAY,
   mockDataset,
@@ -12,6 +14,7 @@ import { NHOM_TUOI_NO_LIST, nhomTuoiNoCua } from '../../utils/congNo'
 import type { DashboardFilters } from './useDashboardFilters'
 
 const SO_THANG_XU_HUONG = 6
+const MOC_CHUA_DONG_BO_NGAY = 7
 
 function sum<T>(items: T[], pick: (item: T) => number): number {
   return items.reduce((total, item) => total + pick(item), 0)
@@ -27,7 +30,7 @@ function laCungThang(isoDate: string, thang: Date): boolean {
 }
 
 export function useDashboardData(filters: DashboardFilters) {
-  return useMemo(() => {
+  const data = useMemo(() => {
     const { phuongXaList, truongList, khoanPhiList, hoaDonList } = mockDataset
 
     const phuongXaById = new Map<string, PhuongXa>(phuongXaList.map((p) => [p.id, p]))
@@ -84,6 +87,8 @@ export function useDashboardData(filters: DashboardFilters) {
         return {
           phuongXa: px,
           tyLe: tongTienPx === 0 ? 0 : daThuPx / tongTienPx,
+          daThuTien: daThuPx,
+          conThuTien: tongTienPx - daThuPx,
           coDuLieu: truongIdsInPx.size > 0,
         }
       })
@@ -171,6 +176,67 @@ export function useDashboardData(filters: DashboardFilters) {
       soPhuongXaCoDuLieu: tyLeThuTheoPhuong.length,
     }
   }, [filters.ky, filters.phuongXaId, filters.capHocList])
+
+  // Tách riêng useMemo cho 2 widget mới (Phase Dashboard v3) — gộp chung vào khối phía trên
+  // khiến function quá lớn, React Compiler không suy luận chính xác được dependency của
+  // useMemo gốc nữa (báo lỗi preserve-manual-memoization dù dependency array không đổi).
+  const phanTich = useMemo(() => {
+    const { truongList, hocSinhList, hoaDonList } = mockDataset
+
+    // ---- Phân tích theo Cấp học (bỏ qua filter Cấp học, chỉ theo Xã/Phường + Kỳ —
+    // widget so sánh giữa các cấp học nên không tự lọc theo chính chiều đang so sánh) ----
+    const phuongXaScopedTruongList = truongList.filter(
+      (t) => filters.phuongXaId === 'all' || t.phuongXaId === filters.phuongXaId,
+    )
+    const phuongXaScopedTruongIds = new Set(phuongXaScopedTruongList.map((t) => t.id))
+    const hoaDonKyPhuongXaScoped = hoaDonList.filter(
+      (hd) => hd.ky === filters.ky && phuongXaScopedTruongIds.has(hd.truongId),
+    )
+    const phanTichCapHoc = CAP_HOC_LIST.map((capHoc) => {
+      const truongNhom = phuongXaScopedTruongList.filter((t) => t.capHoc === capHoc)
+      const truongIdsNhom = new Set(truongNhom.map((t) => t.id))
+      const hds = hoaDonKyPhuongXaScoped.filter((hd) => truongIdsNhom.has(hd.truongId))
+      const tongPhaiThu = sum(hds, (hd) => hd.soTien)
+      const daThu = sum(hds, (hd) => hd.daTra)
+      return {
+        capHoc,
+        soTruong: truongNhom.length,
+        soHocSinh: hocSinhList.filter((hs) => truongIdsNhom.has(hs.truongId)).length,
+        tongPhaiThu,
+        daThu,
+        tyLe: tongPhaiThu === 0 ? 0 : daThu / tongPhaiThu,
+      }
+    })
+
+    // ---- Tình trạng đồng bộ dữ liệu theo Hệ thống đối tác (theo phạm vi Xã/Phường +
+    // Cấp học đang chọn — Ngày cập nhật là thuộc tính trường, không gắn với Kỳ) ----
+    const scopedTruongList = truongList.filter(
+      (t) =>
+        (filters.phuongXaId === 'all' || t.phuongXaId === filters.phuongXaId) &&
+        filters.capHocList.includes(t.capHoc),
+    )
+    const dongBoHeThong = HE_THONG_DOI_TAC_LIST.map((heThong) => {
+      const truongNhom = scopedTruongList.filter((t) => t.heThongDoiTac === heThong)
+      const capNhatMoiNhat = truongNhom.reduce<string | null>((moiNhat, t) => {
+        if (!moiNhat || new Date(t.ngayCapNhat) > new Date(moiNhat)) return t.ngayCapNhat
+        return moiNhat
+      }, null)
+      return {
+        heThong,
+        soTruong: truongNhom.length,
+        tyLe: scopedTruongList.length === 0 ? 0 : truongNhom.length / scopedTruongList.length,
+        capNhatMoiNhat,
+      }
+    })
+    const soTruongChuaDongBo7Ngay = scopedTruongList.filter((t) => {
+      const soNgay = (TODAY.getTime() - new Date(t.ngayCapNhat).getTime()) / (24 * 60 * 60 * 1000)
+      return soNgay > MOC_CHUA_DONG_BO_NGAY
+    }).length
+
+    return { phanTichCapHoc, dongBoHeThong, soTruongChuaDongBo7Ngay }
+  }, [filters.ky, filters.phuongXaId, filters.capHocList])
+
+  return { ...data, ...phanTich }
 }
 
 export type DashboardData = ReturnType<typeof useDashboardData>

@@ -1,8 +1,9 @@
 import { tokens } from '@fluentui/react-components'
-import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { Bar, BarChart, CartesianGrid, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { EmptyState } from '../../components/EmptyState'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
+import { formatBillion } from '../../utils/currency'
 import type { DashboardData } from './useDashboardData'
 
 interface TopRegionsRankingProps {
@@ -14,6 +15,8 @@ interface TopRegionDatum {
   ten: string
   nhan: string
   tyLePercent: number
+  daThuNhan: string
+  conThuNhan: string
 }
 
 export function TopRegionsRanking({ data, loading }: TopRegionsRankingProps) {
@@ -23,6 +26,8 @@ export function TopRegionsRanking({ data, loading }: TopRegionsRankingProps) {
     ten: item.phuongXa.ten,
     nhan: `${index + 1}. ${item.phuongXa.ten}`,
     tyLePercent: Math.round(item.tyLe * 100),
+    daThuNhan: `Đã thu ${formatBillion(item.daThuTien)}`,
+    conThuNhan: `Còn thu ${formatBillion(item.conThuTien)}`,
   }))
 
   return (
@@ -32,9 +37,9 @@ export function TopRegionsRanking({ data, loading }: TopRegionsRankingProps) {
       ) : chartData.length === 0 ? (
         <EmptyState />
       ) : (
-        <div style={{ width: '100%', height: 320 }}>
+        <div style={{ width: '100%', height: 360 }}>
           <ResponsiveContainer>
-            <BarChart data={chartData} layout="vertical" margin={{ left: 24 }}>
+            <BarChart data={chartData} layout="vertical" margin={{ left: 24, right: 140 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={tokens.colorNeutralStroke2} />
               <XAxis
                 type="number"
@@ -58,6 +63,8 @@ export function TopRegionsRanking({ data, loading }: TopRegionsRankingProps) {
                     >
                       <div>{item.ten}</div>
                       <div>{`${item.tyLePercent}%`}</div>
+                      <div>{item.daThuNhan}</div>
+                      <div>{item.conThuNhan}</div>
                     </div>
                   )
                 }}
@@ -66,6 +73,21 @@ export function TopRegionsRanking({ data, loading }: TopRegionsRankingProps) {
                 {chartData.map((item) => (
                   <Cell key={item.ten} fill={tokens.colorBrandBackground} />
                 ))}
+                <LabelList
+                  dataKey="tyLePercent"
+                  position="right"
+                  content={({ x, y, width, height, index }) => {
+                    if (typeof index !== 'number') return null
+                    const item = chartData[index]
+                    const cy = Number(y) + Number(height) / 2
+                    const cx = Number(x) + Number(width) + 8
+                    return (
+                      <text x={cx} y={cy} dominantBaseline="middle" fontSize={11} fill={tokens.colorNeutralForeground3}>
+                        {`${item.daThuNhan} · ${item.conThuNhan}`}
+                      </text>
+                    )
+                  }}
+                />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
