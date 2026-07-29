@@ -1,4 +1,4 @@
-import { tokens } from '@fluentui/react-components'
+import { Button, tokens } from '@fluentui/react-components'
 import {
   Bar,
   CartesianGrid,
@@ -9,6 +9,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { useNavigate } from 'react-router-dom'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
 import { formatCurrencyWithUnit } from '../../utils/currency'
@@ -17,25 +18,34 @@ import type { DashboardData } from './useDashboardData'
 interface MonthlyTrendChartProps {
   data: DashboardData
   loading?: boolean
+  ky: string
 }
 
-export function MonthlyTrendChart({ data, loading }: MonthlyTrendChartProps) {
+export function MonthlyTrendChart({ data, loading, ky }: MonthlyTrendChartProps) {
+  const navigate = useNavigate()
   const chartData = data.xuHuongThang.map((item) => ({
     thang: item.thang,
     'Đã thu': item.daThu,
+    'Tổng phát sinh': item.tongTien,
     'Tỉ lệ thu (%)': Math.round(item.tyLe * 100),
   }))
 
+  const action = (
+    <Button appearance="subtle" onClick={() => navigate(`/thu-hoc-phi/tong-hop?ky=${encodeURIComponent(ky)}`)}>
+      Xem chi tiết
+    </Button>
+  )
+
   if (loading) {
     return (
-      <SectionCard title="Xu hướng thu theo tháng">
+      <SectionCard title="Xu hướng thu theo tháng" action={action}>
         <TableSkeleton rows={5} />
       </SectionCard>
     )
   }
 
   return (
-    <SectionCard title="Xu hướng thu theo tháng">
+    <SectionCard title="Xu hướng thu theo tháng" action={action}>
       <div style={{ width: '100%', height: 280 }}>
         <ResponsiveContainer>
           <ComposedChart data={chartData}>
@@ -48,9 +58,17 @@ export function MonthlyTrendChart({ data, loading }: MonthlyTrendChartProps) {
             />
             <YAxis yAxisId="tyLe" orientation="right" domain={[0, 100]} stroke={tokens.colorNeutralForeground3} />
             <Tooltip
-              formatter={(value, name) => (name === 'Đã thu' ? formatCurrencyWithUnit(Number(value)) : `${value}%`)}
+              formatter={(value, name) =>
+                name === 'Tỉ lệ thu (%)' ? `${value}%` : formatCurrencyWithUnit(Number(value))
+              }
             />
             <Bar yAxisId="tien" dataKey="Đã thu" fill={tokens.colorBrandBackground} radius={[4, 4, 0, 0]} />
+            <Bar
+              yAxisId="tien"
+              dataKey="Tổng phát sinh"
+              fill={tokens.colorNeutralStroke1}
+              radius={[4, 4, 0, 0]}
+            />
             <Line
               yAxisId="tyLe"
               type="monotone"

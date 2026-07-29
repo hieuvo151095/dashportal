@@ -34,6 +34,7 @@ export interface PhuongXa {
   id: string
   ten: string
   loai: 'Phường' | 'Xã' | 'Đặc khu'
+  diaBanCu: string
 }
 
 export interface Truong {

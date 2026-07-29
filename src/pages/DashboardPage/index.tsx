@@ -5,10 +5,10 @@ import { useSkeletonDelay } from '../../utils/useSkeletonDelay'
 import { CapHocAnalysisTable } from './CapHocAnalysisTable'
 import { DashboardFilterBar } from './DashboardFilterBar'
 import { DebtAgingChart } from './DebtAgingChart'
+import { GridMap } from './GridMap'
 import { KpiRow } from './KpiRow'
 import { MonthlyTrendChart } from './MonthlyTrendChart'
 import { PaymentMethodSection } from './PaymentMethodSection'
-import { RegionHeatmap } from './RegionHeatmap'
 import { RevenueCompositionSection } from './RevenueCompositionSection'
 import { SyncStatusTable } from './SyncStatusTable'
 import { TopDebtSchoolsTable } from './TopDebtSchoolsTable'
@@ -53,8 +53,8 @@ export function DashboardPage() {
       <KpiRow data={data} />
 
       <div className={styles.twoColRow}>
-        <RegionHeatmap data={data} onSelectPhuongXa={filters.setPhuongXaId} loading={loading} />
-        <TopRegionsRanking data={data} loading={loading} />
+        <GridMap data={data} loading={loading} />
+        <TopRegionsRanking data={data} loading={loading} ky={filters.ky} />
       </div>
 
       <div className={styles.twoColRow}>
@@ -63,8 +63,8 @@ export function DashboardPage() {
       </div>
 
       <div className={styles.twoColRow}>
-        <MonthlyTrendChart data={data} loading={loading} />
-        <DebtAgingChart data={data} loading={loading} />
+        <MonthlyTrendChart data={data} loading={loading} ky={filters.ky} />
+        <DebtAgingChart data={data} loading={loading} ky={filters.ky} />
       </div>
 
       <div className={styles.fullRow}>

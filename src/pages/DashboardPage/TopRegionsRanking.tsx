@@ -1,5 +1,6 @@
-import { tokens } from '@fluentui/react-components'
+import { Button, tokens } from '@fluentui/react-components'
 import { Bar, BarChart, CartesianGrid, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { useNavigate } from 'react-router-dom'
 import { EmptyState } from '../../components/EmptyState'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
@@ -9,6 +10,7 @@ import type { DashboardData } from './useDashboardData'
 interface TopRegionsRankingProps {
   data: DashboardData
   loading?: boolean
+  ky: string
 }
 
 interface TopRegionDatum {
@@ -19,7 +21,8 @@ interface TopRegionDatum {
   conThuNhan: string
 }
 
-export function TopRegionsRanking({ data, loading }: TopRegionsRankingProps) {
+export function TopRegionsRanking({ data, loading, ky }: TopRegionsRankingProps) {
+  const navigate = useNavigate()
   // data.top10Phuong đã sắp xếp giảm dần theo tỷ lệ thu — Recharts vẽ category axis theo
   // đúng thứ tự mảng (phần tử đầu nằm trên cùng), nên hạng 1 tự nhiên nằm trên cùng.
   const chartData: TopRegionDatum[] = data.top10Phuong.map((item, index) => ({
@@ -31,7 +34,14 @@ export function TopRegionsRanking({ data, loading }: TopRegionsRankingProps) {
   }))
 
   return (
-    <SectionCard title="Top 10 Xã/Phường có tỷ lệ thu cao nhất">
+    <SectionCard
+      title="Top 10 Xã/Phường có tỷ lệ thu cao nhất"
+      action={
+        <Button appearance="subtle" onClick={() => navigate(`/thu-hoc-phi/tong-hop?ky=${encodeURIComponent(ky)}`)}>
+          Xem tất cả
+        </Button>
+      }
+    >
       {loading ? (
         <TableSkeleton rows={4} />
       ) : chartData.length === 0 ? (

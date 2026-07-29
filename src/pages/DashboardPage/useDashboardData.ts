@@ -62,6 +62,12 @@ export function useDashboardData(filters: DashboardFilters) {
     const soCanThu = hoaDonKy.length - soDaThanhToan
     const tiLeHoanThanh = tongTien === 0 ? 0 : daThuTien / tongTien
 
+    // "Kết nối" = trường đã được gán 1 hệ thống đối tác cụ thể (heThongDoiTac luôn có giá
+    // trị theo schema hiện tại, nên tỷ lệ này thực chất luôn 100% — tính động thay vì hardcode
+    // để tự đúng nếu sau này có field trạng thái kết nối thật (case "chưa kết nối").
+    const soTruongKetNoi = scopedTruongList.filter((t) => t.heThongDoiTac).length
+    const tyLeKetNoi = scopedTruongList.length === 0 ? 0 : soTruongKetNoi / scopedTruongList.length
+
     const kpi = {
       tongSoHoaDon: hoaDonKy.length,
       tongTien,
@@ -70,31 +76,36 @@ export function useDashboardData(filters: DashboardFilters) {
       soCanThu,
       canThuTien,
       tiLeHoanThanh,
+      soTruong: scopedTruongList.length,
+      tyLeKetNoi,
     }
 
     // ---- Tỷ lệ thu theo Xã/Phường (bỏ qua filter Xã/Phường, chỉ theo Cấp học + Kỳ) ----
+    // Giữ nguyên đủ 168 khu (kể cả khu chưa có trường, vd Đặc khu Côn Đảo) — Grid map cần
+    // hiện đủ 168 ô. Top 10 lọc lại coDuLieu riêng, không xếp hạng khu rỗng.
     const hoaDonKyCapHocScoped = hoaDonList.filter(
       (hd) => hd.ky === filters.ky && capHocScopedTruongIds.has(hd.truongId),
     )
-    const tyLeThuTheoPhuong = phuongXaList
-      .map((px) => {
-        const truongIdsInPx = new Set(
-          truongList.filter((t) => t.phuongXaId === px.id && filters.capHocList.includes(t.capHoc)).map((t) => t.id),
-        )
-        const hds = hoaDonKyCapHocScoped.filter((hd) => truongIdsInPx.has(hd.truongId))
-        const tongTienPx = sum(hds, (hd) => hd.soTien)
-        const daThuPx = sum(hds, (hd) => hd.daTra)
-        return {
-          phuongXa: px,
-          tyLe: tongTienPx === 0 ? 0 : daThuPx / tongTienPx,
-          daThuTien: daThuPx,
-          conThuTien: tongTienPx - daThuPx,
-          coDuLieu: truongIdsInPx.size > 0,
-        }
-      })
-      .filter((item) => item.coDuLieu)
+    const tyLeThuTheoPhuong = phuongXaList.map((px) => {
+      const truongIdsInPx = new Set(
+        truongList.filter((t) => t.phuongXaId === px.id && filters.capHocList.includes(t.capHoc)).map((t) => t.id),
+      )
+      const hds = hoaDonKyCapHocScoped.filter((hd) => truongIdsInPx.has(hd.truongId))
+      const tongTienPx = sum(hds, (hd) => hd.soTien)
+      const daThuPx = sum(hds, (hd) => hd.daTra)
+      return {
+        phuongXa: px,
+        tyLe: tongTienPx === 0 ? 0 : daThuPx / tongTienPx,
+        daThuTien: daThuPx,
+        conThuTien: tongTienPx - daThuPx,
+        coDuLieu: truongIdsInPx.size > 0,
+      }
+    })
 
-    const top10Phuong = [...tyLeThuTheoPhuong].sort((a, b) => b.tyLe - a.tyLe).slice(0, 10)
+    const top10Phuong = tyLeThuTheoPhuong
+      .filter((item) => item.coDuLieu)
+      .sort((a, b) => b.tyLe - a.tyLe)
+      .slice(0, 10)
 
     // ---- Cơ cấu khoản thu ----
     const coCauKhoanThu = DANH_MUC_KHOAN_THU_LIST.map((danhMuc) => ({
@@ -173,7 +184,7 @@ export function useDashboardData(filters: DashboardFilters) {
       top20CongNo,
       xuHuongThang,
       congNoTheoTuoiNo,
-      soPhuongXaCoDuLieu: tyLeThuTheoPhuong.length,
+      soPhuongXaCoDuLieu: tyLeThuTheoPhuong.filter((item) => item.coDuLieu).length,
     }
   }, [filters.ky, filters.phuongXaId, filters.capHocList])
 

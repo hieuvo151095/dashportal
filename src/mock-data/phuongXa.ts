@@ -6,5 +6,6 @@ export function generatePhuongXaList(): PhuongXa[] {
     id: `px-${String(index + 1).padStart(2, '0')}`,
     ten: `${item.loai} ${item.ten}`,
     loai: item.loai,
+    diaBanCu: item.diaBanCu,
   }))
 }

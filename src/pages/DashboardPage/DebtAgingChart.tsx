@@ -1,5 +1,6 @@
-import { tokens } from '@fluentui/react-components'
+import { Body1, Button, makeStyles, tokens } from '@fluentui/react-components'
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { useNavigate } from 'react-router-dom'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
 import type { NhomTuoiNo } from '../../mock-data'
@@ -13,28 +14,51 @@ const MAU_THEO_NHOM: Record<NhomTuoiNo, string> = {
   '>90 ngày': tokens.colorPaletteRedForeground1,
 }
 
+const useStyles = makeStyles({
+  tongCongNo: {
+    fontSize: tokens.fontSizeBase600,
+    fontWeight: tokens.fontWeightSemibold,
+    color: tokens.colorPaletteRedForeground1,
+    marginBottom: tokens.spacingVerticalM,
+  },
+})
+
 interface DebtAgingChartProps {
   data: DashboardData
   loading?: boolean
+  ky: string
 }
 
-export function DebtAgingChart({ data, loading }: DebtAgingChartProps) {
+export function DebtAgingChart({ data, loading, ky }: DebtAgingChartProps) {
+  const styles = useStyles()
+  const navigate = useNavigate()
   const chartData = data.congNoTheoTuoiNo.map((item) => ({
     nhom: item.nhom,
     tongTien: item.tongTien,
     soHocSinh: item.soHocSinh,
   }))
+  const tongCongNo = chartData.reduce((sum, item) => sum + item.tongTien, 0)
+
+  const action = (
+    <Button
+      appearance="subtle"
+      onClick={() => navigate(`/cong-no/tong-hop?kyTu=${encodeURIComponent(ky)}&kyDen=${encodeURIComponent(ky)}`)}
+    >
+      Xem chi tiết
+    </Button>
+  )
 
   if (loading) {
     return (
-      <SectionCard title="Công nợ theo tuổi nợ">
+      <SectionCard title="Công nợ theo số ngày trả trễ" action={action}>
         <TableSkeleton rows={4} />
       </SectionCard>
     )
   }
 
   return (
-    <SectionCard title="Công nợ theo tuổi nợ">
+    <SectionCard title="Công nợ theo số ngày trả trễ" action={action}>
+      <Body1 as="p" className={styles.tongCongNo}>{`Tổng công nợ: ${formatCurrencyWithUnit(tongCongNo)}`}</Body1>
       <div style={{ width: '100%', height: 220 }}>
         <ResponsiveContainer>
           <BarChart data={chartData} layout="vertical" margin={{ left: 24 }}>

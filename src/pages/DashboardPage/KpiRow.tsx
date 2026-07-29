@@ -1,5 +1,5 @@
 import { makeStyles, tokens } from '@fluentui/react-components'
-import { CheckmarkCircleRegular, ClockRegular, ReceiptRegular } from '@fluentui/react-icons'
+import { BuildingMultipleRegular, CheckmarkCircleRegular, ClockRegular, ReceiptRegular } from '@fluentui/react-icons'
 import { KpiCard } from '../../components/KpiCard'
 import { formatCurrencyWithUnit, formatNumber } from '../../utils/currency'
 import { MiniProgressRing } from './MiniProgressRing'
@@ -8,7 +8,7 @@ import type { DashboardData } from './useDashboardData'
 const useStyles = makeStyles({
   root: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(4, 1fr)',
+    gridTemplateColumns: 'repeat(5, 1fr)',
     columnGap: tokens.spacingHorizontalM,
     marginBottom: tokens.spacingVerticalL,
   },
@@ -49,6 +49,12 @@ export function KpiRow({ data }: KpiRowProps) {
         label="Tỉ lệ hoàn thành"
         value={`${Math.round(kpi.tiLeHoanThanh * 100)}%`}
         trailing={<MiniProgressRing ratio={kpi.tiLeHoanThanh} />}
+      />
+      <KpiCard
+        icon={BuildingMultipleRegular}
+        label="Cơ sở giáo dục"
+        value={`${formatNumber(kpi.soTruong)} trường`}
+        subValue={`${Math.round(kpi.tyLeKetNoi * 100)}% đã kết nối`}
       />
     </div>
   )
