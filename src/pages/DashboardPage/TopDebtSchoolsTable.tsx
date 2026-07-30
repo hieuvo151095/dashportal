@@ -5,9 +5,12 @@ import {
   DataGridCell,
   DataGridRow,
   createTableColumn,
+  makeStyles,
+  mergeClasses,
+  tokens,
   type TableColumnDefinition,
 } from '@fluentui/react-components'
-import { EyeRegular } from '@fluentui/react-icons'
+import { EyeRegular, MoneyHandRegular } from '@fluentui/react-icons'
 import { useNavigate } from 'react-router-dom'
 import { EmptyState } from '../../components/EmptyState'
 import { SectionCard } from '../../components/SectionCard'
@@ -17,6 +20,17 @@ import { formatCurrency, formatNumber } from '../../utils/currency'
 import { COL_DIA_DIEM, COL_HANH_DONG, COL_SO_LUONG, COL_SO_TIEN, COL_STT, COL_TEN } from '../../utils/tableColumnSizes'
 import type { DashboardData } from './useDashboardData'
 
+const useStyles = makeStyles({
+  zebraRow: {
+    backgroundColor: tokens.colorNeutralBackground2,
+  },
+  hoverableRow: {
+    ':hover': {
+      backgroundColor: tokens.colorNeutralBackground2Hover,
+    },
+  },
+})
+
 type TopDebtRow = DashboardData['top20CongNo'][number]
 
 interface TopDebtSchoolsTableProps {
@@ -25,6 +39,7 @@ interface TopDebtSchoolsTableProps {
 }
 
 export function TopDebtSchoolsTable({ data, loading }: TopDebtSchoolsTableProps) {
+  const styles = useStyles()
   const navigate = useNavigate()
 
   const columns: TableColumnDefinition<TopDebtRow>[] = [
@@ -79,7 +94,11 @@ export function TopDebtSchoolsTable({ data, loading }: TopDebtSchoolsTableProps)
   }
 
   return (
-    <SectionCard title="Top 20 trường có công nợ cao nhất">
+    <SectionCard
+      title="Top 20 trường có công nợ cao nhất"
+      icon={MoneyHandRegular}
+      iconColor={tokens.colorPaletteRedForeground1}
+    >
       {loading ? (
         <TableSkeleton rows={6} />
       ) : data.top20CongNo.length === 0 ? (
@@ -95,7 +114,13 @@ export function TopDebtSchoolsTable({ data, loading }: TopDebtSchoolsTableProps)
           <TableHeaderRow />
           <DataGridBody<TopDebtRow>>
             {({ item, rowId }) => (
-              <DataGridRow<TopDebtRow> key={rowId}>
+              <DataGridRow<TopDebtRow>
+                key={rowId}
+                className={mergeClasses(
+                  data.top20CongNo.indexOf(item) % 2 === 1 && styles.zebraRow,
+                  styles.hoverableRow,
+                )}
+              >
                 {({ renderCell }) => <DataGridCell>{renderCell(item)}</DataGridCell>}
               </DataGridRow>
             )}

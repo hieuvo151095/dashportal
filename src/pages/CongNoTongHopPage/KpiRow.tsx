@@ -23,18 +23,31 @@ export function KpiRow({ data }: KpiRowProps) {
 
   return (
     <div className={styles.root}>
-      <KpiCard icon={MoneyRegular} label="Tổng công nợ" value={formatCurrencyWithUnit(kpi.tongCongNo)} accent="warning" />
+      <KpiCard
+        icon={MoneyRegular}
+        label="Tổng công nợ"
+        value={formatCurrencyWithUnit(kpi.tongCongNo)}
+        accent="warning"
+        color="marigold"
+      />
       <KpiCard
         icon={PeopleRegular}
         label="Số học sinh chưa đóng"
         value={`${formatNumber(kpi.soHocSinhChuaDong)} học sinh`}
+        color="blue"
       />
-      <KpiCard icon={AlertRegular} label="Tỉ lệ nợ trung bình" value={`${Math.round(kpi.tyLeNoTrungBinh * 100)}%`} />
+      <KpiCard
+        icon={AlertRegular}
+        label="Tỉ lệ nợ trung bình"
+        value={`${Math.round(kpi.tyLeNoTrungBinh * 100)}%`}
+        color="purple"
+      />
       <KpiCard
         icon={WarningRegular}
         label="Công nợ quá hạn > 90 ngày"
         value={formatCurrencyWithUnit(kpi.congNoQuaHan90)}
         accent="danger"
+        color="red"
       />
     </div>
   )

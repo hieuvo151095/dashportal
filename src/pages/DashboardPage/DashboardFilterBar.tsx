@@ -1,5 +1,6 @@
-import { Button, Combobox, Dropdown, Field, Option } from '@fluentui/react-components'
+import { Button, Caption1, Combobox, Dropdown, Field, Option } from '@fluentui/react-components'
 import { ArrowDownloadRegular } from '@fluentui/react-icons'
+import { useState } from 'react'
 import { CAP_HOC_LIST, mockDataset, type CapHoc } from '../../mock-data'
 import { FilterBar } from '../../components/FilterBar'
 import { getKyOptions } from './useDashboardFilters'
@@ -7,6 +8,7 @@ import type { DashboardFilters } from './useDashboardFilters'
 
 const KY_OPTIONS = getKyOptions()
 const TOAN_THANH_PHO = 'all'
+const gioFormatter = new Intl.DateTimeFormat('vi-VN', { hour: '2-digit', minute: '2-digit' })
 
 interface DashboardFilterBarProps {
   draft: DashboardFilters
@@ -16,6 +18,8 @@ interface DashboardFilterBarProps {
 }
 
 export function DashboardFilterBar({ draft, setDraft, onApply, onReset }: DashboardFilterBarProps) {
+  // Giờ lúc trang được tải — chỉ tính 1 lần lúc mount, không cập nhật lại khi Áp dụng/Làm mới.
+  const [gioCapNhat] = useState(() => gioFormatter.format(new Date()))
   const { phuongXaList } = mockDataset
   const phuongXaLabel =
     draft.phuongXaId === TOAN_THANH_PHO
@@ -30,9 +34,12 @@ export function DashboardFilterBar({ draft, setDraft, onApply, onReset }: Dashbo
       onApply={onApply}
       onReset={onReset}
       action={
-        <Button icon={<ArrowDownloadRegular />} onClick={() => {}}>
-          Xuất báo cáo
-        </Button>
+        <>
+          <Caption1>{`Cập nhật lúc: ${gioCapNhat}`}</Caption1>
+          <Button icon={<ArrowDownloadRegular />} onClick={() => {}}>
+            Xuất báo cáo
+          </Button>
+        </>
       }
     >
       <Field label="Kỳ báo cáo">

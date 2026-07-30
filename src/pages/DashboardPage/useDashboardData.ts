@@ -11,6 +11,7 @@ import {
   type Truong,
 } from '../../mock-data'
 import { NHOM_TUOI_NO_LIST, nhomTuoiNoCua } from '../../utils/congNo'
+import { getKyOptions } from '../../utils/ky'
 import type { DashboardFilters } from './useDashboardFilters'
 
 const SO_THANG_XU_HUONG = 6
@@ -68,6 +69,17 @@ export function useDashboardData(filters: DashboardFilters) {
     const soTruongKetNoi = scopedTruongList.filter((t) => t.heThongDoiTac).length
     const tyLeKetNoi = scopedTruongList.length === 0 ? 0 : soTruongKetNoi / scopedTruongList.length
 
+    // ---- So sánh với kỳ trước (chỉ có nếu kỳ đang xem không phải kỳ sớm nhất trong 6 kỳ gần
+    // nhất — mock data chỉ sinh hoá đơn cho 6 tháng gần nhất, kỳ đầu tiên không có kỳ trước) ----
+    const kyOptions = getKyOptions()
+    const kyIndex = kyOptions.indexOf(filters.ky)
+    const kyTruoc = kyIndex > 0 ? kyOptions[kyIndex - 1] : null
+    const hoaDonKyTruoc = kyTruoc ? hoaDonScoped.filter((hd) => hd.ky === kyTruoc) : []
+    const tongTienTruoc = sum(hoaDonKyTruoc, (hd) => hd.soTien)
+    const daThuTienTruoc = sum(hoaDonKyTruoc, (hd) => hd.daTra)
+    const canThuTienTruoc = sum(hoaDonKyTruoc, (hd) => hd.conLai)
+    const tiLeHoanThanhTruoc = tongTienTruoc === 0 ? 0 : daThuTienTruoc / tongTienTruoc
+
     const kpi = {
       tongSoHoaDon: hoaDonKy.length,
       tongTien,
@@ -78,6 +90,9 @@ export function useDashboardData(filters: DashboardFilters) {
       tiLeHoanThanh,
       soTruong: scopedTruongList.length,
       tyLeKetNoi,
+      kyTruoc: kyTruoc
+        ? { tongTien: tongTienTruoc, daThuTien: daThuTienTruoc, canThuTien: canThuTienTruoc, tiLeHoanThanh: tiLeHoanThanhTruoc }
+        : null,
     }
 
     // ---- Tỷ lệ thu theo Xã/Phường (bỏ qua filter Xã/Phường, chỉ theo Cấp học + Kỳ) ----

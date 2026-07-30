@@ -1,4 +1,4 @@
-import { makeStyles, tokens } from '@fluentui/react-components'
+import { Caption1, makeStyles, tokens } from '@fluentui/react-components'
 import { PageTitle } from '../../components/PageTitle'
 import { useFilterDraft } from '../../utils/useFilterDraft'
 import { useSkeletonDelay } from '../../utils/useSkeletonDelay'
@@ -17,6 +17,11 @@ import { useDashboardData } from './useDashboardData'
 import { useDashboardFilters, type DashboardFilters } from './useDashboardFilters'
 
 const useStyles = makeStyles({
+  description: {
+    display: 'block',
+    color: tokens.colorNeutralForeground3,
+    marginBottom: tokens.spacingVerticalM,
+  },
   twoColRow: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
@@ -42,6 +47,9 @@ export function DashboardPage() {
   return (
     <div>
       <PageTitle title="Tổng quan Thu học phí" />
+      <Caption1 as="p" className={styles.description}>
+        Theo dõi tình hình thu học phí toàn thành phố theo thời gian thực
+      </Caption1>
 
       <DashboardFilterBar
         draft={draft}

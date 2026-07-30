@@ -1,4 +1,5 @@
 import { Button, tokens } from '@fluentui/react-components'
+import { ArrowTrendingRegular } from '@fluentui/react-icons'
 import {
   Bar,
   CartesianGrid,
@@ -38,14 +39,24 @@ export function MonthlyTrendChart({ data, loading, ky }: MonthlyTrendChartProps)
 
   if (loading) {
     return (
-      <SectionCard title="Xu hướng thu theo tháng" action={action}>
+      <SectionCard
+      title="Xu hướng thu theo tháng"
+      action={action}
+      icon={ArrowTrendingRegular}
+      iconColor={tokens.colorPaletteGreenForeground2}
+    >
         <TableSkeleton rows={5} />
       </SectionCard>
     )
   }
 
   return (
-    <SectionCard title="Xu hướng thu theo tháng" action={action}>
+    <SectionCard
+      title="Xu hướng thu theo tháng"
+      action={action}
+      icon={ArrowTrendingRegular}
+      iconColor={tokens.colorPaletteGreenForeground2}
+    >
       <div style={{ width: '100%', height: 280 }}>
         <ResponsiveContainer>
           <ComposedChart data={chartData}>

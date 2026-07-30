@@ -28,6 +28,7 @@ export function KpiRow({ data }: KpiRowProps) {
         label="Tổng hoá đơn"
         value={`${formatNumber(kpi.tongSoHoaDon)} hoá đơn`}
         subValue={formatCurrencyWithUnit(kpi.tongTien)}
+        color="blue"
       />
       <KpiCard
         icon={CheckmarkCircleRegular}
@@ -35,6 +36,7 @@ export function KpiRow({ data }: KpiRowProps) {
         value={`${formatNumber(kpi.soDaThanhToan)} hoá đơn`}
         subValue={formatCurrencyWithUnit(kpi.tienDaThanhToan)}
         accent="success"
+        color="green"
       />
       <KpiCard
         icon={SplitHorizontalRegular}
@@ -42,13 +44,15 @@ export function KpiRow({ data }: KpiRowProps) {
         value={`${formatNumber(kpi.soMotPhan)} hoá đơn`}
         subValue={formatCurrencyWithUnit(kpi.tienMotPhan)}
         accent="warning"
+        color="marigold"
       />
       <KpiCard
         icon={ClockRegular}
         label="Chưa thu"
         value={`${formatNumber(kpi.soChuaThu)} hoá đơn`}
         subValue={formatCurrencyWithUnit(kpi.tienChuaThu)}
-        accent="warning"
+        accent="danger"
+        color="red"
       />
     </div>
   )

@@ -1,4 +1,5 @@
 import { Body1, Button, Caption1, makeStyles, tokens } from '@fluentui/react-components'
+import { MapRegular } from '@fluentui/react-icons'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useMemo, useState } from 'react'
@@ -92,14 +93,22 @@ export function GridMap({ data, loading, ky }: GridMapProps) {
 
   if (loading) {
     return (
-      <SectionCard title="Bản đồ tỷ lệ thu theo Phường/Xã">
+      <SectionCard
+      title="Bản đồ tỷ lệ thu theo Phường/Xã"
+      icon={MapRegular}
+      iconColor={tokens.colorPaletteTealForeground2}
+    >
         <TableSkeleton rows={4} />
       </SectionCard>
     )
   }
 
   return (
-    <SectionCard title="Bản đồ tỷ lệ thu theo Phường/Xã">
+    <SectionCard
+      title="Bản đồ tỷ lệ thu theo Phường/Xã"
+      icon={MapRegular}
+      iconColor={tokens.colorPaletteTealForeground2}
+    >
       <div className={styles.legend}>
         <div className={styles.legendItem}>
           <span className={styles.swatch} style={{ backgroundColor: tokens.colorPaletteGreenForeground1 }} />

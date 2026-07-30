@@ -1,10 +1,11 @@
 import { Button, tokens } from '@fluentui/react-components'
+import { TrophyRegular } from '@fluentui/react-icons'
 import { Bar, BarChart, CartesianGrid, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { useNavigate } from 'react-router-dom'
 import { EmptyState } from '../../components/EmptyState'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
-import { formatBillion } from '../../utils/currency'
+import { formatBillionOrMillion } from '../../utils/currency'
 import type { DashboardData } from './useDashboardData'
 
 interface TopRegionsRankingProps {
@@ -29,13 +30,15 @@ export function TopRegionsRanking({ data, loading, ky }: TopRegionsRankingProps)
     ten: item.phuongXa.ten,
     nhan: `${index + 1}. ${item.phuongXa.ten}`,
     tyLePercent: Math.round(item.tyLe * 100),
-    daThuNhan: `Đã thu ${formatBillion(item.daThuTien)}`,
-    conThuNhan: `Còn thu ${formatBillion(item.conThuTien)}`,
+    daThuNhan: `Đã thu ${formatBillionOrMillion(item.daThuTien)}`,
+    conThuNhan: `Còn thu ${formatBillionOrMillion(item.conThuTien)}`,
   }))
 
   return (
     <SectionCard
       title="Top 10 Xã/Phường có tỷ lệ thu cao nhất"
+      icon={TrophyRegular}
+      iconColor={tokens.colorPaletteMarigoldForeground2}
       action={
         <Button appearance="subtle" onClick={() => navigate(`/thu-hoc-phi/tong-hop?ky=${encodeURIComponent(ky)}`)}>
           Xem tất cả

@@ -10,7 +10,7 @@ import {
   tokens,
   type TableColumnDefinition,
 } from '@fluentui/react-components'
-import { WarningRegular } from '@fluentui/react-icons'
+import { ArrowSyncRegular, WarningRegular } from '@fluentui/react-icons'
 import { EmptyState } from '../../components/EmptyState'
 import { HeThongBadge } from '../../components/HeThongBadge'
 import { SectionCard } from '../../components/SectionCard'
@@ -50,7 +50,12 @@ export function SyncStatusTable({ data, loading }: SyncStatusTableProps) {
 
   if (loading) {
     return (
-      <SectionCard title="Tình trạng đồng bộ dữ liệu" action={stat}>
+      <SectionCard
+      title="Tình trạng đồng bộ dữ liệu"
+      action={stat}
+      icon={ArrowSyncRegular}
+      iconColor={tokens.colorPaletteTealForeground2}
+    >
         <TableSkeleton rows={4} />
       </SectionCard>
     )
@@ -58,7 +63,12 @@ export function SyncStatusTable({ data, loading }: SyncStatusTableProps) {
 
   if (rows.length === 0) {
     return (
-      <SectionCard title="Tình trạng đồng bộ dữ liệu" action={stat}>
+      <SectionCard
+      title="Tình trạng đồng bộ dữ liệu"
+      action={stat}
+      icon={ArrowSyncRegular}
+      iconColor={tokens.colorPaletteTealForeground2}
+    >
         <EmptyState />
       </SectionCard>
     )
@@ -95,7 +105,12 @@ export function SyncStatusTable({ data, loading }: SyncStatusTableProps) {
   }
 
   return (
-    <SectionCard title="Tình trạng đồng bộ dữ liệu" action={stat}>
+    <SectionCard
+      title="Tình trạng đồng bộ dữ liệu"
+      action={stat}
+      icon={ArrowSyncRegular}
+      iconColor={tokens.colorPaletteTealForeground2}
+    >
       <DataGrid
         items={rows}
         columns={columns}

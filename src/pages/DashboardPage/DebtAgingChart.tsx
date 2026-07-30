@@ -1,4 +1,5 @@
 import { Body1, Button, makeStyles, tokens } from '@fluentui/react-components'
+import { ClockAlarmRegular } from '@fluentui/react-icons'
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { useNavigate } from 'react-router-dom'
 import { SectionCard } from '../../components/SectionCard'
@@ -50,14 +51,24 @@ export function DebtAgingChart({ data, loading, ky }: DebtAgingChartProps) {
 
   if (loading) {
     return (
-      <SectionCard title="Công nợ theo số ngày trả trễ" action={action}>
+      <SectionCard
+      title="Công nợ theo số ngày trả trễ"
+      action={action}
+      icon={ClockAlarmRegular}
+      iconColor={tokens.colorPaletteDarkOrangeForeground2}
+    >
         <TableSkeleton rows={4} />
       </SectionCard>
     )
   }
 
   return (
-    <SectionCard title="Công nợ theo số ngày trả trễ" action={action}>
+    <SectionCard
+      title="Công nợ theo số ngày trả trễ"
+      action={action}
+      icon={ClockAlarmRegular}
+      iconColor={tokens.colorPaletteDarkOrangeForeground2}
+    >
       <Body1 as="p" className={styles.tongCongNo}>{`Tổng công nợ: ${formatCurrencyWithUnit(tongCongNo)}`}</Body1>
       <div style={{ width: '100%', height: 220 }}>
         <ResponsiveContainer>

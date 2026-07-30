@@ -6,9 +6,11 @@ import {
   DataGridRow,
   createTableColumn,
   makeStyles,
+  mergeClasses,
   tokens,
   type TableColumnDefinition,
 } from '@fluentui/react-components'
+import { HatGraduationRegular } from '@fluentui/react-icons'
 import { EmptyState } from '../../components/EmptyState'
 import { SectionCard } from '../../components/SectionCard'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
@@ -21,6 +23,14 @@ const useStyles = makeStyles({
   totalRow: {
     fontWeight: tokens.fontWeightSemibold,
     backgroundColor: tokens.colorNeutralBackground2,
+  },
+  zebraRow: {
+    backgroundColor: tokens.colorNeutralBackground2,
+  },
+  hoverableRow: {
+    ':hover': {
+      backgroundColor: tokens.colorNeutralBackground2Hover,
+    },
   },
 })
 
@@ -39,7 +49,7 @@ export function CapHocAnalysisTable({ data, loading }: CapHocAnalysisTableProps)
 
   if (loading) {
     return (
-      <SectionCard title="Phân tích theo cấp học">
+      <SectionCard title="Phân tích theo cấp học" icon={HatGraduationRegular} iconColor={tokens.colorPaletteBlueForeground2}>
         <TableSkeleton rows={4} />
       </SectionCard>
     )
@@ -47,7 +57,7 @@ export function CapHocAnalysisTable({ data, loading }: CapHocAnalysisTableProps)
 
   if (rows.length === 0) {
     return (
-      <SectionCard title="Phân tích theo cấp học">
+      <SectionCard title="Phân tích theo cấp học" icon={HatGraduationRegular} iconColor={tokens.colorPaletteBlueForeground2}>
         <EmptyState />
       </SectionCard>
     )
@@ -119,7 +129,14 @@ export function CapHocAnalysisTable({ data, loading }: CapHocAnalysisTableProps)
         <TableHeaderRow />
         <DataGridBody<GridRow>>
           {({ item, rowId }) => (
-            <DataGridRow<GridRow> key={rowId} className={item.isTotal ? styles.totalRow : undefined}>
+            <DataGridRow<GridRow>
+              key={rowId}
+              className={mergeClasses(
+                items.indexOf(item) % 2 === 1 && styles.zebraRow,
+                styles.hoverableRow,
+                item.isTotal && styles.totalRow,
+              )}
+            >
               {({ renderCell }) => <DataGridCell>{renderCell(item)}</DataGridCell>}
             </DataGridRow>
           )}
