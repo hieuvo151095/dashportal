@@ -53,22 +53,28 @@ export function useChiTietData(filters: ChiTietFiltersApi) {
 
     const hocSinhTruong = hocSinhList.filter((hs) => hs.truongId === filters.truongId)
     const khoiOptions = [...new Set(hocSinhTruong.map((hs) => hs.khoi))].sort((a, b) => a.localeCompare(b, 'vi'))
-    const lopOptions = [
-      ...new Set(
-        hocSinhTruong.filter((hs) => filters.khoi === 'all' || hs.khoi === filters.khoi).map((hs) => hs.lop),
-      ),
-    ].sort((a, b) => a.localeCompare(b, 'vi'))
 
+    // Map khối → danh sách lớp (không phụ thuộc draft.khoiList đang chọn) — FilterBar dùng map
+    // này để tính lại option Lớp hiển thị + cascading (bỏ lớp không còn thuộc khối mới chọn)
+    // mà không cần truy cập thẳng dữ liệu học sinh thô.
+    const lopOptionsTheoKhoi: Record<string, string[]> = {}
+    for (const khoi of khoiOptions) {
+      lopOptionsTheoKhoi[khoi] = [...new Set(hocSinhTruong.filter((hs) => hs.khoi === khoi).map((hs) => hs.lop))].sort(
+        (a, b) => a.localeCompare(b, 'vi'),
+      )
+    }
     const hocSinhById = new Map<string, HocSinh>(hocSinhTruong.map((hs) => [hs.id, hs]))
     const q = filters.q.trim().toLowerCase()
 
     const rows: DebtRow[] = hoaDonList
       .filter((hd) => hd.truongId === filters.truongId && hd.trangThai !== 'Đã thanh toán')
       .filter((hd) => trongPhamViKy(hd.ky, filters.kyTu, filters.kyDen))
+      .filter((hd) => !filters.hanTu || hd.hanThanhToan >= filters.hanTu)
+      .filter((hd) => !filters.hanDen || hd.hanThanhToan <= `${filters.hanDen}T23:59:59`)
       .map((hoaDon) => ({ hoaDon, hocSinh: hocSinhById.get(hoaDon.hocSinhId) }))
       .filter((row): row is { hoaDon: HoaDon; hocSinh: HocSinh } => Boolean(row.hocSinh))
-      .filter((row) => filters.khoi === 'all' || row.hocSinh.khoi === filters.khoi)
-      .filter((row) => filters.lop === 'all' || row.hocSinh.lop === filters.lop)
+      .filter((row) => filters.khoiList.length === 0 || filters.khoiList.includes(row.hocSinh.khoi))
+      .filter((row) => filters.lopList.length === 0 || filters.lopList.includes(row.hocSinh.lop))
       .filter(
         (row) =>
           !q || row.hocSinh.maHocSinh.toLowerCase().includes(q) || row.hocSinh.hoTen.toLowerCase().includes(q),
@@ -83,14 +89,16 @@ export function useChiTietData(filters: ChiTietFiltersApi) {
       .filter((row) => filters.nhomTuoiNo === 'all' || row.nhomTuoiNo === filters.nhomTuoiNo)
       .sort((a, b) => b.soNgayQuaHan - a.soNgayQuaHan)
 
-    return { truong, phuongXa, khoiOptions, lopOptions, rows }
+    return { truong, phuongXa, khoiOptions, lopOptionsTheoKhoi, rows }
   }, [
     filters.truongId,
     filters.q,
-    filters.khoi,
-    filters.lop,
+    filters.khoiList,
+    filters.lopList,
     filters.kyTu,
     filters.kyDen,
+    filters.hanTu,
+    filters.hanDen,
     filters.nhomTuoiNo,
   ])
 }

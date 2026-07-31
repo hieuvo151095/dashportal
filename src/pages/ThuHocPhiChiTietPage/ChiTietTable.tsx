@@ -93,6 +93,11 @@ export function ChiTietTable({ rows, filters }: ChiTietTableProps) {
       renderCell: (item) => (item.hoaDon ? formatDate(item.hoaDon.hanThanhToan) : '—'),
     }),
     createTableColumn<ChiTietRow>({
+      columnId: 'ngayThanhToan',
+      renderHeaderCell: () => 'Ngày thanh toán',
+      renderCell: (item) => (item.hoaDon?.ngayThanhToan ? formatDate(item.hoaDon.ngayThanhToan) : '—'),
+    }),
+    createTableColumn<ChiTietRow>({
       columnId: 'hinhThuc',
       renderHeaderCell: () => 'Hình thức thanh toán',
       renderCell: (item) => item.hoaDon?.hinhThucThanhToan ?? '—',
@@ -157,6 +162,7 @@ export function ChiTietTable({ rows, filters }: ChiTietTableProps) {
     hocSinh: COL_TEN,
     tenHoaDon: COL_TEN,
     hanThanhToan: COL_NGAY,
+    ngayThanhToan: COL_NGAY,
     hinhThuc: COL_BADGE,
     taoXacNhan: COL_TEN,
     trangThai: COL_BADGE,

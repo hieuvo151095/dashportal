@@ -26,8 +26,8 @@ export function useTongHopData(filters: TongHopFiltersApi): { rows: TongHopRow[]
 
     const q = filters.q.trim().toLowerCase()
     const rows: TongHopRow[] = truongList
-      .filter((t) => filters.phuongXaId === 'all' || t.phuongXaId === filters.phuongXaId)
-      .filter((t) => filters.truongId === 'all' || t.id === filters.truongId)
+      .filter((t) => filters.phuongXaIds.length === 0 || filters.phuongXaIds.includes(t.phuongXaId))
+      .filter((t) => filters.truongIds.length === 0 || filters.truongIds.includes(t.id))
       .filter((t) => !q || t.tenTruong.toLowerCase().includes(q) || t.maTruong.includes(q))
       .map((t) => ({
         truong: t,
@@ -36,5 +36,5 @@ export function useTongHopData(filters: TongHopFiltersApi): { rows: TongHopRow[]
       }))
 
     return { rows }
-  }, [filters.phuongXaId, filters.truongId, filters.nienKhoa, filters.nhomPhi, filters.nguonThu, filters.q])
+  }, [filters.phuongXaIds, filters.truongIds, filters.nienKhoa, filters.nhomPhi, filters.nguonThu, filters.q])
 }

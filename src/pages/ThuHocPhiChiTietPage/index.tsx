@@ -1,3 +1,4 @@
+import { PageTitle } from '../../components/PageTitle'
 import { SchoolHeader } from '../../components/SchoolHeader'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
@@ -18,6 +19,8 @@ export function ThuHocPhiChiTietPage() {
     hinhThucThanhToan: filters.hinhThucThanhToan,
     hanTu: filters.hanTu,
     hanDen: filters.hanDen,
+    ngayTtTu: filters.ngayTtTu,
+    ngayTtDen: filters.ngayTtDen,
   })
   const data = useChiTietData(filters)
   const loading = useSkeletonDelay([
@@ -29,13 +32,14 @@ export function ThuHocPhiChiTietPage() {
     filters.hinhThucThanhToan,
     filters.hanTu,
     filters.hanDen,
+    filters.ngayTtTu,
+    filters.ngayTtDen,
   ])
 
   return (
     <div>
+      <PageTitle title="Thu Học phí — Chi tiết theo trường" />
       <SchoolHeader
-        moduleTitle="Thu Học phí"
-        pageTitle="Chi tiết theo trường"
         truong={data.truong}
         phuongXa={data.phuongXa}
         truongId={filters.truongId}

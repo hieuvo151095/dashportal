@@ -1,5 +1,6 @@
-import { Body1, Caption1, Card, Combobox, Field, Option, Title2, makeStyles, tokens } from '@fluentui/react-components'
+import { Body1, Caption1, Card, Field, makeStyles, tokens } from '@fluentui/react-components'
 import { mockDataset, type PhuongXa, type Truong } from '../mock-data'
+import { SearchableCombobox } from './SearchableCombobox'
 
 const useStyles = makeStyles({
   card: {
@@ -30,22 +31,18 @@ const useStyles = makeStyles({
 })
 
 interface SchoolHeaderProps {
-  moduleTitle: string
-  pageTitle: string
   truong: Truong | undefined
   phuongXa: PhuongXa | undefined
   truongId: string
   onSelectTruong: (truongId: string) => void
 }
 
-export function SchoolHeader({ moduleTitle, pageTitle, truong, phuongXa, truongId, onSelectTruong }: SchoolHeaderProps) {
+export function SchoolHeader({ truong, phuongXa, truongId, onSelectTruong }: SchoolHeaderProps) {
   const styles = useStyles()
   const { truongList } = mockDataset
 
   return (
     <Card className={styles.card}>
-      <Title2 as="h1">{`${moduleTitle} — ${pageTitle}`}</Title2>
-
       <div className={styles.infoRow}>
         <div className={styles.info}>
           {truong && (
@@ -59,17 +56,11 @@ export function SchoolHeader({ moduleTitle, pageTitle, truong, phuongXa, truongI
         </div>
 
         <Field label="Chọn trường" className={styles.picker}>
-          <Combobox
-            value={truong?.tenTruong ?? ''}
-            selectedOptions={[truongId]}
-            onOptionSelect={(_, data) => data.optionValue && onSelectTruong(data.optionValue)}
-          >
-            {truongList.map((t) => (
-              <Option key={t.id} value={t.id}>
-                {t.tenTruong}
-              </Option>
-            ))}
-          </Combobox>
+          <SearchableCombobox
+            options={truongList.map((t) => ({ value: t.id, label: t.tenTruong }))}
+            value={truongId}
+            onChange={onSelectTruong}
+          />
         </Field>
       </div>
     </Card>

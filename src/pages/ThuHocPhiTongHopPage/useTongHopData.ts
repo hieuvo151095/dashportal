@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { mockDataset, type HocSinh, type PhuongXa, type Truong } from '../../mock-data'
+import { HINH_THUC_THANH_TOAN_LIST, mockDataset, type HocSinh, type PhuongXa, type Truong } from '../../mock-data'
 import type { TongHopFiltersApi, TrangThaiTongHop } from './useTongHopFilters'
 
 function sum<T>(items: T[], pick: (item: T) => number): number {
@@ -53,20 +53,27 @@ export function useTongHopData(filters: TongHopFiltersApi) {
     const hocSinhById = new Map<string, HocSinh>(hocSinhList.map((h) => [h.id, h]))
     const truongById = new Map<string, Truong>(truongList.map((t) => [t.id, t]))
 
+    const q = filters.q.trim().toLowerCase()
     const scopedTruongList = truongList.filter(
       (t) =>
-        (filters.phuongXaId === 'all' || t.phuongXaId === filters.phuongXaId) &&
-        (filters.truongId === 'all' || t.id === filters.truongId) &&
+        (filters.phuongXaIds.length === 0 || filters.phuongXaIds.includes(t.phuongXaId)) &&
+        (filters.truongIds.length === 0 || filters.truongIds.includes(t.id)) &&
         filters.capHocList.includes(t.capHoc) &&
-        (filters.heThong === 'all' || t.heThongDoiTac === filters.heThong),
+        filters.heThongList.includes(t.heThongDoiTac) &&
+        (!q || t.tenTruong.toLowerCase().includes(q) || t.maTruong.toLowerCase().includes(q)),
     )
     const scopedTruongIds = new Set(scopedTruongList.map((t) => t.id))
 
+    // Hình thức thanh toán chọn đủ cả danh sách (mặc định) = không lọc, kể cả hoá đơn chưa có
+    // hình thức (hinhThucThanhToan === null, chưa thanh toán) — thu hẹp lựa chọn mới bắt đầu
+    // loại các hoá đơn null này ra (giữ đúng hành vi sentinel 'all' cũ).
+    const hinhThucDayDu = filters.hinhThucThanhToanList.length === HINH_THUC_THANH_TOAN_LIST.length
     const hoaDonKy = hoaDonList.filter(
       (hd) =>
         hd.ky === filters.ky &&
         scopedTruongIds.has(hd.truongId) &&
-        (filters.hinhThucThanhToan === 'all' || hd.hinhThucThanhToan === filters.hinhThucThanhToan),
+        (hinhThucDayDu ||
+          (hd.hinhThucThanhToan !== null && filters.hinhThucThanhToanList.includes(hd.hinhThucThanhToan))),
     )
 
     // ---- KPI ----
@@ -108,15 +115,15 @@ export function useTongHopData(filters: TongHopFiltersApi) {
           trangThaiTongHop: trangThaiTongHopCua(tongThu, tongSoTien),
         }
       })
-      .filter((row) => filters.trangThai === 'all' || row.trangThaiTongHop === filters.trangThai)
+      .filter((row) => filters.trangThaiList.includes(row.trangThaiTongHop))
       .sort((a, b) => a.truong.tenTruong.localeCompare(b.truong.tenTruong, 'vi'))
 
     // ---- 3 tab hoá đơn theo trạng thái ----
-    // Filter "Trạng thái" áp thêm lên từng subset — vốn đã thuần 1 trạng thái/tab nên chỉ
-    // giữ nguyên (khớp) hoặc rỗng (không khớp), không ảnh hưởng KPI (tính từ hoaDonKy gốc).
-    const trangThaiHoaDonMapped = filters.trangThai === 'Chưa thanh toán' ? 'Đã gửi' : filters.trangThai
-    function locTheoTrangThai(list: typeof hoaDonKy): typeof hoaDonKy {
-      return filters.trangThai === 'all' ? list : list.filter((hd) => hd.trangThai === trangThaiHoaDonMapped)
+    // Mỗi subset (daThanhToan/motPhan/chuaThu) đã thuần 1 trạng thái — chỉ cần biết trạng thái
+    // đó có nằm trong "Trạng thái" đang chọn hay không (đủ danh sách = Tất cả, không ảnh hưởng
+    // KPI vì KPI tính từ hoaDonKy gốc).
+    function locTheoTrangThai(list: typeof hoaDonKy, nhan: TrangThaiTongHop): typeof hoaDonKy {
+      return filters.trangThaiList.includes(nhan) ? list : []
     }
 
     function toInvoiceRows(list: typeof hoaDonKy): InvoiceRow[] {
@@ -133,19 +140,20 @@ export function useTongHopData(filters: TongHopFiltersApi) {
       kpi,
       overviewRows,
       invoiceRowsByTab: {
-        'da-thanh-toan': toInvoiceRows(locTheoTrangThai(daThanhToan)),
-        'mot-phan': toInvoiceRows(locTheoTrangThai(motPhan)),
-        'chua-thanh-toan': toInvoiceRows(locTheoTrangThai(chuaThu)),
+        'da-thanh-toan': toInvoiceRows(locTheoTrangThai(daThanhToan, 'Đã thanh toán')),
+        'mot-phan': toInvoiceRows(locTheoTrangThai(motPhan, 'Thanh toán một phần')),
+        'chua-thanh-toan': toInvoiceRows(locTheoTrangThai(chuaThu, 'Chưa thanh toán')),
       },
     }
   }, [
     filters.ky,
-    filters.phuongXaId,
-    filters.truongId,
+    filters.phuongXaIds,
+    filters.truongIds,
     filters.capHocList,
-    filters.hinhThucThanhToan,
-    filters.heThong,
-    filters.trangThai,
+    filters.hinhThucThanhToanList,
+    filters.heThongList,
+    filters.trangThaiList,
+    filters.q,
   ])
 }
 

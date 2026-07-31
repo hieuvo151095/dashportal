@@ -1,4 +1,12 @@
-import { Tab, TabList, makeStyles, tokens, type SelectTabData, type SelectTabEvent } from '@fluentui/react-components'
+import {
+  Caption1,
+  Tab,
+  TabList,
+  makeStyles,
+  tokens,
+  type SelectTabData,
+  type SelectTabEvent,
+} from '@fluentui/react-components'
 import { PageTitle } from '../../components/PageTitle'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
@@ -29,28 +37,30 @@ export function ThuHocPhiTongHopPage() {
   const filters = useTongHopFilters()
   const [draft, setDraft] = useFilterDraft<TongHopFilters>({
     ky: filters.ky,
-    phuongXaId: filters.phuongXaId,
-    truongId: filters.truongId,
+    phuongXaIds: filters.phuongXaIds,
+    truongIds: filters.truongIds,
     capHocList: filters.capHocList,
-    hinhThucThanhToan: filters.hinhThucThanhToan,
-    heThong: filters.heThong,
-    trangThai: filters.trangThai,
+    hinhThucThanhToanList: filters.hinhThucThanhToanList,
+    heThongList: filters.heThongList,
+    trangThaiList: filters.trangThaiList,
+    q: filters.q,
   })
   const data = useTongHopData(filters)
   const loading = useSkeletonDelay([
     filters.ky,
-    filters.phuongXaId,
-    filters.truongId,
+    filters.phuongXaIds,
+    filters.truongIds,
     filters.capHocList,
-    filters.hinhThucThanhToan,
-    filters.heThong,
-    filters.trangThai,
+    filters.hinhThucThanhToanList,
+    filters.heThongList,
+    filters.trangThaiList,
+    filters.q,
     filters.tab,
   ])
 
   return (
     <div>
-      <PageTitle title="Thu Học phí — Tổng hợp toàn thành phố" />
+      <PageTitle title="Thu Học phí — Tổng hợp toàn thành phố" showUnit={false} />
 
       <TongHopFilterBar draft={draft} setDraft={setDraft} onApply={() => filters.apply(draft)} onReset={filters.reset} />
 
@@ -68,7 +78,10 @@ export function ThuHocPhiTongHopPage() {
         ))}
       </TabList>
 
-      <SectionCard title={TAB_LABELS[filters.tab]}>
+      <SectionCard
+        title={TAB_LABELS[filters.tab]}
+        action={<Caption1 style={{ color: tokens.colorNeutralForeground3 }}>Đơn vị: Đồng</Caption1>}
+      >
         {loading ? (
           <TableSkeleton rows={8} />
         ) : filters.tab === 'tong-quan' ? (

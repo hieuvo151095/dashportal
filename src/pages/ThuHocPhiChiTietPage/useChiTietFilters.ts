@@ -3,7 +3,20 @@ import { useUrlFilters } from '../../utils/useUrlFilters'
 
 const DEFAULT_TRUONG_ID = mockDataset.truongList[0]?.id ?? ''
 
-const DEFAULTS: Record<'truong' | 'q' | 'lop' | 'ky' | 'trangThai' | 'hinhThuc' | 'hanTu' | 'hanDen' | 'page', string> = {
+const DEFAULTS: Record<
+  | 'truong'
+  | 'q'
+  | 'lop'
+  | 'ky'
+  | 'trangThai'
+  | 'hinhThuc'
+  | 'hanTu'
+  | 'hanDen'
+  | 'ngayTtTu'
+  | 'ngayTtDen'
+  | 'page',
+  string
+> = {
   truong: DEFAULT_TRUONG_ID,
   q: '',
   lop: 'all',
@@ -12,6 +25,8 @@ const DEFAULTS: Record<'truong' | 'q' | 'lop' | 'ky' | 'trangThai' | 'hinhThuc' 
   hinhThuc: 'all',
   hanTu: '',
   hanDen: '',
+  ngayTtTu: '',
+  ngayTtDen: '',
   page: '1',
 }
 
@@ -23,6 +38,8 @@ export interface ChiTietFilters {
   hinhThucThanhToan: string
   hanTu: string
   hanDen: string
+  ngayTtTu: string
+  ngayTtDen: string
 }
 
 export interface ChiTietFiltersApi extends ChiTietFilters {
@@ -36,6 +53,8 @@ export interface ChiTietFiltersApi extends ChiTietFilters {
   setHinhThucThanhToan: (value: string) => void
   setHanTu: (value: string) => void
   setHanDen: (value: string) => void
+  setNgayTtTu: (value: string) => void
+  setNgayTtDen: (value: string) => void
   setPage: (value: number) => void
   apply: (draft: ChiTietFilters) => void
   reset: () => void
@@ -55,6 +74,8 @@ export function useChiTietFilters(): ChiTietFiltersApi {
     hinhThucThanhToan: get('hinhThuc'),
     hanTu: get('hanTu'),
     hanDen: get('hanDen'),
+    ngayTtTu: get('ngayTtTu'),
+    ngayTtDen: get('ngayTtDen'),
     page: Number(get('page')) || 1,
     // Chọn trường (SchoolHeader) là điều hướng ngữ cảnh trang, áp dụng ngay — không qua draft.
     setTruongId: (value) => update({ truong: value, lop: DEFAULTS.lop, page: DEFAULTS.page }),
@@ -65,6 +86,8 @@ export function useChiTietFilters(): ChiTietFiltersApi {
     setHinhThucThanhToan: (value) => update({ hinhThuc: value }),
     setHanTu: (value) => update({ hanTu: value }),
     setHanDen: (value) => update({ hanDen: value }),
+    setNgayTtTu: (value) => update({ ngayTtTu: value }),
+    setNgayTtDen: (value) => update({ ngayTtDen: value }),
     setPage: (value) => update({ page: String(value) }),
     apply: (draft) =>
       update({
@@ -75,6 +98,8 @@ export function useChiTietFilters(): ChiTietFiltersApi {
         hinhThuc: draft.hinhThucThanhToan,
         hanTu: draft.hanTu,
         hanDen: draft.hanDen,
+        ngayTtTu: draft.ngayTtTu,
+        ngayTtDen: draft.ngayTtDen,
         page: DEFAULTS.page,
       }),
     // "Làm mới" chỉ reset field của FilterBar — không đụng trường đang chọn (truongId).
@@ -87,6 +112,8 @@ export function useChiTietFilters(): ChiTietFiltersApi {
         hinhThuc: DEFAULTS.hinhThuc,
         hanTu: DEFAULTS.hanTu,
         hanDen: DEFAULTS.hanDen,
+        ngayTtTu: DEFAULTS.ngayTtTu,
+        ngayTtDen: DEFAULTS.ngayTtDen,
         page: DEFAULTS.page,
       }),
   }

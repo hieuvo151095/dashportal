@@ -1,15 +1,14 @@
-import { Button, Combobox, Dropdown, Field, Option } from '@fluentui/react-components'
+import { Button, Dropdown, Field, Option } from '@fluentui/react-components'
 import { ArrowDownloadRegular } from '@fluentui/react-icons'
 import { useMemo } from 'react'
 import { FilterBar } from '../../components/FilterBar'
+import { SearchInput } from '../../components/SearchInput'
+import { SearchableMultiCombobox } from '../../components/SearchableMultiCombobox'
 import { CAP_HOC_LIST, HE_THONG_DOI_TAC_LIST, HINH_THUC_THANH_TOAN_LIST, mockDataset, type CapHoc } from '../../mock-data'
 import { getKyOptions } from '../../utils/ky'
-import type { TongHopFilters, TrangThaiTongHop } from './useTongHopFilters'
+import { TRANG_THAI_TONG_HOP_LIST, type TongHopFilters } from './useTongHopFilters'
 
 const KY_OPTIONS = getKyOptions()
-const TOAN_THANH_PHO = 'all'
-const TAT_CA = 'all'
-const TRANG_THAI_LIST: TrangThaiTongHop[] = ['Đã thanh toán', 'Thanh toán một phần', 'Chưa thanh toán']
 
 interface TongHopFilterBarProps {
   draft: TongHopFilters
@@ -22,22 +21,34 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
   const { phuongXaList, truongList } = mockDataset
 
   const truongOptions = useMemo(
-    () => truongList.filter((t) => draft.phuongXaId === TOAN_THANH_PHO || t.phuongXaId === draft.phuongXaId),
-    [truongList, draft.phuongXaId],
+    () => truongList.filter((t) => draft.phuongXaIds.length === 0 || draft.phuongXaIds.includes(t.phuongXaId)),
+    [truongList, draft.phuongXaIds],
   )
-
-  const phuongXaLabel =
-    draft.phuongXaId === TOAN_THANH_PHO
-      ? 'Toàn thành phố'
-      : (phuongXaList.find((p) => p.id === draft.phuongXaId)?.ten ?? 'Toàn thành phố')
-
-  const truongLabel =
-    draft.truongId === TAT_CA
-      ? 'Tất cả trường'
-      : (truongList.find((t) => t.id === draft.truongId)?.tenTruong ?? 'Tất cả trường')
 
   const capHocLabel =
     draft.capHocList.length === CAP_HOC_LIST.length ? 'Tất cả cấp học' : draft.capHocList.join(', ')
+  const hinhThucLabel =
+    draft.hinhThucThanhToanList.length === HINH_THUC_THANH_TOAN_LIST.length
+      ? 'Tất cả hình thức'
+      : draft.hinhThucThanhToanList.join(', ')
+  const heThongLabel =
+    draft.heThongList.length === HE_THONG_DOI_TAC_LIST.length ? 'Tất cả hệ thống' : draft.heThongList.join(', ')
+  const trangThaiLabel =
+    draft.trangThaiList.length === TRANG_THAI_TONG_HOP_LIST.length
+      ? 'Tất cả trạng thái'
+      : draft.trangThaiList.join(', ')
+
+  // Đổi Xã/Phường (multi) → bỏ khỏi Trường đã chọn những trường không còn thuộc phạm vi mới —
+  // atomic trong 1 lần setDraft.
+  function handlePhuongXaChange(values: string[]) {
+    const scopedTruongIds = new Set(
+      truongList.filter((t) => values.length === 0 || values.includes(t.phuongXaId)).map((t) => t.id),
+    )
+    setDraft({
+      phuongXaIds: values,
+      truongIds: draft.truongIds.filter((id) => scopedTruongIds.has(id)),
+    })
+  }
 
   return (
     <FilterBar
@@ -49,6 +60,10 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
         </Button>
       }
     >
+      <Field label="Tìm kiếm">
+        <SearchInput value={draft.q} onChange={(value) => setDraft({ q: value })} placeholder="Tìm theo mã và tên trường" />
+      </Field>
+
       <Field label="Kỳ báo cáo">
         <Dropdown
           value={draft.ky}
@@ -64,33 +79,23 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
       </Field>
 
       <Field label="Xã/Phường">
-        <Combobox
-          value={phuongXaLabel}
-          selectedOptions={[draft.phuongXaId]}
-          onOptionSelect={(_, data) => data.optionValue && setDraft({ phuongXaId: data.optionValue, truongId: TAT_CA })}
-        >
-          <Option value={TOAN_THANH_PHO}>Toàn thành phố</Option>
-          {phuongXaList.map((px) => (
-            <Option key={px.id} value={px.id}>
-              {px.ten}
-            </Option>
-          ))}
-        </Combobox>
+        <SearchableMultiCombobox
+          options={phuongXaList.map((px) => ({ value: px.id, label: px.ten }))}
+          selected={draft.phuongXaIds}
+          onChange={handlePhuongXaChange}
+          placeholder="Tìm Xã/Phường"
+          allLabel="Toàn thành phố"
+        />
       </Field>
 
       <Field label="Trường">
-        <Combobox
-          value={truongLabel}
-          selectedOptions={[draft.truongId]}
-          onOptionSelect={(_, data) => data.optionValue && setDraft({ truongId: data.optionValue })}
-        >
-          <Option value={TAT_CA}>Tất cả trường</Option>
-          {truongOptions.map((t) => (
-            <Option key={t.id} value={t.id}>
-              {t.tenTruong}
-            </Option>
-          ))}
-        </Combobox>
+        <SearchableMultiCombobox
+          options={truongOptions.map((t) => ({ value: t.id, label: t.tenTruong }))}
+          selected={draft.truongIds}
+          onChange={(values) => setDraft({ truongIds: values })}
+          placeholder="Tìm trường"
+          allLabel="Tất cả trường"
+        />
       </Field>
 
       <Field label="Cấp học">
@@ -110,11 +115,13 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
 
       <Field label="Hình thức thanh toán">
         <Dropdown
-          value={draft.hinhThucThanhToan === TAT_CA ? 'Tất cả hình thức' : draft.hinhThucThanhToan}
-          selectedOptions={[draft.hinhThucThanhToan]}
-          onOptionSelect={(_, data) => data.optionValue && setDraft({ hinhThucThanhToan: data.optionValue })}
+          multiselect
+          value={hinhThucLabel}
+          selectedOptions={draft.hinhThucThanhToanList}
+          onOptionSelect={(_, data) =>
+            setDraft({ hinhThucThanhToanList: data.selectedOptions as TongHopFilters['hinhThucThanhToanList'] })
+          }
         >
-          <Option value={TAT_CA}>Tất cả hình thức</Option>
           {HINH_THUC_THANH_TOAN_LIST.map((ht) => (
             <Option key={ht} value={ht}>
               {ht}
@@ -125,11 +132,11 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
 
       <Field label="Hệ thống">
         <Dropdown
-          value={draft.heThong === TAT_CA ? 'Tất cả hệ thống' : draft.heThong}
-          selectedOptions={[draft.heThong]}
-          onOptionSelect={(_, data) => data.optionValue && setDraft({ heThong: data.optionValue })}
+          multiselect
+          value={heThongLabel}
+          selectedOptions={draft.heThongList}
+          onOptionSelect={(_, data) => setDraft({ heThongList: data.selectedOptions as TongHopFilters['heThongList'] })}
         >
-          <Option value={TAT_CA}>Tất cả hệ thống</Option>
           {HE_THONG_DOI_TAC_LIST.map((ht) => (
             <Option key={ht} value={ht}>
               {ht}
@@ -140,12 +147,14 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
 
       <Field label="Trạng thái">
         <Dropdown
-          value={draft.trangThai === TAT_CA ? 'Tất cả trạng thái' : draft.trangThai}
-          selectedOptions={[draft.trangThai]}
-          onOptionSelect={(_, data) => data.optionValue && setDraft({ trangThai: data.optionValue })}
+          multiselect
+          value={trangThaiLabel}
+          selectedOptions={draft.trangThaiList}
+          onOptionSelect={(_, data) =>
+            setDraft({ trangThaiList: data.selectedOptions as TongHopFilters['trangThaiList'] })
+          }
         >
-          <Option value={TAT_CA}>Tất cả trạng thái</Option>
-          {TRANG_THAI_LIST.map((tt) => (
+          {TRANG_THAI_TONG_HOP_LIST.map((tt) => (
             <Option key={tt} value={tt}>
               {tt}
             </Option>

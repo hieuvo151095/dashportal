@@ -11,8 +11,8 @@ import { useTongHopFilters, type TongHopFilters } from './useTongHopFilters'
 export function DanhMucPhiTongHopPage() {
   const filters = useTongHopFilters()
   const [draft, setDraft] = useFilterDraft<TongHopFilters>({
-    phuongXaId: filters.phuongXaId,
-    truongId: filters.truongId,
+    phuongXaIds: filters.phuongXaIds,
+    truongIds: filters.truongIds,
     nienKhoa: filters.nienKhoa,
     nhomPhi: filters.nhomPhi,
     nguonThu: filters.nguonThu,
@@ -20,8 +20,8 @@ export function DanhMucPhiTongHopPage() {
   })
   const { rows } = useTongHopData(filters)
   const loading = useSkeletonDelay([
-    filters.phuongXaId,
-    filters.truongId,
+    filters.phuongXaIds,
+    filters.truongIds,
     filters.nienKhoa,
     filters.nhomPhi,
     filters.nguonThu,

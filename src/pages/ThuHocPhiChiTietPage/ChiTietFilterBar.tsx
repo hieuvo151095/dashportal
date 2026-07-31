@@ -1,5 +1,6 @@
 import { Dropdown, Field, Input, Option } from '@fluentui/react-components'
 import { FilterBar } from '../../components/FilterBar'
+import { RangeFilterField } from '../../components/RangeFilterField'
 import { SearchInput } from '../../components/SearchInput'
 import { HINH_THUC_THANH_TOAN_LIST, NIEN_KHOA, type TrangThaiHoaDon } from '../../mock-data'
 import { getKyOptions } from '../../utils/ky'
@@ -93,12 +94,17 @@ export function ChiTietFilterBar({ draft, setDraft, onApply, onReset, lopOptions
         </Dropdown>
       </Field>
 
-      <Field label="Hạn thanh toán từ ngày">
-        <Input type="date" value={draft.hanTu} onChange={(_, data) => setDraft({ hanTu: data.value })} />
-      </Field>
-      <Field label="đến ngày">
-        <Input type="date" value={draft.hanDen} onChange={(_, data) => setDraft({ hanDen: data.value })} />
-      </Field>
+      <RangeFilterField
+        label="Hạn thanh toán"
+        from={<Input type="date" value={draft.hanTu} onChange={(_, data) => setDraft({ hanTu: data.value })} />}
+        to={<Input type="date" value={draft.hanDen} onChange={(_, data) => setDraft({ hanDen: data.value })} />}
+      />
+
+      <RangeFilterField
+        label="Ngày thanh toán"
+        from={<Input type="date" value={draft.ngayTtTu} onChange={(_, data) => setDraft({ ngayTtTu: data.value })} />}
+        to={<Input type="date" value={draft.ngayTtDen} onChange={(_, data) => setDraft({ ngayTtDen: data.value })} />}
+      />
     </FilterBar>
   )
 }

@@ -80,6 +80,7 @@ export interface HoaDon {
   ky: string
   ngayLap: string
   hanThanhToan: string
+  ngayThanhToan: string | null
   soTien: number
   daTra: number
   conLai: number

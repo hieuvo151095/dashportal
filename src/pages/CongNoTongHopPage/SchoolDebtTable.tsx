@@ -12,6 +12,7 @@ import {
 import { EyeRegular } from '@fluentui/react-icons'
 import { useNavigate } from 'react-router-dom'
 import { EmptyState } from '../../components/EmptyState'
+import { Pagination } from '../../components/Pagination'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
 import type { NhomTuoiNo } from '../../mock-data'
 import { formatCurrency, formatNumber } from '../../utils/currency'
@@ -28,6 +29,7 @@ import {
   COL_TEN,
 } from '../../utils/tableColumnSizes'
 import type { TongHopData } from './useTongHopData'
+import type { TongHopFiltersApi } from './useTongHopFilters'
 
 const BADGE_COLOR: Record<NhomTuoiNo, 'informative' | 'warning' | 'severe' | 'danger'> = {
   '≤30 ngày': 'informative',
@@ -36,24 +38,31 @@ const BADGE_COLOR: Record<NhomTuoiNo, 'informative' | 'warning' | 'severe' | 'da
   '>90 ngày': 'danger',
 }
 
+const PAGE_SIZE = 50
+
 type Row = TongHopData['rows'][number]
 
 interface SchoolDebtTableProps {
   rows: Row[]
+  filters: TongHopFiltersApi
 }
 
-export function SchoolDebtTable({ rows }: SchoolDebtTableProps) {
+export function SchoolDebtTable({ rows, filters }: SchoolDebtTableProps) {
   const navigate = useNavigate()
 
   if (rows.length === 0) {
     return <EmptyState />
   }
 
+  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE))
+  const page = Math.min(Math.max(1, filters.page), totalPages)
+  const paginated = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
   const columns: TableColumnDefinition<Row>[] = [
     createTableColumn<Row>({
       columnId: 'stt',
       renderHeaderCell: () => 'STT',
-      renderCell: (item) => rows.indexOf(item) + 1,
+      renderCell: (item) => (page - 1) * PAGE_SIZE + paginated.indexOf(item) + 1,
     }),
     createTableColumn<Row>({
       columnId: 'maTruong',
@@ -125,7 +134,7 @@ export function SchoolDebtTable({ rows }: SchoolDebtTableProps) {
   return (
     <div>
       <DataGrid
-        items={rows}
+        items={paginated}
         columns={columns}
         getRowId={(item: Row) => item.truong.id}
         resizableColumns
@@ -141,6 +150,7 @@ export function SchoolDebtTable({ rows }: SchoolDebtTableProps) {
         </DataGridBody>
       </DataGrid>
       <Body1 as="p">{`Tổng số dòng: ${rows.length}`}</Body1>
+      <Pagination page={page} totalPages={totalPages} totalItems={rows.length} pageSize={PAGE_SIZE} onPageChange={filters.setPage} />
     </div>
   )
 }

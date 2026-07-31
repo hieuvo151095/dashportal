@@ -35,6 +35,8 @@ export function useChiTietData(filters: ChiTietFiltersApi) {
       if (filters.hinhThucThanhToan !== 'all' && hd.hinhThucThanhToan !== filters.hinhThucThanhToan) return false
       if (filters.hanTu && hd.hanThanhToan < filters.hanTu) return false
       if (filters.hanDen && hd.hanThanhToan > `${filters.hanDen}T23:59:59`) return false
+      if (filters.ngayTtTu && (!hd.ngayThanhToan || hd.ngayThanhToan < filters.ngayTtTu)) return false
+      if (filters.ngayTtDen && (!hd.ngayThanhToan || hd.ngayThanhToan > `${filters.ngayTtDen}T23:59:59`)) return false
       return true
     }
 
@@ -78,6 +80,8 @@ export function useChiTietData(filters: ChiTietFiltersApi) {
     filters.hinhThucThanhToan,
     filters.hanTu,
     filters.hanDen,
+    filters.ngayTtTu,
+    filters.ngayTtDen,
   ])
 }
 

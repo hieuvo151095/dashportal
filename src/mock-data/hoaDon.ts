@@ -25,6 +25,11 @@ function lamTronNghin(soTien: number): number {
   return Math.round(soTien / 1000) * 1000
 }
 
+// Tỷ lệ cố định (không dùng rng) để suy ra "Ngày thanh toán" nằm giữa ngày lập và hạn thanh
+// toán — không gọi thêm rng.* nào để tránh làm lệch toàn bộ chuỗi giá trị ngẫu nhiên của các
+// hoá đơn sinh sau, giữ nguyên số liệu mock hiện có (KPI, biểu đồ...) không đổi.
+const TY_LE_NGAY_THANH_TOAN = 0.6
+
 function weightedPick<T extends string>(rng: Rng, weights: [T, number][]): T {
   const total = weights.reduce((sum, [, w]) => sum + w, 0)
   let r = rng.next() * total
@@ -76,6 +81,13 @@ function taoHoaDon({ rng, index, hocSinh, truong, khoanPhi, ky, ngayLap }: TaoHo
     hinhThucThanhToan = rng.pick(HINH_THUC_THANH_TOAN_LIST)
   }
 
+  const ngayThanhToan =
+    trangThai === 'Đã gửi'
+      ? null
+      : new Date(
+          ngayLap.getTime() + (hanThanhToan.getTime() - ngayLap.getTime()) * TY_LE_NGAY_THANH_TOAN,
+        ).toISOString()
+
   return {
     id: `hd-${String(index).padStart(6, '0')}`,
     soHoaDon: `HD${ngayLap.getFullYear()}${String(ngayLap.getMonth() + 1).padStart(2, '0')}${String(index).padStart(6, '0')}`,
@@ -85,6 +97,7 @@ function taoHoaDon({ rng, index, hocSinh, truong, khoanPhi, ky, ngayLap }: TaoHo
     ky,
     ngayLap: ngayLap.toISOString(),
     hanThanhToan: hanThanhToan.toISOString(),
+    ngayThanhToan,
     soTien,
     daTra,
     conLai: soTien - daTra,

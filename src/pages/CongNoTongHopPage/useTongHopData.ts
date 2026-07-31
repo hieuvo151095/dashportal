@@ -1,12 +1,11 @@
 import { useMemo } from 'react'
-import { TODAY, mockDataset, type PhuongXa } from '../../mock-data'
+import { mockDataset, type PhuongXa } from '../../mock-data'
 import { NHOM_TUOI_NO_LIST, nhomTuoiNoCua } from '../../utils/congNo'
 import { getKyOptions } from '../../utils/ky'
 import type { TongHopFiltersApi } from './useTongHopFilters'
 
 const KY_OPTIONS = getKyOptions()
 const KY_INDEX = new Map(KY_OPTIONS.map((ky, index) => [ky, index]))
-const SO_THANG_XU_HUONG = 6
 
 function sum<T>(items: T[], pick: (item: T) => number): number {
   return items.reduce((total, item) => total + pick(item), 0)
@@ -22,15 +21,6 @@ function trongPhamViKy(ky: string, kyTu: string, kyDen: string): boolean {
   return idx >= idxTu && idx <= idxDen
 }
 
-function formatKyThang(date: Date): string {
-  return `${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`
-}
-
-function laCungThang(isoDate: string, thang: Date): boolean {
-  const d = new Date(isoDate)
-  return d.getFullYear() === thang.getFullYear() && d.getMonth() === thang.getMonth()
-}
-
 export function useTongHopData(filters: TongHopFiltersApi) {
   return useMemo(() => {
     const { phuongXaList, truongList, hoaDonList } = mockDataset
@@ -39,8 +29,8 @@ export function useTongHopData(filters: TongHopFiltersApi) {
     const q = filters.q.trim().toLowerCase()
     const scopedTruongList = truongList.filter(
       (t) =>
-        (filters.phuongXaId === 'all' || t.phuongXaId === filters.phuongXaId) &&
-        (filters.truongId === 'all' || t.id === filters.truongId) &&
+        (filters.phuongXaIds.length === 0 || filters.phuongXaIds.includes(t.phuongXaId)) &&
+        (filters.truongIds.length === 0 || filters.truongIds.includes(t.id)) &&
         (!q || t.tenTruong.toLowerCase().includes(q) || t.maTruong.toLowerCase().includes(q)),
     )
     const scopedTruongIds = new Set(scopedTruongList.map((t) => t.id))
@@ -49,9 +39,7 @@ export function useTongHopData(filters: TongHopFiltersApi) {
       (hd) => scopedTruongIds.has(hd.truongId) && trongPhamViKy(hd.ky, filters.kyTu, filters.kyDen),
     )
     const hoaDonNo = hoaDonScoped.filter((hd) => hd.trangThai !== 'Đã thanh toán')
-    const hoaDonNoLoc = hoaDonNo.filter(
-      (hd) => filters.nhomTuoiNo === 'all' || nhomTuoiNoCua(hd) === filters.nhomTuoiNo,
-    )
+    const hoaDonNoLoc = hoaDonNo.filter((hd) => filters.nhomTuoiNoList.includes(nhomTuoiNoCua(hd)))
 
     // ---- KPI ----
     const tongCongNo = sum(hoaDonNoLoc, (hd) => hd.conLai)
@@ -78,21 +66,19 @@ export function useTongHopData(filters: TongHopFiltersApi) {
       return { nhom, tongTien: entry.tongTien, soHocSinh: entry.hocSinhIds.size }
     })
 
-    // ---- Xu hướng công nợ theo tháng (bỏ qua filter Kỳ phí + Nhóm tuổi nợ — xem xu hướng
-    // theo thời gian, không giới hạn theo khoảng kỳ hay nhóm tuổi nợ đang chọn) ----
-    const hoaDonTheoTruong = hoaDonList.filter((hd) => scopedTruongIds.has(hd.truongId))
-    const danhSachThang: Date[] = []
-    for (let i = SO_THANG_XU_HUONG - 1; i >= 0; i--) {
-      danhSachThang.push(new Date(TODAY.getFullYear(), TODAY.getMonth() - i, 1))
-    }
-    const xuHuongThang = danhSachThang.map((thang) => {
-      const hdsThang = hoaDonTheoTruong.filter(
-        (hd) => laCungThang(hd.ngayLap, thang) && hd.trangThai !== 'Đã thanh toán',
-      )
+    // ---- Xu hướng công nợ theo tháng (theo đúng khoảng Kỳ phí đang chọn — BUG cũ: luôn tính
+    // cứng 6 tháng gần nhất tính từ hôm nay theo ngày lập hoá đơn, không phản ứng theo filter
+    // Kỳ phí. Sửa: nhóm theo hd.ky trong đúng khoảng [kyTu, kyDen]. Vẫn bỏ qua filter Nhóm tuổi
+    // nợ — đây là widget so sánh theo thời gian, không nên tự lọc theo chính chiều khác) ----
+    const idxTu = KY_INDEX.get(filters.kyTu) ?? 0
+    const idxDen = KY_INDEX.get(filters.kyDen) ?? KY_OPTIONS.length - 1
+    const kyTrongKhoang = KY_OPTIONS.slice(idxTu, idxDen + 1)
+    const xuHuongThang = kyTrongKhoang.map((ky) => {
+      const hdsKy = hoaDonNo.filter((hd) => hd.ky === ky)
       return {
-        thang: formatKyThang(thang),
-        tongNo: sum(hdsThang, (hd) => hd.conLai),
-        soHocSinhNoMoi: new Set(hdsThang.map((hd) => hd.hocSinhId)).size,
+        thang: ky,
+        tongNo: sum(hdsKy, (hd) => hd.conLai),
+        soHocSinhNoMoi: new Set(hdsKy.map((hd) => hd.hocSinhId)).size,
       }
     })
 
@@ -128,7 +114,7 @@ export function useTongHopData(filters: TongHopFiltersApi) {
       .sort((a, b) => b.soTienChuaThu - a.soTienChuaThu)
 
     return { kpi, congNoTheoTuoiNo, xuHuongThang, rows }
-  }, [filters.phuongXaId, filters.truongId, filters.kyTu, filters.kyDen, filters.nhomTuoiNo, filters.q])
+  }, [filters.phuongXaIds, filters.truongIds, filters.kyTu, filters.kyDen, filters.nhomTuoiNoList, filters.q])
 }
 
 export type TongHopData = ReturnType<typeof useTongHopData>

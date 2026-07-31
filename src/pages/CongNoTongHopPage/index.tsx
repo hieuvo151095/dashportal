@@ -28,20 +28,20 @@ export function CongNoTongHopPage() {
   const styles = useStyles()
   const filters = useTongHopFilters()
   const [draft, setDraft] = useFilterDraft<TongHopFilters>({
-    phuongXaId: filters.phuongXaId,
-    truongId: filters.truongId,
+    phuongXaIds: filters.phuongXaIds,
+    truongIds: filters.truongIds,
     kyTu: filters.kyTu,
     kyDen: filters.kyDen,
-    nhomTuoiNo: filters.nhomTuoiNo,
+    nhomTuoiNoList: filters.nhomTuoiNoList,
     q: filters.q,
   })
   const data = useTongHopData(filters)
   const loading = useSkeletonDelay([
-    filters.phuongXaId,
-    filters.truongId,
+    filters.phuongXaIds,
+    filters.truongIds,
     filters.kyTu,
     filters.kyDen,
-    filters.nhomTuoiNo,
+    filters.nhomTuoiNoList,
     filters.q,
   ])
 
@@ -60,7 +60,7 @@ export function CongNoTongHopPage() {
 
       <div className={styles.fullRow}>
         <SectionCard title="Công nợ theo trường">
-          {loading ? <TableSkeleton rows={8} /> : <SchoolDebtTable rows={data.rows} />}
+          {loading ? <TableSkeleton rows={8} /> : <SchoolDebtTable rows={data.rows} filters={filters} />}
         </SectionCard>
       </div>
     </div>

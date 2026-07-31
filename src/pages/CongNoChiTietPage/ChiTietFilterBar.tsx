@@ -1,5 +1,7 @@
-import { Dropdown, Field, Option } from '@fluentui/react-components'
+import { Dropdown, Field, Input, Option } from '@fluentui/react-components'
+import { useMemo } from 'react'
 import { FilterBar } from '../../components/FilterBar'
+import { RangeFilterField } from '../../components/RangeFilterField'
 import { SearchInput } from '../../components/SearchInput'
 import { NHOM_TUOI_NO_LIST } from '../../utils/congNo'
 import { getKyOptions } from '../../utils/ky'
@@ -14,10 +16,37 @@ interface ChiTietFilterBarProps {
   onApply: () => void
   onReset: () => void
   khoiOptions: string[]
-  lopOptions: string[]
+  lopOptionsTheoKhoi: Record<string, string[]>
 }
 
-export function ChiTietFilterBar({ draft, setDraft, onApply, onReset, khoiOptions, lopOptions }: ChiTietFilterBarProps) {
+export function ChiTietFilterBar({
+  draft,
+  setDraft,
+  onApply,
+  onReset,
+  khoiOptions,
+  lopOptionsTheoKhoi,
+}: ChiTietFilterBarProps) {
+  // Lớp phải phản ứng theo Khối đang chỉnh trong DRAFT (chưa Áp dụng) — không dùng lại
+  // data.lopOptions vốn tính theo filters (URL) đã áp dụng, kẻo hiển thị sai khi đang gõ dở.
+  const lopOptions = useMemo(() => {
+    const khoiXet = draft.khoiList.length === 0 ? khoiOptions : draft.khoiList
+    return [...new Set(khoiXet.flatMap((k) => lopOptionsTheoKhoi[k] ?? []))].sort((a, b) => a.localeCompare(b, 'vi'))
+  }, [draft.khoiList, khoiOptions, lopOptionsTheoKhoi])
+
+  const khoiLabel = draft.khoiList.length === 0 ? 'Tất cả khối' : draft.khoiList.join(', ')
+  const lopLabel = draft.lopList.length === 0 ? 'Tất cả lớp' : draft.lopList.join(', ')
+
+  // Đổi Khối (multi) → bỏ khỏi Lớp đã chọn những lớp không còn thuộc các khối mới chọn.
+  function handleKhoiChange(values: string[]) {
+    const khoiXet = values.length === 0 ? khoiOptions : values
+    const allowedLop = new Set(khoiXet.flatMap((k) => lopOptionsTheoKhoi[k] ?? []))
+    setDraft({
+      khoiList: values,
+      lopList: draft.lopList.filter((l) => allowedLop.has(l)),
+    })
+  }
+
   return (
     <FilterBar onApply={onApply} onReset={onReset}>
       <Field label="Tìm kiếm">
@@ -26,11 +55,11 @@ export function ChiTietFilterBar({ draft, setDraft, onApply, onReset, khoiOption
 
       <Field label="Khối">
         <Dropdown
-          value={draft.khoi === TAT_CA ? 'Tất cả khối' : draft.khoi}
-          selectedOptions={[draft.khoi]}
-          onOptionSelect={(_, data) => data.optionValue && setDraft({ khoi: data.optionValue, lop: TAT_CA })}
+          multiselect
+          value={khoiLabel}
+          selectedOptions={draft.khoiList}
+          onOptionSelect={(_, data) => handleKhoiChange(data.selectedOptions)}
         >
-          <Option value={TAT_CA}>Tất cả khối</Option>
           {khoiOptions.map((khoi) => (
             <Option key={khoi} value={khoi}>
               {khoi}
@@ -41,11 +70,11 @@ export function ChiTietFilterBar({ draft, setDraft, onApply, onReset, khoiOption
 
       <Field label="Lớp">
         <Dropdown
-          value={draft.lop === TAT_CA ? 'Tất cả lớp' : draft.lop}
-          selectedOptions={[draft.lop]}
-          onOptionSelect={(_, data) => data.optionValue && setDraft({ lop: data.optionValue })}
+          multiselect
+          value={lopLabel}
+          selectedOptions={draft.lopList}
+          onOptionSelect={(_, data) => setDraft({ lopList: data.selectedOptions })}
         >
-          <Option value={TAT_CA}>Tất cả lớp</Option>
           {lopOptions.map((lop) => (
             <Option key={lop} value={lop}>
               {lop}
@@ -54,33 +83,41 @@ export function ChiTietFilterBar({ draft, setDraft, onApply, onReset, khoiOption
         </Dropdown>
       </Field>
 
-      <Field label="Kỳ phí từ">
-        <Dropdown
-          value={draft.kyTu}
-          selectedOptions={[draft.kyTu]}
-          onOptionSelect={(_, data) => data.optionValue && setDraft({ kyTu: data.optionValue })}
-        >
-          {KY_OPTIONS.map((ky) => (
-            <Option key={ky} value={ky}>
-              {ky}
-            </Option>
-          ))}
-        </Dropdown>
-      </Field>
+      <RangeFilterField
+        label="Kỳ phí"
+        from={
+          <Dropdown
+            value={draft.kyTu}
+            selectedOptions={[draft.kyTu]}
+            onOptionSelect={(_, data) => data.optionValue && setDraft({ kyTu: data.optionValue })}
+          >
+            {KY_OPTIONS.map((ky) => (
+              <Option key={ky} value={ky}>
+                {ky}
+              </Option>
+            ))}
+          </Dropdown>
+        }
+        to={
+          <Dropdown
+            value={draft.kyDen}
+            selectedOptions={[draft.kyDen]}
+            onOptionSelect={(_, data) => data.optionValue && setDraft({ kyDen: data.optionValue })}
+          >
+            {KY_OPTIONS.map((ky) => (
+              <Option key={ky} value={ky}>
+                {ky}
+              </Option>
+            ))}
+          </Dropdown>
+        }
+      />
 
-      <Field label="đến kỳ">
-        <Dropdown
-          value={draft.kyDen}
-          selectedOptions={[draft.kyDen]}
-          onOptionSelect={(_, data) => data.optionValue && setDraft({ kyDen: data.optionValue })}
-        >
-          {KY_OPTIONS.map((ky) => (
-            <Option key={ky} value={ky}>
-              {ky}
-            </Option>
-          ))}
-        </Dropdown>
-      </Field>
+      <RangeFilterField
+        label="Hạn thanh toán"
+        from={<Input type="date" value={draft.hanTu} onChange={(_, data) => setDraft({ hanTu: data.value })} />}
+        to={<Input type="date" value={draft.hanDen} onChange={(_, data) => setDraft({ hanDen: data.value })} />}
+      />
 
       <Field label="Nhóm tuổi nợ">
         <Dropdown

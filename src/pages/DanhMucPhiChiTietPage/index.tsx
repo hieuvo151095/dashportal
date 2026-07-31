@@ -1,3 +1,4 @@
+import { PageTitle } from '../../components/PageTitle'
 import { SchoolHeader } from '../../components/SchoolHeader'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
@@ -27,9 +28,8 @@ export function DanhMucPhiChiTietPage() {
 
   return (
     <div>
+      <PageTitle title="Danh mục Phí — Chi tiết theo trường" />
       <SchoolHeader
-        moduleTitle="Danh mục Phí"
-        pageTitle="Chi tiết theo trường"
         truong={data.truong}
         phuongXa={data.phuongXa}
         truongId={filters.truongId}

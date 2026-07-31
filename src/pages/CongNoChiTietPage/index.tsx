@@ -1,3 +1,4 @@
+import { PageTitle } from '../../components/PageTitle'
 import { SchoolHeader } from '../../components/SchoolHeader'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
@@ -12,28 +13,31 @@ export function CongNoChiTietPage() {
   const filters = useChiTietFilters()
   const [draft, setDraft] = useFilterDraft<ChiTietFilters>({
     q: filters.q,
-    khoi: filters.khoi,
-    lop: filters.lop,
+    khoiList: filters.khoiList,
+    lopList: filters.lopList,
     kyTu: filters.kyTu,
     kyDen: filters.kyDen,
+    hanTu: filters.hanTu,
+    hanDen: filters.hanDen,
     nhomTuoiNo: filters.nhomTuoiNo,
   })
   const data = useChiTietData(filters)
   const loading = useSkeletonDelay([
     filters.truongId,
     filters.q,
-    filters.khoi,
-    filters.lop,
+    filters.khoiList,
+    filters.lopList,
     filters.kyTu,
     filters.kyDen,
+    filters.hanTu,
+    filters.hanDen,
     filters.nhomTuoiNo,
   ])
 
   return (
     <div>
+      <PageTitle title="Công nợ Học phí — Chi tiết theo trường" />
       <SchoolHeader
-        moduleTitle="Công nợ Học phí"
-        pageTitle="Chi tiết theo trường"
         truong={data.truong}
         phuongXa={data.phuongXa}
         truongId={filters.truongId}
@@ -46,7 +50,7 @@ export function CongNoChiTietPage() {
         onApply={() => filters.apply(draft)}
         onReset={filters.reset}
         khoiOptions={data.khoiOptions}
-        lopOptions={data.lopOptions}
+        lopOptionsTheoKhoi={data.lopOptionsTheoKhoi}
       />
 
       <SectionCard title="Danh sách công nợ">

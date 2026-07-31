@@ -1,15 +1,20 @@
-import { Combobox, Dropdown, Field, Option } from '@fluentui/react-components'
+import { Dropdown, Field, Option } from '@fluentui/react-components'
 import { useMemo } from 'react'
 import { FilterBar } from '../../components/FilterBar'
+import { RangeFilterField } from '../../components/RangeFilterField'
 import { SearchInput } from '../../components/SearchInput'
-import { mockDataset } from '../../mock-data'
+import { SearchableMultiCombobox } from '../../components/SearchableMultiCombobox'
+import { mockDataset, type NhomTuoiNo } from '../../mock-data'
 import { NHOM_TUOI_NO_LIST } from '../../utils/congNo'
 import { getKyOptions } from '../../utils/ky'
 import type { TongHopFilters } from './useTongHopFilters'
 
 const KY_OPTIONS = getKyOptions()
-const TOAN_THANH_PHO = 'all'
-const TAT_CA = 'all'
+const KY_INDEX = new Map(KY_OPTIONS.map((ky, index) => [ky, index]))
+// Công nợ 4.1 giới hạn tối đa 6 kỳ trong khoảng chọn — hiện KY_OPTIONS chỉ có đúng 6 kỳ nên
+// giới hạn này chưa từng thực sự "chặn" được gì, nhưng vẫn tính tổng quát theo index để đúng
+// nếu sau này danh sách kỳ dài hơn 6.
+const MAX_KY_SPAN = 6
 
 interface TongHopFilterBarProps {
   draft: TongHopFilters
@@ -22,19 +27,28 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
   const { phuongXaList, truongList } = mockDataset
 
   const truongOptions = useMemo(
-    () => truongList.filter((t) => draft.phuongXaId === TOAN_THANH_PHO || t.phuongXaId === draft.phuongXaId),
-    [truongList, draft.phuongXaId],
+    () => truongList.filter((t) => draft.phuongXaIds.length === 0 || draft.phuongXaIds.includes(t.phuongXaId)),
+    [truongList, draft.phuongXaIds],
   )
 
-  const phuongXaLabel =
-    draft.phuongXaId === TOAN_THANH_PHO
-      ? 'Toàn thành phố'
-      : (phuongXaList.find((p) => p.id === draft.phuongXaId)?.ten ?? 'Toàn thành phố')
+  const nhomTuoiNoLabel =
+    draft.nhomTuoiNoList.length === NHOM_TUOI_NO_LIST.length ? 'Tất cả nhóm' : draft.nhomTuoiNoList.join(', ')
 
-  const truongLabel =
-    draft.truongId === TAT_CA
-      ? 'Tất cả trường'
-      : (truongList.find((t) => t.id === draft.truongId)?.tenTruong ?? 'Tất cả trường')
+  function handlePhuongXaChange(values: string[]) {
+    const scopedTruongIds = new Set(
+      truongList.filter((t) => values.length === 0 || values.includes(t.phuongXaId)).map((t) => t.id),
+    )
+    setDraft({
+      phuongXaIds: values,
+      truongIds: draft.truongIds.filter((id) => scopedTruongIds.has(id)),
+    })
+  }
+
+  // Vô hiệu hoá (xám) option ngoài phạm vi ở đầu kia của khoảng — vừa giữ đúng thứ tự từ ≤ đến,
+  // vừa giữ khoảng không vượt quá MAX_KY_SPAN kỳ. Không cần tự động kẹp giá trị vì option
+  // không hợp lệ đã không thể bấm chọn được ngay từ đầu.
+  const idxTu = KY_INDEX.get(draft.kyTu) ?? 0
+  const idxDen = KY_INDEX.get(draft.kyDen) ?? KY_OPTIONS.length - 1
 
   return (
     <FilterBar onApply={onApply} onReset={onReset}>
@@ -43,70 +57,62 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
       </Field>
 
       <Field label="Xã/Phường">
-        <Combobox
-          value={phuongXaLabel}
-          selectedOptions={[draft.phuongXaId]}
-          onOptionSelect={(_, data) => data.optionValue && setDraft({ phuongXaId: data.optionValue, truongId: TAT_CA })}
-        >
-          <Option value={TOAN_THANH_PHO}>Toàn thành phố</Option>
-          {phuongXaList.map((px) => (
-            <Option key={px.id} value={px.id}>
-              {px.ten}
-            </Option>
-          ))}
-        </Combobox>
+        <SearchableMultiCombobox
+          options={phuongXaList.map((px) => ({ value: px.id, label: px.ten }))}
+          selected={draft.phuongXaIds}
+          onChange={handlePhuongXaChange}
+          placeholder="Tìm Xã/Phường"
+          allLabel="Toàn thành phố"
+        />
       </Field>
 
       <Field label="Trường">
-        <Combobox
-          value={truongLabel}
-          selectedOptions={[draft.truongId]}
-          onOptionSelect={(_, data) => data.optionValue && setDraft({ truongId: data.optionValue })}
-        >
-          <Option value={TAT_CA}>Tất cả trường</Option>
-          {truongOptions.map((t) => (
-            <Option key={t.id} value={t.id}>
-              {t.tenTruong}
-            </Option>
-          ))}
-        </Combobox>
+        <SearchableMultiCombobox
+          options={truongOptions.map((t) => ({ value: t.id, label: t.tenTruong }))}
+          selected={draft.truongIds}
+          onChange={(values) => setDraft({ truongIds: values })}
+          placeholder="Tìm trường"
+          allLabel="Tất cả trường"
+        />
       </Field>
 
-      <Field label="Kỳ phí từ">
-        <Dropdown
-          value={draft.kyTu}
-          selectedOptions={[draft.kyTu]}
-          onOptionSelect={(_, data) => data.optionValue && setDraft({ kyTu: data.optionValue })}
-        >
-          {KY_OPTIONS.map((ky) => (
-            <Option key={ky} value={ky}>
-              {ky}
-            </Option>
-          ))}
-        </Dropdown>
-      </Field>
-
-      <Field label="đến kỳ">
-        <Dropdown
-          value={draft.kyDen}
-          selectedOptions={[draft.kyDen]}
-          onOptionSelect={(_, data) => data.optionValue && setDraft({ kyDen: data.optionValue })}
-        >
-          {KY_OPTIONS.map((ky) => (
-            <Option key={ky} value={ky}>
-              {ky}
-            </Option>
-          ))}
-        </Dropdown>
-      </Field>
+      <RangeFilterField
+        label="Kỳ phí"
+        from={
+          <Dropdown
+            value={draft.kyTu}
+            selectedOptions={[draft.kyTu]}
+            onOptionSelect={(_, data) => data.optionValue && setDraft({ kyTu: data.optionValue })}
+          >
+            {KY_OPTIONS.map((ky, idx) => (
+              <Option key={ky} value={ky} disabled={idx > idxDen || idx < idxDen - (MAX_KY_SPAN - 1)}>
+                {ky}
+              </Option>
+            ))}
+          </Dropdown>
+        }
+        to={
+          <Dropdown
+            value={draft.kyDen}
+            selectedOptions={[draft.kyDen]}
+            onOptionSelect={(_, data) => data.optionValue && setDraft({ kyDen: data.optionValue })}
+          >
+            {KY_OPTIONS.map((ky, idx) => (
+              <Option key={ky} value={ky} disabled={idx < idxTu || idx > idxTu + (MAX_KY_SPAN - 1)}>
+                {ky}
+              </Option>
+            ))}
+          </Dropdown>
+        }
+      />
 
       <Field label="Nhóm tuổi nợ">
         <Dropdown
-          value={draft.nhomTuoiNo === TAT_CA ? 'Tất cả nhóm' : draft.nhomTuoiNo}
-          selectedOptions={[draft.nhomTuoiNo]}
-          onOptionSelect={(_, data) => data.optionValue && setDraft({ nhomTuoiNo: data.optionValue })}
+          multiselect
+          value={nhomTuoiNoLabel}
+          selectedOptions={draft.nhomTuoiNoList}
+          onOptionSelect={(_, data) => setDraft({ nhomTuoiNoList: data.selectedOptions as NhomTuoiNo[] })}
         >
-          <Option value={TAT_CA}>Tất cả nhóm</Option>
           {NHOM_TUOI_NO_LIST.map((nhom) => (
             <Option key={nhom} value={nhom}>
               {nhom}
