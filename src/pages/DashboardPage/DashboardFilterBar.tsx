@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { CAP_HOC_LIST, mockDataset, type CapHoc } from '../../mock-data'
 import { FilterBar } from '../../components/FilterBar'
 import { SearchableCombobox } from '../../components/SearchableCombobox'
+import { ALL_OPTION_VALUE, resolveMultiSelectChange, withAllOptionSelected } from '../../utils/multiSelectAll'
 import { getKyOptions } from './useDashboardFilters'
 import type { DashboardFilters } from './useDashboardFilters'
 
@@ -45,6 +46,7 @@ export function DashboardFilterBar({ draft, setDraft, onApply, onReset }: Dashbo
     >
       <Field label="Kỳ báo cáo">
         <Dropdown
+          positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
           value={draft.ky}
           selectedOptions={[draft.ky]}
           onOptionSelect={(_, data) => data.optionValue && setDraft({ ky: data.optionValue })}
@@ -68,11 +70,15 @@ export function DashboardFilterBar({ draft, setDraft, onApply, onReset }: Dashbo
 
       <Field label="Cấp học">
         <Dropdown
+          positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
           multiselect
           value={capHocLabel}
-          selectedOptions={draft.capHocList}
-          onOptionSelect={(_, data) => setDraft({ capHocList: data.selectedOptions as CapHoc[] })}
+          selectedOptions={withAllOptionSelected(CAP_HOC_LIST, draft.capHocList)}
+          onOptionSelect={(_, data) =>
+            setDraft({ capHocList: resolveMultiSelectChange(CAP_HOC_LIST, data) as CapHoc[] })
+          }
         >
+          <Option value={ALL_OPTION_VALUE}>Tất cả</Option>
           {CAP_HOC_LIST.map((capHoc) => (
             <Option key={capHoc} value={capHoc}>
               {capHoc}

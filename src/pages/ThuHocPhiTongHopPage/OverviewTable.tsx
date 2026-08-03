@@ -16,6 +16,7 @@ import { EyeRegular } from '@fluentui/react-icons'
 import { useNavigate } from 'react-router-dom'
 import { EmptyState } from '../../components/EmptyState'
 import { HeThongBadge } from '../../components/HeThongBadge'
+import { Pagination } from '../../components/Pagination'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
 import { formatCurrency, formatNumber } from '../../utils/currency'
 import { ngayDongBoGanNhat } from '../../utils/dongBo'
@@ -31,6 +32,9 @@ import {
   COL_TEN,
 } from '../../utils/tableColumnSizes'
 import type { OverviewRow } from './useTongHopData'
+import type { TongHopFiltersApi } from './useTongHopFilters'
+
+const PAGE_SIZE = 50
 
 // Cột STT ở bảng này chỉ cần rất hẹp — thu gọn khoảng cách với cột Mã trường ngay sau,
 // không đụng hằng số COL_STT dùng chung (sẽ ảnh hưởng mọi bảng khác).
@@ -76,9 +80,10 @@ type GridRow = Row | TotalRow
 
 interface OverviewTableProps {
   rows: OverviewRow[]
+  filters: TongHopFiltersApi
 }
 
-export function OverviewTable({ rows }: OverviewTableProps) {
+export function OverviewTable({ rows, filters }: OverviewTableProps) {
   const styles = useStyles()
   const navigate = useNavigate()
 
@@ -86,6 +91,12 @@ export function OverviewTable({ rows }: OverviewTableProps) {
     return <EmptyState />
   }
 
+  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE))
+  const page = Math.min(Math.max(1, filters.page), totalPages)
+  const paginated = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
+  // Hàng "Tổng cộng" tính trên TOÀN BỘ rows đã lọc (không chỉ trang hiện tại) — giữ đúng ý
+  // nghĩa tổng hợp toàn thành phố dù đang xem trang nào.
   const total: TotalRow = {
     isTotal: true,
     tienMat: rows.reduce((s, r) => s + r.tienMat, 0),
@@ -98,13 +109,13 @@ export function OverviewTable({ rows }: OverviewTableProps) {
   }
   total.tyLeThu = total.tongSoTien === 0 ? 0 : total.tongThu / total.tongSoTien
 
-  const items: GridRow[] = [...rows, total]
+  const items: GridRow[] = [...paginated, total]
 
   const columns: TableColumnDefinition<GridRow>[] = [
     createTableColumn<GridRow>({
       columnId: 'stt',
       renderHeaderCell: () => 'STT',
-      renderCell: (item) => (item.isTotal ? '' : rows.indexOf(item) + 1),
+      renderCell: (item) => (item.isTotal ? '' : (page - 1) * PAGE_SIZE + paginated.indexOf(item) + 1),
     }),
     createTableColumn<GridRow>({
       columnId: 'maTruong',
@@ -233,6 +244,7 @@ export function OverviewTable({ rows }: OverviewTableProps) {
         </DataGrid>
       </div>
       <Body1 as="p">{`Tổng số dòng: ${rows.length}`}</Body1>
+      <Pagination page={page} totalPages={totalPages} totalItems={rows.length} pageSize={PAGE_SIZE} onPageChange={filters.setPage} />
     </div>
   )
 }

@@ -21,8 +21,17 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     rowGap: tokens.spacingVerticalXXS,
   },
+  pickerRow: {
+    display: 'flex',
+    alignItems: 'baseline',
+    columnGap: tokens.spacingHorizontalM,
+  },
   picker: {
     minWidth: '320px',
+  },
+  unit: {
+    color: tokens.colorNeutralForeground3,
+    flexShrink: 0,
   },
   truongInfo: {
     fontSize: tokens.fontSizeBase500,
@@ -55,13 +64,16 @@ export function SchoolHeader({ truong, phuongXa, truongId, onSelectTruong }: Sch
           <Caption1 as="p">{`Mã trường: ${truong?.maTruong ?? '—'}`}</Caption1>
         </div>
 
-        <Field label="Chọn trường" className={styles.picker}>
-          <SearchableCombobox
-            options={truongList.map((t) => ({ value: t.id, label: t.tenTruong }))}
-            value={truongId}
-            onChange={onSelectTruong}
-          />
-        </Field>
+        <div className={styles.pickerRow}>
+          <Caption1 className={styles.unit}>Đơn vị: Đồng</Caption1>
+          <Field label="Chọn trường" className={styles.picker}>
+            <SearchableCombobox
+              options={truongList.map((t) => ({ value: t.id, label: t.tenTruong }))}
+              value={truongId}
+              onChange={onSelectTruong}
+            />
+          </Field>
+        </div>
       </div>
     </Card>
   )

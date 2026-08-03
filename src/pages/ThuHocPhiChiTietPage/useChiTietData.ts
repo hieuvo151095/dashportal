@@ -1,10 +1,22 @@
 import { useMemo } from 'react'
-import { mockDataset, type HoaDon, type HocSinh } from '../../mock-data'
+import { mockDataset, type HoaDon, type HocSinh, type TrangThaiHoaDon } from '../../mock-data'
 import type { ChiTietFiltersApi } from './useChiTietFilters'
 
 export interface ChiTietRow {
   hocSinh: HocSinh
   hoaDon: HoaDon | null
+}
+
+export const TRANG_THAI_LIST: TrangThaiHoaDon[] = ['Đã gửi', 'Thanh toán một phần', 'Đã thanh toán']
+
+// Dùng chung cho cả filter Trạng thái (ChiTietFilterBar) và badge Trạng thái (ChiTietTable) —
+// "Đã gửi" là tên trạng thái nội bộ (mock-data), người dùng cuối luôn thấy "Chưa thanh toán"
+// (khớp tên tab 3.1 "Hoá đơn chưa thanh toán"). Badge từng hiện thẳng trạng thái nội bộ, gây
+// sai lệch với filter/tab — gộp về 1 map để 2 nơi luôn khớp nhau.
+export const TRANG_THAI_LABEL: Record<TrangThaiHoaDon, string> = {
+  'Đã gửi': 'Chưa thanh toán',
+  'Thanh toán một phần': 'Thanh toán một phần',
+  'Đã thanh toán': 'Đã thanh toán',
 }
 
 export function tenHoaDon(ky: string): string {

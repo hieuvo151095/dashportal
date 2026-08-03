@@ -4,15 +4,10 @@ import { RangeFilterField } from '../../components/RangeFilterField'
 import { SearchInput } from '../../components/SearchInput'
 import { HINH_THUC_THANH_TOAN_LIST, NIEN_KHOA, type TrangThaiHoaDon } from '../../mock-data'
 import { getKyOptions } from '../../utils/ky'
+import { TRANG_THAI_LABEL, TRANG_THAI_LIST } from './useChiTietData'
 import type { ChiTietFilters } from './useChiTietFilters'
 
 const KY_OPTIONS = [...getKyOptions(), NIEN_KHOA]
-const TRANG_THAI_LIST: TrangThaiHoaDon[] = ['Đã gửi', 'Thanh toán một phần', 'Đã thanh toán']
-const TRANG_THAI_LABEL: Record<TrangThaiHoaDon, string> = {
-  'Đã gửi': 'Chưa thanh toán',
-  'Thanh toán một phần': 'Thanh toán một phần',
-  'Đã thanh toán': 'Đã thanh toán',
-}
 const TAT_CA = 'all'
 
 interface ChiTietFilterBarProps {
@@ -36,6 +31,7 @@ export function ChiTietFilterBar({ draft, setDraft, onApply, onReset, lopOptions
 
       <Field label="Lớp">
         <Dropdown
+          positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
           value={draft.lop === TAT_CA ? 'Tất cả lớp' : draft.lop}
           selectedOptions={[draft.lop]}
           onOptionSelect={(_, data) => data.optionValue && setDraft({ lop: data.optionValue })}
@@ -51,6 +47,7 @@ export function ChiTietFilterBar({ draft, setDraft, onApply, onReset, lopOptions
 
       <Field label="Kỳ">
         <Dropdown
+          positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
           value={draft.ky === TAT_CA ? 'Tất cả các kỳ' : draft.ky}
           selectedOptions={[draft.ky]}
           onOptionSelect={(_, data) => data.optionValue && setDraft({ ky: data.optionValue })}
@@ -66,6 +63,7 @@ export function ChiTietFilterBar({ draft, setDraft, onApply, onReset, lopOptions
 
       <Field label="Trạng thái">
         <Dropdown
+          positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
           value={draft.trangThai === TAT_CA ? 'Tất cả trạng thái' : TRANG_THAI_LABEL[draft.trangThai as TrangThaiHoaDon]}
           selectedOptions={[draft.trangThai]}
           onOptionSelect={(_, data) => data.optionValue && setDraft({ trangThai: data.optionValue })}
@@ -81,6 +79,7 @@ export function ChiTietFilterBar({ draft, setDraft, onApply, onReset, lopOptions
 
       <Field label="Hình thức thanh toán">
         <Dropdown
+          positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
           value={draft.hinhThucThanhToan === TAT_CA ? 'Tất cả hình thức' : draft.hinhThucThanhToan}
           selectedOptions={[draft.hinhThucThanhToan]}
           onOptionSelect={(_, data) => data.optionValue && setDraft({ hinhThucThanhToan: data.optionValue })}

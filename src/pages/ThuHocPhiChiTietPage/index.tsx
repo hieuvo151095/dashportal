@@ -1,4 +1,3 @@
-import { Caption1, tokens } from '@fluentui/react-components'
 import { PageTitle } from '../../components/PageTitle'
 import { SchoolHeader } from '../../components/SchoolHeader'
 import { SectionCard } from '../../components/SectionCard'
@@ -55,10 +54,7 @@ export function ThuHocPhiChiTietPage() {
         lopOptions={data.lopOptions}
       />
 
-      <SectionCard
-        title="Danh sách hoá đơn"
-        action={<Caption1 style={{ color: tokens.colorNeutralForeground3 }}>Đơn vị: Đồng</Caption1>}
-      >
+      <SectionCard title="Danh sách hoá đơn">
         {loading ? <TableSkeleton rows={8} /> : <ChiTietTable rows={data.rows} filters={filters} />}
       </SectionCard>
     </div>

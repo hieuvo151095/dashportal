@@ -56,6 +56,7 @@ export function ChiTietFilterBar({
 
       <Field label="Khối">
         <Dropdown
+          positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
           multiselect
           value={khoiLabel}
           selectedOptions={withAllOptionSelectedEmpty(draft.khoiList)}
@@ -72,6 +73,7 @@ export function ChiTietFilterBar({
 
       <Field label="Lớp">
         <Dropdown
+          positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
           multiselect
           value={lopLabel}
           selectedOptions={withAllOptionSelectedEmpty(draft.lopList)}
@@ -90,6 +92,7 @@ export function ChiTietFilterBar({
         label="Kỳ phí"
         from={
           <Dropdown
+            positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
             value={draft.kyTu}
             selectedOptions={[draft.kyTu]}
             onOptionSelect={(_, data) => data.optionValue && setDraft({ kyTu: data.optionValue })}
@@ -103,6 +106,7 @@ export function ChiTietFilterBar({
         }
         to={
           <Dropdown
+            positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
             value={draft.kyDen}
             selectedOptions={[draft.kyDen]}
             onOptionSelect={(_, data) => data.optionValue && setDraft({ kyDen: data.optionValue })}
@@ -124,6 +128,7 @@ export function ChiTietFilterBar({
 
       <Field label="Nhóm tuổi nợ">
         <Dropdown
+          positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
           value={draft.nhomTuoiNo === TAT_CA ? 'Tất cả nhóm' : draft.nhomTuoiNo}
           selectedOptions={[draft.nhomTuoiNo]}
           onOptionSelect={(_, data) => data.optionValue && setDraft({ nhomTuoiNo: data.optionValue })}

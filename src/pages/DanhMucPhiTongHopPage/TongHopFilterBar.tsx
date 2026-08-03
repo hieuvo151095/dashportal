@@ -63,6 +63,7 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
 
       <Field label="Niên khoá">
         <Dropdown
+          positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
           value={draft.nienKhoa}
           selectedOptions={[draft.nienKhoa]}
           onOptionSelect={(_, data) => data.optionValue && setDraft({ nienKhoa: data.optionValue })}
@@ -77,6 +78,7 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
 
       <Field label="Nhóm phí">
         <Dropdown
+          positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
           value={draft.nhomPhi === TAT_CA ? 'Tất cả nhóm phí' : draft.nhomPhi}
           selectedOptions={[draft.nhomPhi]}
           onOptionSelect={(_, data) => data.optionValue && setDraft({ nhomPhi: data.optionValue })}
@@ -92,6 +94,7 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
 
       <Field label="Nguồn thu">
         <Dropdown
+          positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
           value={draft.nguonThu === TAT_CA ? 'Tất cả nguồn thu' : draft.nguonThu}
           selectedOptions={[draft.nguonThu]}
           onOptionSelect={(_, data) => data.optionValue && setDraft({ nguonThu: data.optionValue })}

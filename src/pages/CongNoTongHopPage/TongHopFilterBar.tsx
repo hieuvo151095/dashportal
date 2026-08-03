@@ -81,6 +81,7 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
         label="Kỳ phí"
         from={
           <Dropdown
+            positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
             value={draft.kyTu}
             selectedOptions={[draft.kyTu]}
             onOptionSelect={(_, data) => data.optionValue && setDraft({ kyTu: data.optionValue })}
@@ -94,6 +95,7 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
         }
         to={
           <Dropdown
+            positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
             value={draft.kyDen}
             selectedOptions={[draft.kyDen]}
             onOptionSelect={(_, data) => data.optionValue && setDraft({ kyDen: data.optionValue })}
@@ -109,6 +111,7 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
 
       <Field label="Nhóm tuổi nợ">
         <Dropdown
+          positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
           multiselect
           value={nhomTuoiNoLabel}
           selectedOptions={withAllOptionSelected(NHOM_TUOI_NO_LIST, draft.nhomTuoiNoList)}

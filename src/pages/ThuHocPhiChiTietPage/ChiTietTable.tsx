@@ -20,7 +20,7 @@ import { TODAY } from '../../mock-data'
 import { formatCurrency } from '../../utils/currency'
 import { formatDate } from '../../utils/date'
 import { COL_BADGE, COL_NGAY, COL_SO_TIEN, COL_TEN } from '../../utils/tableColumnSizes'
-import { tenHoaDon, type ChiTietRow } from './useChiTietData'
+import { TRANG_THAI_LABEL, tenHoaDon, type ChiTietRow } from './useChiTietData'
 import type { ChiTietFiltersApi } from './useChiTietFilters'
 
 const PAGE_SIZE = 50
@@ -139,7 +139,7 @@ export function ChiTietTable({ rows, filters }: ChiTietTableProps) {
                   : 'informative'
             }
           >
-            {item.hoaDon.trangThai}
+            {TRANG_THAI_LABEL[item.hoaDon.trangThai]}
           </Badge>
         )
       },

@@ -85,7 +85,7 @@ export function ThuHocPhiTongHopPage() {
         {loading ? (
           <TableSkeleton rows={8} />
         ) : filters.tab === 'tong-quan' ? (
-          <OverviewTable rows={data.overviewRows} />
+          <OverviewTable rows={data.overviewRows} filters={filters} />
         ) : (
           <InvoiceTable rows={data.invoiceRowsByTab[filters.tab]} filters={filters} />
         )}

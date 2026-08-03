@@ -1,4 +1,3 @@
-import { Caption1, tokens } from '@fluentui/react-components'
 import { PageTitle } from '../../components/PageTitle'
 import { SchoolHeader } from '../../components/SchoolHeader'
 import { SectionCard } from '../../components/SectionCard'
@@ -39,10 +38,7 @@ export function DanhMucPhiChiTietPage() {
 
       <ChiTietFilterBar draft={draft} setDraft={setDraft} onApply={() => filters.apply(draft)} onReset={filters.reset} />
 
-      <SectionCard
-        title="Danh sách khoản phí"
-        action={<Caption1 style={{ color: tokens.colorNeutralForeground3 }}>Đơn vị: Đồng</Caption1>}
-      >
+      <SectionCard title="Danh sách khoản phí">
         {loading ? <TableSkeleton rows={6} /> : <ChiTietTable rows={data.rows} />}
       </SectionCard>
     </div>
