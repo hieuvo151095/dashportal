@@ -17,6 +17,10 @@ interface SearchableComboboxProps {
 // <Option> con theo text gõ vào (phải tự quản lý query + dùng useComboboxFilter, theo đúng
 // pattern "Filterable Combobox" chính thức của Fluent). Dùng cho single-select danh sách dài
 // (vd "Chọn trường" ở SchoolHeader).
+// positioning ép cứng 'below' (bỏ 'after'/'before' khỏi fallback mặc định của Fluent): với
+// danh sách dài, listbox cần nhiều chiều cao hơn khoảng trống còn lại bên dưới trong <main>
+// (overflow: auto) nên Fluent tự fallback xổ sang phải — ép 'below' để luôn xổ xuống, cuộn
+// nội bộ listbox thay vì đổi hướng.
 export function SearchableCombobox({ options, value, onChange, placeholder }: SearchableComboboxProps) {
   const [query, setQuery] = useState('')
 
@@ -38,6 +42,7 @@ export function SearchableCombobox({ options, value, onChange, placeholder }: Se
   return (
     <Combobox
       freeform
+      positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
       value={query !== '' ? query : selectedLabel}
       placeholder={placeholder}
       selectedOptions={[value]}

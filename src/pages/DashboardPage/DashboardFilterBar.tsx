@@ -1,8 +1,9 @@
-import { Button, Caption1, Combobox, Dropdown, Field, Option } from '@fluentui/react-components'
+import { Button, Caption1, Dropdown, Field, Option } from '@fluentui/react-components'
 import { ArrowDownloadRegular } from '@fluentui/react-icons'
 import { useState } from 'react'
 import { CAP_HOC_LIST, mockDataset, type CapHoc } from '../../mock-data'
 import { FilterBar } from '../../components/FilterBar'
+import { SearchableCombobox } from '../../components/SearchableCombobox'
 import { getKyOptions } from './useDashboardFilters'
 import type { DashboardFilters } from './useDashboardFilters'
 
@@ -21,10 +22,10 @@ export function DashboardFilterBar({ draft, setDraft, onApply, onReset }: Dashbo
   // Giờ lúc trang được tải — chỉ tính 1 lần lúc mount, không cập nhật lại khi Áp dụng/Làm mới.
   const [gioCapNhat] = useState(() => gioFormatter.format(new Date()))
   const { phuongXaList } = mockDataset
-  const phuongXaLabel =
-    draft.phuongXaId === TOAN_THANH_PHO
-      ? 'Toàn thành phố'
-      : (phuongXaList.find((p) => p.id === draft.phuongXaId)?.ten ?? 'Toàn thành phố')
+  const phuongXaOptions = [
+    { value: TOAN_THANH_PHO, label: 'Toàn thành phố' },
+    ...phuongXaList.map((px) => ({ value: px.id, label: px.ten })),
+  ]
 
   const capHocLabel =
     draft.capHocList.length === CAP_HOC_LIST.length ? 'Tất cả cấp học' : draft.capHocList.join(', ')
@@ -57,18 +58,12 @@ export function DashboardFilterBar({ draft, setDraft, onApply, onReset }: Dashbo
       </Field>
 
       <Field label="Xã/Phường">
-        <Combobox
-          value={phuongXaLabel}
-          selectedOptions={[draft.phuongXaId]}
-          onOptionSelect={(_, data) => data.optionValue && setDraft({ phuongXaId: data.optionValue })}
-        >
-          <Option value={TOAN_THANH_PHO}>Toàn thành phố</Option>
-          {phuongXaList.map((px) => (
-            <Option key={px.id} value={px.id}>
-              {px.ten}
-            </Option>
-          ))}
-        </Combobox>
+        <SearchableCombobox
+          options={phuongXaOptions}
+          value={draft.phuongXaId}
+          onChange={(value) => setDraft({ phuongXaId: value })}
+          placeholder="Tìm Xã/Phường"
+        />
       </Field>
 
       <Field label="Cấp học">

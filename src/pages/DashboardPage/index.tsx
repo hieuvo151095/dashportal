@@ -10,7 +10,7 @@ import { KpiRow } from './KpiRow'
 import { MonthlyTrendChart } from './MonthlyTrendChart'
 import { PaymentMethodSection } from './PaymentMethodSection'
 import { RevenueCompositionSection } from './RevenueCompositionSection'
-import { SyncStatusTable } from './SyncStatusTable'
+import { SyncComplianceSection } from './SyncComplianceSection'
 import { TopDebtSchoolsTable } from './TopDebtSchoolsTable'
 import { TopRegionsRanking } from './TopRegionsRanking'
 import { useDashboardData } from './useDashboardData'
@@ -46,7 +46,7 @@ export function DashboardPage() {
 
   return (
     <div>
-      <PageTitle title="Tổng quan Thu học phí" />
+      <PageTitle title="Tổng quan Thu học phí" showUnit={false} />
       <Caption1 as="p" className={styles.description}>
         Theo dõi tình hình thu học phí toàn thành phố theo thời gian thực
       </Caption1>
@@ -80,7 +80,7 @@ export function DashboardPage() {
       </div>
 
       <div className={styles.fullRow}>
-        <SyncStatusTable data={data} loading={loading} />
+        <SyncComplianceSection data={data} loading={loading} />
       </div>
 
       <div className={styles.fullRow}>

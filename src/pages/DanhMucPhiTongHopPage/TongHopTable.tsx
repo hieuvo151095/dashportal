@@ -17,6 +17,7 @@ import { HeThongBadge } from '../../components/HeThongBadge'
 import { Pagination } from '../../components/Pagination'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
 import { formatDate } from '../../utils/date'
+import { ngayDongBoGanNhat } from '../../utils/dongBo'
 import {
   COL_BADGE,
   COL_CAP_HOC,
@@ -30,7 +31,7 @@ import {
 import type { TongHopRow } from './useTongHopData'
 import type { TongHopFiltersApi } from './useTongHopFilters'
 
-const PAGE_SIZE = 15
+const PAGE_SIZE = 50
 
 // Bảng này có nhiều khoảng trống bên phải (ít cột hơn các bảng khác trong app) khiến cột
 // Tên trường bị co hẹp và xuống dòng dù còn dư chỗ — nới rộng cục bộ cho riêng bảng này,
@@ -47,7 +48,7 @@ interface LocalSortState {
 const COMPARE_FNS: Record<string, CompareFn> = {
   tenTruong: (a, b) => a.truong.tenTruong.localeCompare(b.truong.tenTruong, 'vi'),
   soMucPhi: (a, b) => a.soMucPhi - b.soMucPhi,
-  ngayCapNhat: (a, b) => new Date(a.truong.ngayCapNhat).getTime() - new Date(b.truong.ngayCapNhat).getTime(),
+  ngayCapNhat: (a, b) => new Date(ngayDongBoGanNhat(a.truong)).getTime() - new Date(ngayDongBoGanNhat(b.truong)).getTime(),
 }
 
 interface TongHopTableProps {
@@ -118,7 +119,7 @@ export function TongHopTable({ rows, filters }: TongHopTableProps) {
     createTableColumn<TongHopRow>({
       columnId: 'ngayCapNhat',
       renderHeaderCell: () => 'Ngày cập nhật',
-      renderCell: (item) => formatDate(item.truong.ngayCapNhat),
+      renderCell: (item) => formatDate(ngayDongBoGanNhat(item.truong)),
       compare: COMPARE_FNS.ngayCapNhat,
     }),
     createTableColumn<TongHopRow>({

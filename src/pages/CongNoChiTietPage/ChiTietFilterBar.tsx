@@ -5,6 +5,7 @@ import { RangeFilterField } from '../../components/RangeFilterField'
 import { SearchInput } from '../../components/SearchInput'
 import { NHOM_TUOI_NO_LIST } from '../../utils/congNo'
 import { getKyOptions } from '../../utils/ky'
+import { ALL_OPTION_VALUE, resolveMultiSelectChangeEmpty, withAllOptionSelectedEmpty } from '../../utils/multiSelectAll'
 import type { ChiTietFilters } from './useChiTietFilters'
 
 const KY_OPTIONS = getKyOptions()
@@ -57,9 +58,10 @@ export function ChiTietFilterBar({
         <Dropdown
           multiselect
           value={khoiLabel}
-          selectedOptions={draft.khoiList}
-          onOptionSelect={(_, data) => handleKhoiChange(data.selectedOptions)}
+          selectedOptions={withAllOptionSelectedEmpty(draft.khoiList)}
+          onOptionSelect={(_, data) => handleKhoiChange(resolveMultiSelectChangeEmpty(data))}
         >
+          <Option value={ALL_OPTION_VALUE}>Tất cả</Option>
           {khoiOptions.map((khoi) => (
             <Option key={khoi} value={khoi}>
               {khoi}
@@ -72,9 +74,10 @@ export function ChiTietFilterBar({
         <Dropdown
           multiselect
           value={lopLabel}
-          selectedOptions={draft.lopList}
-          onOptionSelect={(_, data) => setDraft({ lopList: data.selectedOptions })}
+          selectedOptions={withAllOptionSelectedEmpty(draft.lopList)}
+          onOptionSelect={(_, data) => setDraft({ lopList: resolveMultiSelectChangeEmpty(data) })}
         >
+          <Option value={ALL_OPTION_VALUE}>Tất cả</Option>
           {lopOptions.map((lop) => (
             <Option key={lop} value={lop}>
               {lop}

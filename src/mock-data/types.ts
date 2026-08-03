@@ -44,7 +44,8 @@ export interface Truong {
   phuongXaId: string
   capHoc: CapHoc
   heThongDoiTac: HeThongDoiTac
-  ngayCapNhat: string
+  /** Ngày trường đồng bộ dữ liệu, theo từng Kỳ báo cáo (key "MM/YYYY", 6 kỳ gần nhất). */
+  ngayDongBoTheoKy: Record<string, string>
 }
 
 export interface HocSinh {

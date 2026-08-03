@@ -6,6 +6,12 @@ const useStyles = makeStyles({
   card: {
     padding: tokens.spacingHorizontalL,
     rowGap: tokens.spacingVerticalXS,
+    // Card không tự set height — grid 5 cột (KpiRow) mặc định stretch item theo hàng, nhưng
+    // Fluent Card có sẵn quy tắc nội bộ ghi đè việc đó, khiến 2 card thiếu subValue/trend (Tỉ
+    // lệ hoàn thành, Cơ sở giáo dục) co lại thấp hơn 3 card còn lại. height:100% ép card luôn
+    // lấp đầy đúng chiều cao hàng grid, các card thiếu dòng chỉ để trống khoảng dưới.
+    height: '100%',
+    boxSizing: 'border-box',
   },
   header: {
     display: 'flex',

@@ -18,6 +18,7 @@ import { EmptyState } from '../../components/EmptyState'
 import { HeThongBadge } from '../../components/HeThongBadge'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
 import { formatCurrency, formatNumber } from '../../utils/currency'
+import { ngayDongBoGanNhat } from '../../utils/dongBo'
 import {
   COL_BADGE,
   COL_CAP_HOC,
@@ -175,7 +176,7 @@ export function OverviewTable({ rows }: OverviewTableProps) {
     createTableColumn<GridRow>({
       columnId: 'ngayCapNhat',
       renderHeaderCell: () => 'Ngày cập nhật',
-      renderCell: (item) => (item.isTotal ? '' : new Date(item.truong.ngayCapNhat).toLocaleDateString('vi-VN')),
+      renderCell: (item) => (item.isTotal ? '' : new Date(ngayDongBoGanNhat(item.truong)).toLocaleDateString('vi-VN')),
     }),
     createTableColumn<GridRow>({
       columnId: 'hanhDong',

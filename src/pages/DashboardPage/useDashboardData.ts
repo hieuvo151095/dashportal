@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import {
   CAP_HOC_LIST,
   DANH_MUC_KHOAN_THU_LIST,
-  HE_THONG_DOI_TAC_LIST,
   HINH_THUC_THANH_TOAN_LIST,
   TODAY,
   mockDataset,
@@ -11,11 +10,11 @@ import {
   type Truong,
 } from '../../mock-data'
 import { NHOM_TUOI_NO_LIST, nhomTuoiNoCua } from '../../utils/congNo'
+import { soNgayTreCuaTruong } from '../../utils/dongBo'
 import { getKyOptions } from '../../utils/ky'
 import type { DashboardFilters } from './useDashboardFilters'
 
 const SO_THANG_XU_HUONG = 6
-const MOC_CHUA_DONG_BO_NGAY = 7
 
 function sum<T>(items: T[], pick: (item: T) => number): number {
   return items.reduce((total, item) => total + pick(item), 0)
@@ -207,7 +206,7 @@ export function useDashboardData(filters: DashboardFilters) {
   // khiến function quá lớn, React Compiler không suy luận chính xác được dependency của
   // useMemo gốc nữa (báo lỗi preserve-manual-memoization dù dependency array không đổi).
   const phanTich = useMemo(() => {
-    const { truongList, hocSinhList, hoaDonList } = mockDataset
+    const { truongList, hocSinhList, hoaDonList, phuongXaList } = mockDataset
 
     // ---- Phân tích theo Cấp học (bỏ qua filter Cấp học, chỉ theo Xã/Phường + Kỳ —
     // widget so sánh giữa các cấp học nên không tự lọc theo chính chiều đang so sánh) ----
@@ -234,32 +233,28 @@ export function useDashboardData(filters: DashboardFilters) {
       }
     })
 
-    // ---- Tình trạng đồng bộ dữ liệu theo Hệ thống đối tác (theo phạm vi Xã/Phường +
-    // Cấp học đang chọn — Ngày cập nhật là thuộc tính trường, không gắn với Kỳ) ----
-    const scopedTruongList = truongList.filter(
-      (t) =>
-        (filters.phuongXaId === 'all' || t.phuongXaId === filters.phuongXaId) &&
-        filters.capHocList.includes(t.capHoc),
-    )
-    const dongBoHeThong = HE_THONG_DOI_TAC_LIST.map((heThong) => {
-      const truongNhom = scopedTruongList.filter((t) => t.heThongDoiTac === heThong)
-      const capNhatMoiNhat = truongNhom.reduce<string | null>((moiNhat, t) => {
-        if (!moiNhat || new Date(t.ngayCapNhat) > new Date(moiNhat)) return t.ngayCapNhat
-        return moiNhat
-      }, null)
+    // ---- Tuân thủ đồng bộ theo Kỳ, xếp hạng theo Xã/Phường (bỏ qua filter Xã/Phường, chỉ
+    // theo Cấp học + Kỳ — cùng nguyên tắc widget so sánh giữa các khu vực như tyLeThuTheoPhuong
+    // ở trên: tự lọc theo chính chiều đang so sánh sẽ mất ý nghĩa xếp hạng). Tỷ lệ = số trường
+    // đã đồng bộ đúng hạn của Kỳ đang chọn / tổng số trường trong khu vực (định nghĩa case B3).
+    // truongChuaDongBo giữ luôn số ngày trễ của từng trường — mỗi tab "Chậm ..." tự lọc lại
+    // danh sách này theo ngưỡng riêng, không tính lại từ đầu.
+    const dongBoTheoPhuong = phuongXaList.map((px) => {
+      const truongTrongKhu = truongList.filter((t) => t.phuongXaId === px.id && filters.capHocList.includes(t.capHoc))
+      const truongChuaDongBo = truongTrongKhu
+        .map((truong) => ({ truong, soNgayTre: soNgayTreCuaTruong(truong, filters.ky) }))
+        .filter((item) => item.soNgayTre > 0)
+      const soDungHan = truongTrongKhu.length - truongChuaDongBo.length
       return {
-        heThong,
-        soTruong: truongNhom.length,
-        tyLe: scopedTruongList.length === 0 ? 0 : truongNhom.length / scopedTruongList.length,
-        capNhatMoiNhat,
+        phuongXa: px,
+        soTruong: truongTrongKhu.length,
+        soDungHan,
+        tyLeDongBo: truongTrongKhu.length === 0 ? 0 : soDungHan / truongTrongKhu.length,
+        truongChuaDongBo,
       }
     })
-    const soTruongChuaDongBo7Ngay = scopedTruongList.filter((t) => {
-      const soNgay = (TODAY.getTime() - new Date(t.ngayCapNhat).getTime()) / (24 * 60 * 60 * 1000)
-      return soNgay > MOC_CHUA_DONG_BO_NGAY
-    }).length
 
-    return { phanTichCapHoc, dongBoHeThong, soTruongChuaDongBo7Ngay }
+    return { phanTichCapHoc, dongBoTheoPhuong }
   }, [filters.ky, filters.phuongXaId, filters.capHocList])
 
   return { ...data, ...phanTich }

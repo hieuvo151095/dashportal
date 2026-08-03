@@ -5,8 +5,52 @@ import {
   TEN_HOA_DIA_DANH_LIST,
   TODAY,
 } from './constants'
-import { createRng } from './random'
+import { createRng, type Rng } from './random'
 import type { CapHoc, PhuongXa, Truong } from './types'
+import { formatMonthYear } from '../utils/date'
+
+// 6 kỳ gần nhất — cùng logic getKyOptions() ở utils/ky.ts, nhưng viết lại tại chỗ (không
+// import utils/ky.ts) để tránh import cycle: utils/ky.ts đọc TODAY từ barrel mock-data/index.ts,
+// mà index.ts lại import chính truong.ts này.
+const SO_KY_DONG_BO = 6
+function sinhDanhSachKy(): string[] {
+  const result: string[] = []
+  for (let i = SO_KY_DONG_BO - 1; i >= 0; i--) {
+    result.push(formatMonthYear(new Date(TODAY.getFullYear(), TODAY.getMonth() - i, 1)))
+  }
+  return result
+}
+const DANH_SACH_KY = sinhDanhSachKy()
+
+// Hạn chót đồng bộ dữ liệu của 1 kỳ = ngày 7 tháng kế tiếp (vd kỳ 07/2026 → hạn 07/08/2026).
+function hanChotDongBoCuaKy(ky: string): Date {
+  const [thangStr, namStr] = ky.split('/')
+  // Date(năm, tháng, ngày) coi tham số tháng là 0-based — truyền thẳng số tháng 1-based của kỳ
+  // vào đúng bằng chỉ số 0-based của tháng KẾ TIẾP, khỏi phải +1 rồi xử lý tràn năm thủ công.
+  return new Date(Number(namStr), Number(thangStr), 7)
+}
+
+// Mỗi trường có 1 mốc "ngày đồng bộ" riêng cho từng kỳ trong 6 kỳ gần nhất — kỳ càng gần hiện
+// tại thì xác suất đã đồng bộ đúng hạn càng thấp (kỳ hiện tại còn chưa hết hạn), giống cách
+// chonTrangThai() ở hoaDon.ts thiên vị theo khoảng cách tới hôm nay.
+function sinhNgayDongBoTheoKy(rng: Rng): Record<string, string> {
+  const result: Record<string, string> = {}
+  DANH_SACH_KY.forEach((ky, idx) => {
+    const soKyTruoc = DANH_SACH_KY.length - 1 - idx
+    const xacSuatDungHan = soKyTruoc === 0 ? 0.3 : soKyTruoc === 1 ? 0.6 : 0.9
+    const hanChot = hanChotDongBoCuaKy(ky)
+    const ngayDongBo = new Date(hanChot)
+    if (rng.chance(xacSuatDungHan)) {
+      ngayDongBo.setDate(ngayDongBo.getDate() - rng.int(1, 7))
+    } else {
+      // Biên độ trễ trải rộng tới 25 ngày (không chỉ 1-10) để có đủ trường rơi vào cả 2 mốc
+      // phân loại "Chậm từ 7 ngày" (8-15) và "Chậm từ 15 ngày" (>=15) ở Dashboard.
+      ngayDongBo.setDate(ngayDongBo.getDate() + rng.int(1, 25))
+    }
+    result[ky] = ngayDongBo.toISOString()
+  })
+  return result
+}
 
 // Phân bổ đều 4 cấp học, tổng 180 trường (đủ để hầu hết 167 Phường/Xã có dân — trừ Đặc khu
 // Côn Đảo — đều có ít nhất 1 trường, xem phân bổ round-robin bên dưới).
@@ -77,8 +121,7 @@ export function generateTruongList(phuongXaList: PhuongXa[]): Truong[] {
 
       const phuongXa = phanBoPhuongXa[sttToanCuc - 1]
       const heThongDoiTac = rng.pick(HE_THONG_DOI_TAC_LIST)
-      const ngayCapNhat = new Date(TODAY)
-      ngayCapNhat.setDate(ngayCapNhat.getDate() - rng.int(0, 60))
+      const ngayDongBoTheoKy = sinhNgayDongBoTheoKy(rng)
 
       truongList.push({
         id: `truong-${String(sttToanCuc).padStart(3, '0')}`,
@@ -87,7 +130,7 @@ export function generateTruongList(phuongXaList: PhuongXa[]): Truong[] {
         phuongXaId: phuongXa.id,
         capHoc,
         heThongDoiTac,
-        ngayCapNhat: ngayCapNhat.toISOString(),
+        ngayDongBoTheoKy,
       })
       sttToanCuc++
     }

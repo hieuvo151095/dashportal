@@ -17,6 +17,7 @@ import { TableHeaderRow } from '../../components/TableHeaderRow'
 import type { NhomTuoiNo } from '../../mock-data'
 import { formatCurrency, formatNumber } from '../../utils/currency'
 import { formatDate } from '../../utils/date'
+import { ngayDongBoGanNhat } from '../../utils/dongBo'
 import {
   COL_BADGE,
   COL_DIA_DIEM,
@@ -101,7 +102,7 @@ export function SchoolDebtTable({ rows, filters }: SchoolDebtTableProps) {
     createTableColumn<Row>({
       columnId: 'ngayCapNhat',
       renderHeaderCell: () => 'Ngày cập nhật',
-      renderCell: (item) => formatDate(item.truong.ngayCapNhat),
+      renderCell: (item) => formatDate(ngayDongBoGanNhat(item.truong)),
     }),
     createTableColumn<Row>({
       columnId: 'hanhDong',

@@ -25,6 +25,10 @@ import type { ChiTietFiltersApi } from './useChiTietFilters'
 
 const PAGE_SIZE = 50
 
+// "Thanh toán một phần" dài hơn COL_BADGE dùng chung — nới rộng cục bộ cho riêng cột này
+// (cùng nguyên nhân/cách sửa đã áp dụng cho bảng Tổng quan 3.1, xem OverviewTable.tsx).
+const COL_TRANG_THAI_RONG = { minWidth: 170, defaultWidth: 190 }
+
 const useStyles = makeStyles({
   studentCell: {
     display: 'flex',
@@ -165,7 +169,7 @@ export function ChiTietTable({ rows, filters }: ChiTietTableProps) {
     ngayThanhToan: COL_NGAY,
     hinhThuc: COL_BADGE,
     taoXacNhan: COL_TEN,
-    trangThai: COL_BADGE,
+    trangThai: COL_TRANG_THAI_RONG,
     soTien: COL_SO_TIEN,
   }
 

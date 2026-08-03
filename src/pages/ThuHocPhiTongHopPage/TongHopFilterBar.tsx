@@ -6,6 +6,7 @@ import { SearchInput } from '../../components/SearchInput'
 import { SearchableMultiCombobox } from '../../components/SearchableMultiCombobox'
 import { CAP_HOC_LIST, HE_THONG_DOI_TAC_LIST, HINH_THUC_THANH_TOAN_LIST, mockDataset, type CapHoc } from '../../mock-data'
 import { getKyOptions } from '../../utils/ky'
+import { ALL_OPTION_VALUE, resolveMultiSelectChange, withAllOptionSelected } from '../../utils/multiSelectAll'
 import { TRANG_THAI_TONG_HOP_LIST, type TongHopFilters } from './useTongHopFilters'
 
 const KY_OPTIONS = getKyOptions()
@@ -117,11 +118,14 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
         <Dropdown
           multiselect
           value={hinhThucLabel}
-          selectedOptions={draft.hinhThucThanhToanList}
+          selectedOptions={withAllOptionSelected(HINH_THUC_THANH_TOAN_LIST, draft.hinhThucThanhToanList)}
           onOptionSelect={(_, data) =>
-            setDraft({ hinhThucThanhToanList: data.selectedOptions as TongHopFilters['hinhThucThanhToanList'] })
+            setDraft({
+              hinhThucThanhToanList: resolveMultiSelectChange(HINH_THUC_THANH_TOAN_LIST, data),
+            })
           }
         >
+          <Option value={ALL_OPTION_VALUE}>Tất cả</Option>
           {HINH_THUC_THANH_TOAN_LIST.map((ht) => (
             <Option key={ht} value={ht}>
               {ht}
@@ -134,9 +138,10 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
         <Dropdown
           multiselect
           value={heThongLabel}
-          selectedOptions={draft.heThongList}
-          onOptionSelect={(_, data) => setDraft({ heThongList: data.selectedOptions as TongHopFilters['heThongList'] })}
+          selectedOptions={withAllOptionSelected(HE_THONG_DOI_TAC_LIST, draft.heThongList)}
+          onOptionSelect={(_, data) => setDraft({ heThongList: resolveMultiSelectChange(HE_THONG_DOI_TAC_LIST, data) })}
         >
+          <Option value={ALL_OPTION_VALUE}>Tất cả</Option>
           {HE_THONG_DOI_TAC_LIST.map((ht) => (
             <Option key={ht} value={ht}>
               {ht}
@@ -149,11 +154,12 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
         <Dropdown
           multiselect
           value={trangThaiLabel}
-          selectedOptions={draft.trangThaiList}
+          selectedOptions={withAllOptionSelected(TRANG_THAI_TONG_HOP_LIST, draft.trangThaiList)}
           onOptionSelect={(_, data) =>
-            setDraft({ trangThaiList: data.selectedOptions as TongHopFilters['trangThaiList'] })
+            setDraft({ trangThaiList: resolveMultiSelectChange(TRANG_THAI_TONG_HOP_LIST, data) })
           }
         >
+          <Option value={ALL_OPTION_VALUE}>Tất cả</Option>
           {TRANG_THAI_TONG_HOP_LIST.map((tt) => (
             <Option key={tt} value={tt}>
               {tt}

@@ -35,7 +35,7 @@ const useStyles = makeStyles({
   },
 })
 
-const PAGE_SIZE = 15
+const PAGE_SIZE = 50
 
 const COLUMN_SIZING_OPTIONS = {
   stt: COL_STT,

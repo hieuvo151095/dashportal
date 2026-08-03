@@ -1,3 +1,4 @@
+import { Caption1, tokens } from '@fluentui/react-components'
 import { PageTitle } from '../../components/PageTitle'
 import { SchoolHeader } from '../../components/SchoolHeader'
 import { SectionCard } from '../../components/SectionCard'
@@ -36,7 +37,7 @@ export function CongNoChiTietPage() {
 
   return (
     <div>
-      <PageTitle title="Công nợ Học phí — Chi tiết theo trường" />
+      <PageTitle title="Công nợ Học phí — Chi tiết theo trường" showUnit={false} />
       <SchoolHeader
         truong={data.truong}
         phuongXa={data.phuongXa}
@@ -53,7 +54,10 @@ export function CongNoChiTietPage() {
         lopOptionsTheoKhoi={data.lopOptionsTheoKhoi}
       />
 
-      <SectionCard title="Danh sách công nợ">
+      <SectionCard
+        title="Danh sách công nợ"
+        action={<Caption1 style={{ color: tokens.colorNeutralForeground3 }}>Đơn vị: Đồng</Caption1>}
+      >
         {loading ? <TableSkeleton rows={8} /> : <ChiTietTable rows={data.rows} filters={filters} />}
       </SectionCard>
     </div>

@@ -4,9 +4,10 @@ import { FilterBar } from '../../components/FilterBar'
 import { RangeFilterField } from '../../components/RangeFilterField'
 import { SearchInput } from '../../components/SearchInput'
 import { SearchableMultiCombobox } from '../../components/SearchableMultiCombobox'
-import { mockDataset, type NhomTuoiNo } from '../../mock-data'
+import { mockDataset } from '../../mock-data'
 import { NHOM_TUOI_NO_LIST } from '../../utils/congNo'
 import { getKyOptions } from '../../utils/ky'
+import { ALL_OPTION_VALUE, resolveMultiSelectChange, withAllOptionSelected } from '../../utils/multiSelectAll'
 import type { TongHopFilters } from './useTongHopFilters'
 
 const KY_OPTIONS = getKyOptions()
@@ -110,9 +111,10 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
         <Dropdown
           multiselect
           value={nhomTuoiNoLabel}
-          selectedOptions={draft.nhomTuoiNoList}
-          onOptionSelect={(_, data) => setDraft({ nhomTuoiNoList: data.selectedOptions as NhomTuoiNo[] })}
+          selectedOptions={withAllOptionSelected(NHOM_TUOI_NO_LIST, draft.nhomTuoiNoList)}
+          onOptionSelect={(_, data) => setDraft({ nhomTuoiNoList: resolveMultiSelectChange(NHOM_TUOI_NO_LIST, data) })}
         >
+          <Option value={ALL_OPTION_VALUE}>Tất cả</Option>
           {NHOM_TUOI_NO_LIST.map((nhom) => (
             <Option key={nhom} value={nhom}>
               {nhom}
