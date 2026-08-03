@@ -10,6 +10,9 @@ import {
 import { PageTitle } from '../../components/PageTitle'
 import { SectionCard } from '../../components/SectionCard'
 import { TableSkeleton } from '../../components/TableSkeleton'
+import { formatDate } from '../../utils/date'
+import { ngayDongBoGanNhat } from '../../utils/dongBo'
+import { exportToExcel } from '../../utils/exportExcel'
 import { useFilterDraft } from '../../utils/useFilterDraft'
 import { useSkeletonDelay } from '../../utils/useSkeletonDelay'
 import { InvoiceTable } from './InvoiceTable'
@@ -58,11 +61,57 @@ export function ThuHocPhiTongHopPage() {
     filters.tab,
   ])
 
+  // Xuất đúng bảng của TAB đang xem, theo đúng bộ lọc đang áp dụng — không xuất toàn bộ dữ liệu gốc.
+  function handleExport() {
+    const kyLabel = filters.ky.replace('/', '-')
+    if (filters.tab === 'tong-quan') {
+      const rows = data.overviewRows.map((item, index) => ({
+        STT: index + 1,
+        'Mã trường': item.truong.maTruong,
+        'Tên trường': item.truong.tenTruong,
+        'Xã/Phường': item.phuongXa.ten,
+        'Hệ thống': item.truong.heThongDoiTac,
+        'Cấp học': item.truong.capHoc,
+        'Tiền mặt': item.tienMat,
+        'CK/Thu hộ': item.chuyenKhoan,
+        'Tổng thu': item.tongThu,
+        'HĐ còn lại': item.conLaiSoLuong,
+        'Phí còn lại': item.conLaiTien,
+        'Trạng thái': item.trangThaiTongHop,
+        'Tỉ lệ thu (%)': Math.round(item.tyLeThu * 100),
+        'Ngày cập nhật': formatDate(ngayDongBoGanNhat(item.truong)),
+      }))
+      exportToExcel(`thu-hoc-phi-tong-quan-${kyLabel}.xlsx`, [{ name: TAB_LABELS[filters.tab], rows }])
+      return
+    }
+
+    const rows = data.invoiceRowsByTab[filters.tab].map((item, index) => ({
+      STT: index + 1,
+      'Mã trường': item.truong.maTruong,
+      'Tên trường': item.truong.tenTruong,
+      'Học sinh': `${item.hocSinh.hoTen} (${item.hocSinh.maHocSinh})`,
+      'Số HĐ': item.hoaDon.soHoaDon,
+      Kỳ: item.hoaDon.ky,
+      'Hạn thanh toán': formatDate(item.hoaDon.hanThanhToan),
+      'Hình thức TT': item.hoaDon.hinhThucThanhToan ?? '—',
+      'Đã trả': item.hoaDon.daTra,
+      'Còn lại': item.hoaDon.conLai,
+      'Số tiền': item.hoaDon.soTien,
+    }))
+    exportToExcel(`thu-hoc-phi-${filters.tab}-${kyLabel}.xlsx`, [{ name: TAB_LABELS[filters.tab], rows }])
+  }
+
   return (
     <div>
       <PageTitle title="Thu Học phí — Tổng hợp toàn thành phố" showUnit={false} />
 
-      <TongHopFilterBar draft={draft} setDraft={setDraft} onApply={() => filters.apply(draft)} onReset={filters.reset} />
+      <TongHopFilterBar
+        draft={draft}
+        setDraft={setDraft}
+        onApply={() => filters.apply(draft)}
+        onReset={filters.reset}
+        onExport={handleExport}
+      />
 
       <KpiRow data={data} />
 

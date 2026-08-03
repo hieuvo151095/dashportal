@@ -17,9 +17,10 @@ interface DashboardFilterBarProps {
   setDraft: (patch: Partial<DashboardFilters>) => void
   onApply: () => void
   onReset: () => void
+  onExport: () => void
 }
 
-export function DashboardFilterBar({ draft, setDraft, onApply, onReset }: DashboardFilterBarProps) {
+export function DashboardFilterBar({ draft, setDraft, onApply, onReset, onExport }: DashboardFilterBarProps) {
   // Giờ lúc trang được tải — chỉ tính 1 lần lúc mount, không cập nhật lại khi Áp dụng/Làm mới.
   const [gioCapNhat] = useState(() => gioFormatter.format(new Date()))
   const { phuongXaList } = mockDataset
@@ -38,7 +39,7 @@ export function DashboardFilterBar({ draft, setDraft, onApply, onReset }: Dashbo
       action={
         <>
           <Caption1>{`Cập nhật lúc: ${gioCapNhat}`}</Caption1>
-          <Button icon={<ArrowDownloadRegular />} onClick={() => {}}>
+          <Button icon={<ArrowDownloadRegular />} onClick={onExport}>
             Xuất báo cáo
           </Button>
         </>

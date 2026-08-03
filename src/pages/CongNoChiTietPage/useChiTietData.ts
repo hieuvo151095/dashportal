@@ -7,27 +7,6 @@ import type { ChiTietFiltersApi } from './useChiTietFilters'
 const KY_OPTIONS = getKyOptions()
 const KY_INDEX = new Map(KY_OPTIONS.map((ky, index) => [ky, index]))
 
-const LY_DO_NO_LIST = [
-  'Phụ huynh chưa thanh toán',
-  'Đang chờ xác nhận chuyển khoản',
-  'Học sinh tạm nghỉ học',
-  'Gia đình xin gia hạn đóng phí',
-  'Chưa liên hệ được phụ huynh',
-  'Hồ sơ miễn giảm đang chờ duyệt',
-]
-
-function hashString(value: string): number {
-  let hash = 0
-  for (let i = 0; i < value.length; i++) {
-    hash = (hash * 31 + value.charCodeAt(i)) >>> 0
-  }
-  return hash
-}
-
-function lyDoNoCua(hoaDon: HoaDon): string {
-  return LY_DO_NO_LIST[hashString(hoaDon.id) % LY_DO_NO_LIST.length]
-}
-
 function trongPhamViKy(ky: string, kyTu: string, kyDen: string): boolean {
   const idx = KY_INDEX.get(ky)
   if (idx === undefined) return true
@@ -41,7 +20,6 @@ export interface DebtRow {
   hoaDon: HoaDon
   soNgayQuaHan: number
   nhomTuoiNo: ReturnType<typeof nhomTuoiNoCua>
-  lyDoNo: string
 }
 
 export function useChiTietData(filters: ChiTietFiltersApi) {
@@ -84,9 +62,8 @@ export function useChiTietData(filters: ChiTietFiltersApi) {
         hoaDon: row.hoaDon,
         soNgayQuaHan: soNgayQuaHan(row.hoaDon.hanThanhToan),
         nhomTuoiNo: nhomTuoiNoCua(row.hoaDon),
-        lyDoNo: lyDoNoCua(row.hoaDon),
       }))
-      .filter((row) => filters.nhomTuoiNo === 'all' || row.nhomTuoiNo === filters.nhomTuoiNo)
+      .filter((row) => filters.nhomTuoiNoList.includes(row.nhomTuoiNo))
       .sort((a, b) => b.soNgayQuaHan - a.soNgayQuaHan)
 
     return { truong, phuongXa, khoiOptions, lopOptionsTheoKhoi, rows }
@@ -99,7 +76,7 @@ export function useChiTietData(filters: ChiTietFiltersApi) {
     filters.kyDen,
     filters.hanTu,
     filters.hanDen,
-    filters.nhomTuoiNo,
+    filters.nhomTuoiNoList,
   ])
 }
 

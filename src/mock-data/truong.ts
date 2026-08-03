@@ -33,7 +33,10 @@ function hanChotDongBoCuaKy(ky: string): Date {
 // Mỗi trường có 1 mốc "ngày đồng bộ" riêng cho từng kỳ trong 6 kỳ gần nhất — kỳ càng gần hiện
 // tại thì xác suất đã đồng bộ đúng hạn càng thấp (kỳ hiện tại còn chưa hết hạn), giống cách
 // chonTrangThai() ở hoaDon.ts thiên vị theo khoảng cách tới hôm nay.
-function sinhNgayDongBoTheoKy(rng: Rng): Record<string, string> {
+// Export để tái dùng cho dữ liệu demo riêng của widget "Tình trạng đồng bộ dữ liệu"
+// (xem src/pages/DashboardPage/syncComplianceMockData.ts) — giữ đúng 1 phân phối xác suất
+// đúng hạn/trễ hạn cho mọi nơi sinh "ngày đồng bộ", không viết lại logic riêng.
+export function sinhNgayDongBoTheoKy(rng: Rng): Record<string, string> {
   const result: Record<string, string> = {}
   DANH_SACH_KY.forEach((ky, idx) => {
     const soKyTruoc = DANH_SACH_KY.length - 1 - idx
@@ -61,7 +64,7 @@ const SO_TRUONG_THEO_CAP: Record<CapHoc, number> = {
   THPT: 45,
 }
 
-const PREFIX_THEO_CAP: Record<CapHoc, string> = {
+export const PREFIX_THEO_CAP: Record<CapHoc, string> = {
   'Mầm non': 'Trường Mầm non',
   'Tiểu học': 'Trường Tiểu học',
   THCS: 'Trường THCS',

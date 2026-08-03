@@ -12,15 +12,16 @@ interface ChiTietFilterBarProps {
   setDraft: (patch: Partial<ChiTietFilters>) => void
   onApply: () => void
   onReset: () => void
+  onExport: () => void
 }
 
-export function ChiTietFilterBar({ draft, setDraft, onApply, onReset }: ChiTietFilterBarProps) {
+export function ChiTietFilterBar({ draft, setDraft, onApply, onReset, onExport }: ChiTietFilterBarProps) {
   return (
     <FilterBar
       onApply={onApply}
       onReset={onReset}
       action={
-        <Button icon={<ArrowDownloadRegular />} onClick={() => {}}>
+        <Button icon={<ArrowDownloadRegular />} onClick={onExport}>
           Xuất Excel
         </Button>
       }

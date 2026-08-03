@@ -1,5 +1,6 @@
 import { Caption1, makeStyles, tokens } from '@fluentui/react-components'
 import { PageTitle } from '../../components/PageTitle'
+import { exportToExcel } from '../../utils/exportExcel'
 import { useFilterDraft } from '../../utils/useFilterDraft'
 import { useSkeletonDelay } from '../../utils/useSkeletonDelay'
 import { CapHocAnalysisTable } from './CapHocAnalysisTable'
@@ -44,6 +45,63 @@ export function DashboardPage() {
   const data = useDashboardData(filters)
   const loading = useSkeletonDelay([filters.ky, filters.phuongXaId, filters.capHocList])
 
+  // Phạm vi xuất Dashboard (đã chốt với người dùng): chỉ KPI + 2 bảng thật (Phân tích theo cấp
+  // học, Top 20 công nợ) — không xuất dữ liệu nền của chart, không xuất Tình trạng đồng bộ dữ
+  // liệu (widget đó có tab/tìm kiếm riêng, không thuộc bộ lọc chính của trang).
+  function handleExport() {
+    const { kpi, phanTichCapHoc, top20CongNo } = data
+    const kpiRows = [
+      { 'Chỉ số': 'Tổng hoá đơn', 'Số lượng': kpi.tongSoHoaDon, 'Số tiền': kpi.tongTien },
+      { 'Chỉ số': 'Đã thu', 'Số lượng': kpi.soDaThanhToan, 'Số tiền': kpi.daThuTien },
+      { 'Chỉ số': 'Cần thu (còn lại)', 'Số lượng': kpi.soCanThu, 'Số tiền': kpi.canThuTien },
+      { 'Chỉ số': 'Tỉ lệ hoàn thành', 'Số lượng': `${Math.round(kpi.tiLeHoanThanh * 100)}%`, 'Số tiền': '' },
+      {
+        'Chỉ số': 'Cơ sở giáo dục',
+        'Số lượng': `${kpi.soTruong} trường`,
+        'Số tiền': `${Math.round(kpi.tyLeKetNoi * 100)}% đã kết nối`,
+      },
+    ]
+
+    const tongCapHoc = {
+      soTruong: phanTichCapHoc.reduce((s, r) => s + r.soTruong, 0),
+      soHocSinh: phanTichCapHoc.reduce((s, r) => s + r.soHocSinh, 0),
+      tongPhaiThu: phanTichCapHoc.reduce((s, r) => s + r.tongPhaiThu, 0),
+      daThu: phanTichCapHoc.reduce((s, r) => s + r.daThu, 0),
+    }
+    const capHocRows = [
+      ...phanTichCapHoc.map((item) => ({
+        'Cấp học': item.capHoc,
+        'Số trường': item.soTruong,
+        'Số học sinh': item.soHocSinh,
+        'Tổng phải thu': item.tongPhaiThu,
+        'Đã thu': item.daThu,
+        'Tỷ lệ (%)': Math.round(item.tyLe * 100),
+      })),
+      {
+        'Cấp học': 'TỔNG CỘNG',
+        'Số trường': tongCapHoc.soTruong,
+        'Số học sinh': tongCapHoc.soHocSinh,
+        'Tổng phải thu': tongCapHoc.tongPhaiThu,
+        'Đã thu': tongCapHoc.daThu,
+        'Tỷ lệ (%)': tongCapHoc.tongPhaiThu === 0 ? 0 : Math.round((tongCapHoc.daThu / tongCapHoc.tongPhaiThu) * 100),
+      },
+    ]
+
+    const congNoRows = top20CongNo.map((item, index) => ({
+      STT: index + 1,
+      'Tên trường': item.truong.tenTruong,
+      'Xã/Phường': item.phuongXa.ten,
+      'Số tiền công nợ': item.tongNo,
+      'Số học sinh chưa đóng': item.soHocSinh,
+    }))
+
+    exportToExcel(`dashboard-tong-quan-${filters.ky.replace('/', '-')}.xlsx`, [
+      { name: 'Tổng quan (KPI)', rows: kpiRows },
+      { name: 'Phân tích theo cấp học', rows: capHocRows },
+      { name: 'Top 20 công nợ', rows: congNoRows },
+    ])
+  }
+
   return (
     <div>
       <PageTitle title="Tổng quan Thu học phí" showUnit={false} />
@@ -56,6 +114,7 @@ export function DashboardPage() {
         setDraft={setDraft}
         onApply={() => filters.apply(draft)}
         onReset={filters.reset}
+        onExport={handleExport}
       />
 
       <KpiRow data={data} />

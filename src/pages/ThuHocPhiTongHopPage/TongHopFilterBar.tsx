@@ -16,9 +16,10 @@ interface TongHopFilterBarProps {
   setDraft: (patch: Partial<TongHopFilters>) => void
   onApply: () => void
   onReset: () => void
+  onExport: () => void
 }
 
-export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopFilterBarProps) {
+export function TongHopFilterBar({ draft, setDraft, onApply, onReset, onExport }: TongHopFilterBarProps) {
   const { phuongXaList, truongList } = mockDataset
 
   const truongOptions = useMemo(
@@ -56,7 +57,7 @@ export function TongHopFilterBar({ draft, setDraft, onApply, onReset }: TongHopF
       onApply={onApply}
       onReset={onReset}
       action={
-        <Button icon={<ArrowDownloadRegular />} onClick={() => {}}>
+        <Button icon={<ArrowDownloadRegular />} onClick={onExport}>
           Xuất báo cáo
         </Button>
       }

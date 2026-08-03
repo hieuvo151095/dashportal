@@ -19,7 +19,7 @@ export function CongNoChiTietPage() {
     kyDen: filters.kyDen,
     hanTu: filters.hanTu,
     hanDen: filters.hanDen,
-    nhomTuoiNo: filters.nhomTuoiNo,
+    nhomTuoiNoList: filters.nhomTuoiNoList,
   })
   const data = useChiTietData(filters)
   const loading = useSkeletonDelay([
@@ -31,7 +31,7 @@ export function CongNoChiTietPage() {
     filters.kyDen,
     filters.hanTu,
     filters.hanDen,
-    filters.nhomTuoiNo,
+    filters.nhomTuoiNoList,
   ])
 
   return (

@@ -1,4 +1,5 @@
 import {
+  Button,
   DataGrid,
   DataGridBody,
   DataGridCell,
@@ -15,7 +16,7 @@ import {
   type TableColumnDefinition,
 } from '@fluentui/react-components'
 import { ArrowSyncRegular } from '@fluentui/react-icons'
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { EmptyState } from '../../components/EmptyState'
 import { Pagination } from '../../components/Pagination'
 import { SearchInput } from '../../components/SearchInput'
@@ -29,6 +30,11 @@ import type { DashboardData } from './useDashboardData'
 // Ngoại lệ có chủ đích riêng cho bảng này — 20 dòng/trang thay vì 50 như quy ước chung, vì
 // đơn vị hiển thị là Phường/Xã có thể có nội dung mở rộng ở cột "Trường chưa đồng bộ".
 const PAGE_SIZE = 20
+
+// Số trường tối đa hiện mặc định trong 1 ô "Trường chưa đồng bộ" (ưu tiên trường trễ nhiều
+// ngày nhất) trước khi phải bấm "+N trường khác" để xem toàn bộ — tránh 1 khu vực có nhiều
+// trường (nay đã có dữ liệu demo 3-5 trường/khu) làm dòng bảng cha quá cao.
+const SO_TRUONG_HIEN_MAC_DINH = 5
 
 const COL_TEN_PHUONG_XA = { minWidth: 200, defaultWidth: 240 }
 const COL_TRUONG_CHUA_DONG_BO = { minWidth: 280, defaultWidth: 340 }
@@ -70,12 +76,65 @@ const useStyles = makeStyles({
     marginBottom: tokens.spacingVerticalM,
     maxWidth: '320px',
   },
-  truongList: {
-    display: 'flex',
-    flexDirection: 'column',
+  // Grid 2 cột dùng CHUNG cho cả header cột (renderHeaderCell — hiện ĐÚNG 1 LẦN ở đầu bảng,
+  // qua TableHeaderRow) lẫn từng dòng dữ liệu (renderCell — gọi lại 1 lần cho mỗi Phường/Xã).
+  // Bản trước dùng <table><thead> lồng riêng BÊN TRONG mỗi ô renderCell — mỗi Phường/Xã tự vẽ
+  // 1 header riêng, nên nhìn xuống cả cột (nhiều dòng Phường/Xã) thấy "Tên trường"/"Số ngày trễ"
+  // lặp lại theo từng dòng. Sửa đúng: header chỉ khai báo 1 lần ở renderHeaderCell của cột,
+  // renderCell mỗi dòng chỉ render giá trị — cùng 1 class grid (tỉ lệ cột cố định) nên vẫn
+  // thẳng hàng tuyệt đối giữa các dòng và khớp với header.
+  truongGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'minmax(0, 1fr) 90px',
+    columnGap: tokens.spacingHorizontalM,
     rowGap: tokens.spacingVerticalXXS,
+    width: '100%',
+  },
+  truongGridSoNgay: {
+    whiteSpace: 'nowrap',
+  },
+  xemThemCell: {
+    gridColumn: '1 / -1',
   },
 })
+
+// Tách riêng component (thay vì render thẳng trong renderCell) để có state expanded cục bộ
+// cho từng ô — mỗi Phường/Xã tự nhớ trạng thái mở rộng của chính nó, độc lập với các dòng khác.
+// KHÔNG tự vẽ header ở đây — header của 2 "cột" Tên trường/Số ngày trễ nằm ở renderHeaderCell
+// của cột 'truongChuaDongBo' bên dưới, hiện đúng 1 lần cho toàn bộ bảng.
+interface TruongChuaDongBoCellProps {
+  list: TruongTre[]
+}
+
+function TruongChuaDongBoCell({ list }: TruongChuaDongBoCellProps) {
+  const styles = useStyles()
+  const [expanded, setExpanded] = useState(false)
+
+  if (list.length === 0) return '—'
+
+  // Ưu tiên hiện trường trễ nhiều ngày nhất trước — cả ở dạng rút gọn lẫn khi đã mở rộng.
+  const sorted = [...list].sort((a, b) => b.soNgayTre - a.soNgayTre)
+  const hienThi = expanded ? sorted : sorted.slice(0, SO_TRUONG_HIEN_MAC_DINH)
+  const soConLai = sorted.length - hienThi.length
+
+  return (
+    <div className={styles.truongGrid}>
+      {hienThi.map(({ truong, soNgayTre }) => (
+        <Fragment key={truong.id}>
+          <span>{truong.tenTruong}</span>
+          <span className={styles.truongGridSoNgay}>{`${soNgayTre} ngày`}</span>
+        </Fragment>
+      ))}
+      {soConLai > 0 && (
+        <div className={styles.xemThemCell}>
+          <Button appearance="transparent" size="small" onClick={() => setExpanded(true)}>
+            {`+${soConLai} trường khác`}
+          </Button>
+        </div>
+      )}
+    </div>
+  )
+}
 
 interface SyncComplianceSectionProps {
   data: DashboardData
@@ -133,17 +192,19 @@ export function SyncComplianceSection({ data, loading }: SyncComplianceSectionPr
     }),
     createTableColumn<PhuongXaItem>({
       columnId: 'truongChuaDongBo',
-      renderHeaderCell: () => 'Trường chưa đồng bộ',
+      // Header 2 "cột" con (Tên trường / Số ngày trễ) khai báo ĐÚNG 1 LẦN ở đây — TableHeaderRow
+      // render renderHeaderCell() 1 lần duy nhất cho toàn bảng, không lặp lại theo từng dòng
+      // Phường/Xã như bản cũ (mỗi dòng tự vẽ <thead> riêng bên trong renderCell).
+      renderHeaderCell: () => (
+        <div className={styles.truongGrid}>
+          <span>Tên trường</span>
+          <span>Số ngày trễ</span>
+        </div>
+      ),
       renderCell: (item) => {
         const list = locTheoNguong(tab, item.truongChuaDongBo)
-        if (list.length === 0) return '—'
-        return (
-          <div className={styles.truongList}>
-            {list.map(({ truong, soNgayTre }) => (
-              <div key={truong.id}>{`${truong.tenTruong} — trễ ${soNgayTre} ngày`}</div>
-            ))}
-          </div>
-        )
+        // key={tab}: đổi tab reset lại trạng thái mở rộng (danh sách/ngưỡng đã đổi hẳn).
+        return <TruongChuaDongBoCell key={tab} list={list} />
       },
     }),
   ]

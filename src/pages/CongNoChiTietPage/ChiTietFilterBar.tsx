@@ -5,11 +5,16 @@ import { RangeFilterField } from '../../components/RangeFilterField'
 import { SearchInput } from '../../components/SearchInput'
 import { NHOM_TUOI_NO_LIST } from '../../utils/congNo'
 import { getKyOptions } from '../../utils/ky'
-import { ALL_OPTION_VALUE, resolveMultiSelectChangeEmpty, withAllOptionSelectedEmpty } from '../../utils/multiSelectAll'
+import {
+  ALL_OPTION_VALUE,
+  resolveMultiSelectChange,
+  resolveMultiSelectChangeEmpty,
+  withAllOptionSelected,
+  withAllOptionSelectedEmpty,
+} from '../../utils/multiSelectAll'
 import type { ChiTietFilters } from './useChiTietFilters'
 
 const KY_OPTIONS = getKyOptions()
-const TAT_CA = 'all'
 
 interface ChiTietFilterBarProps {
   draft: ChiTietFilters
@@ -37,6 +42,8 @@ export function ChiTietFilterBar({
 
   const khoiLabel = draft.khoiList.length === 0 ? 'Tất cả khối' : draft.khoiList.join(', ')
   const lopLabel = draft.lopList.length === 0 ? 'Tất cả lớp' : draft.lopList.join(', ')
+  const nhomTuoiNoLabel =
+    draft.nhomTuoiNoList.length === NHOM_TUOI_NO_LIST.length ? 'Tất cả nhóm' : draft.nhomTuoiNoList.join(', ')
 
   // Đổi Khối (multi) → bỏ khỏi Lớp đã chọn những lớp không còn thuộc các khối mới chọn.
   function handleKhoiChange(values: string[]) {
@@ -129,11 +136,14 @@ export function ChiTietFilterBar({
       <Field label="Nhóm tuổi nợ">
         <Dropdown
           positioning={{ position: 'below', align: 'start', fallbackPositions: ['above'] }}
-          value={draft.nhomTuoiNo === TAT_CA ? 'Tất cả nhóm' : draft.nhomTuoiNo}
-          selectedOptions={[draft.nhomTuoiNo]}
-          onOptionSelect={(_, data) => data.optionValue && setDraft({ nhomTuoiNo: data.optionValue })}
+          multiselect
+          value={nhomTuoiNoLabel}
+          selectedOptions={withAllOptionSelected(NHOM_TUOI_NO_LIST, draft.nhomTuoiNoList)}
+          onOptionSelect={(_, data) =>
+            setDraft({ nhomTuoiNoList: resolveMultiSelectChange(NHOM_TUOI_NO_LIST, data) })
+          }
         >
-          <Option value={TAT_CA}>Tất cả nhóm</Option>
+          <Option value={ALL_OPTION_VALUE}>Tất cả</Option>
           {NHOM_TUOI_NO_LIST.map((nhom) => (
             <Option key={nhom} value={nhom}>
               {nhom}

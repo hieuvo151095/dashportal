@@ -12,6 +12,7 @@ import {
 import { NHOM_TUOI_NO_LIST, nhomTuoiNoCua } from '../../utils/congNo'
 import { soNgayTreCuaTruong } from '../../utils/dongBo'
 import { getKyOptions } from '../../utils/ky'
+import { dongBoDemoTheoPhuong } from './syncComplianceMockData'
 import type { DashboardFilters } from './useDashboardFilters'
 
 const SO_THANG_XU_HUONG = 6
@@ -233,29 +234,31 @@ export function useDashboardData(filters: DashboardFilters) {
       }
     })
 
-    // ---- Tuân thủ đồng bộ theo Kỳ, xếp hạng theo Xã/Phường (bỏ qua filter Xã/Phường, chỉ
-    // theo Cấp học + Kỳ — cùng nguyên tắc widget so sánh giữa các khu vực như tyLeThuTheoPhuong
-    // ở trên: tự lọc theo chính chiều đang so sánh sẽ mất ý nghĩa xếp hạng). Tỷ lệ = số trường
-    // đã đồng bộ đúng hạn của Kỳ đang chọn / tổng số trường trong khu vực (định nghĩa case B3).
-    // truongChuaDongBo giữ luôn số ngày trễ của từng trường — mỗi tab "Chậm ..." tự lọc lại
-    // danh sách này theo ngưỡng riêng, không tính lại từ đầu.
+    // ---- Tuân thủ đồng bộ theo Kỳ, xếp hạng theo Xã/Phường ----
+    // Dùng dongBoDemoTheoPhuong (data demo riêng, KHÔNG phải mockDataset.truongList thật — xem
+    // syncComplianceMockData.ts) để widget luôn có đủ 3-5 trường/khu minh hoạ trường hợp danh
+    // sách dài, thay vì phụ thuộc số trường thật (đa số khu chỉ có 1-2 trường thật). Vì vậy
+    // widget này KHÔNG áp filter Cấp học/Xã-Phường của trang (data demo không gắn với 2 chiều
+    // filter đó) — Tỷ lệ = số trường demo đã đồng bộ đúng hạn của Kỳ đang chọn / tổng số trường
+    // demo trong khu vực. truongChuaDongBo giữ luôn số ngày trễ của từng trường — mỗi tab
+    // "Chậm ..." tự lọc lại danh sách này theo ngưỡng riêng, không tính lại từ đầu.
     const dongBoTheoPhuong = phuongXaList.map((px) => {
-      const truongTrongKhu = truongList.filter((t) => t.phuongXaId === px.id && filters.capHocList.includes(t.capHoc))
-      const truongChuaDongBo = truongTrongKhu
+      const truongDemoTrongKhu = dongBoDemoTheoPhuong[px.id] ?? []
+      const truongChuaDongBo = truongDemoTrongKhu
         .map((truong) => ({ truong, soNgayTre: soNgayTreCuaTruong(truong, filters.ky) }))
         .filter((item) => item.soNgayTre > 0)
-      const soDungHan = truongTrongKhu.length - truongChuaDongBo.length
+      const soDungHan = truongDemoTrongKhu.length - truongChuaDongBo.length
       return {
         phuongXa: px,
-        soTruong: truongTrongKhu.length,
+        soTruong: truongDemoTrongKhu.length,
         soDungHan,
-        tyLeDongBo: truongTrongKhu.length === 0 ? 0 : soDungHan / truongTrongKhu.length,
+        tyLeDongBo: truongDemoTrongKhu.length === 0 ? 0 : soDungHan / truongDemoTrongKhu.length,
         truongChuaDongBo,
       }
     })
 
     return { phanTichCapHoc, dongBoTheoPhuong }
-  }, [filters.ky, filters.phuongXaId, filters.capHocList])
+  }, [filters.ky, filters.phuongXaId])
 
   return { ...data, ...phanTich }
 }

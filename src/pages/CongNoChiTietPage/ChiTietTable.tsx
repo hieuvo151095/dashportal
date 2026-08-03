@@ -54,7 +54,6 @@ const COLUMN_SIZING_OPTIONS = {
   hanThanhToan: COL_NGAY,
   soNgayQuaHan: COL_SO_LUONG,
   nhomTuoiNo: COL_BADGE,
-  lyDoNo: COL_TEN,
 }
 
 function mauSoNgayQuaHan(soNgay: number): string {
@@ -132,11 +131,6 @@ export function ChiTietTable({ rows, filters }: ChiTietTableProps) {
           {item.nhomTuoiNo}
         </Badge>
       ),
-    }),
-    createTableColumn<DebtRow>({
-      columnId: 'lyDoNo',
-      renderHeaderCell: () => 'Lý do nợ/Ghi chú',
-      renderCell: (item) => item.lyDoNo,
     }),
   ]
 

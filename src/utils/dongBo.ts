@@ -1,5 +1,12 @@
 import type { Truong } from '../mock-data'
 
+// Chữ ký hẹp hơn Truong đầy đủ — chỉ cần ngayDongBoTheoKy — để soNgayTreCuaTruong dùng được cả
+// cho Truong thật lẫn dữ liệu demo riêng của widget "Tình trạng đồng bộ dữ liệu" (xem
+// src/pages/DashboardPage/syncComplianceMockData.ts), vốn không phải Truong thật.
+interface CoNgayDongBoTheoKy {
+  ngayDongBoTheoKy: Record<string, string>
+}
+
 // Hạn chót đồng bộ dữ liệu của 1 kỳ = ngày 7 tháng kế tiếp (vd kỳ 07/2026 → hạn 07/08/2026).
 export function hanChotDongBoCuaKy(ky: string): Date {
   const [thangStr, namStr] = ky.split('/')
@@ -11,7 +18,7 @@ export function hanChotDongBoCuaKy(ky: string): Date {
 const MS_MOT_NGAY = 24 * 60 * 60 * 1000
 
 // Số ngày trễ hạn đồng bộ của 1 trường ở 1 kỳ — 0 nếu đồng bộ đúng hạn hoặc sớm hơn (không âm).
-export function soNgayTreCuaTruong(truong: Truong, ky: string): number {
+export function soNgayTreCuaTruong(truong: CoNgayDongBoTheoKy, ky: string): number {
   const ngayDongBo = truong.ngayDongBoTheoKy[ky]
   if (!ngayDongBo) return 0
   const soNgay = (new Date(ngayDongBo).getTime() - hanChotDongBoCuaKy(ky).getTime()) / MS_MOT_NGAY
