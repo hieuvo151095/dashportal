@@ -23,6 +23,7 @@ import {
 import { ArrowSyncRegular } from '@fluentui/react-icons'
 import { useMemo, useState } from 'react'
 import { EmptyState } from '../../components/EmptyState'
+import { LabelValueField } from '../../components/LabelValueField'
 import { Pagination } from '../../components/Pagination'
 import { SearchInput } from '../../components/SearchInput'
 import { SectionCard } from '../../components/SectionCard'
@@ -66,11 +67,17 @@ const useStyles = makeStyles({
   sortDropdown: {
     minWidth: '180px',
   },
+  // maxWidth đủ rộng để bảng "Danh sách trường" hiện hết 4 cột không cần cuộn ngang ở màn
+  // hình desktop thường (>=1280px) — cùng chuẩn với popup breakdown khoản phí hoá đơn
+  // (xem HoaDonBreakdownDialog.tsx).
+  dialogSurface: {
+    maxWidth: '1200px',
+    width: '95vw',
+  },
   dialogSummary: {
     display: 'flex',
-    flexDirection: 'column',
-    gap: tokens.spacingVerticalXS,
-    marginBottom: tokens.spacingVerticalM,
+    columnGap: tokens.spacingHorizontalXXXL,
+    marginBottom: tokens.spacingVerticalL,
   },
 })
 
@@ -234,14 +241,17 @@ export function SyncComplianceSection({ data, loading }: SyncComplianceSectionPr
       )}
 
       <Dialog open={chiTietPx !== null} onOpenChange={(_, dialogData) => !dialogData.open && setChiTietPx(null)}>
-        <DialogSurface>
+        <DialogSurface className={styles.dialogSurface}>
           {chiTietPx && (
             <DialogBody>
               <DialogTitle>{`Danh sách trường — ${chiTietPx.phuongXa.ten}`}</DialogTitle>
               <DialogContent>
                 <div className={styles.dialogSummary}>
-                  <span>{`Tổng số trường: ${formatNumber(chiTietPx.soTruong)}`}</span>
-                  <span>{`Tỷ lệ đồng bộ hiện tại: ${chiTietPx.soDungHan}/${chiTietPx.soTruong} trường là ${Math.round(chiTietPx.tyLeDongBo * 100)}%`}</span>
+                  <LabelValueField label="Tổng số trường" value={formatNumber(chiTietPx.soTruong)} />
+                  <LabelValueField
+                    label="Tỷ lệ đồng bộ hiện tại"
+                    value={`${chiTietPx.soDungHan}/${chiTietPx.soTruong} trường là ${Math.round(chiTietPx.tyLeDongBo * 100)}%`}
+                  />
                 </div>
                 <DataGrid
                   items={chiTietPx.danhSachTruong}

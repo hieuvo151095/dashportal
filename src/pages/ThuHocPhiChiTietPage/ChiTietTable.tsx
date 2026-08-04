@@ -2,6 +2,7 @@ import {
   Avatar,
   Badge,
   Body1,
+  Button,
   Caption1,
   DataGrid,
   DataGridBody,
@@ -13,13 +14,15 @@ import {
   type TableColumnDefinition,
 } from '@fluentui/react-components'
 import { ClockRegular } from '@fluentui/react-icons'
+import { useState } from 'react'
 import { EmptyState } from '../../components/EmptyState'
 import { Pagination } from '../../components/Pagination'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
 import { TODAY } from '../../mock-data'
 import { formatCurrency } from '../../utils/currency'
 import { formatDate } from '../../utils/date'
-import { COL_BADGE, COL_NGAY, COL_SO_TIEN, COL_TEN } from '../../utils/tableColumnSizes'
+import { COL_BADGE, COL_HANH_DONG, COL_NGAY, COL_SO_TIEN, COL_TEN } from '../../utils/tableColumnSizes'
+import { HoaDonBreakdownDialog } from './HoaDonBreakdownDialog'
 import { TRANG_THAI_LABEL, tenHoaDon, type ChiTietRow } from './useChiTietData'
 import type { ChiTietFiltersApi } from './useChiTietFilters'
 
@@ -55,6 +58,7 @@ interface ChiTietTableProps {
 
 export function ChiTietTable({ rows, filters }: ChiTietTableProps) {
   const styles = useStyles()
+  const [breakdownRow, setBreakdownRow] = useState<ChiTietRow | null>(null)
 
   if (rows.length === 0) {
     return <EmptyState />
@@ -160,6 +164,18 @@ export function ChiTietTable({ rows, filters }: ChiTietTableProps) {
         return formatCurrency(item.hoaDon.soTien)
       },
     }),
+    createTableColumn<ChiTietRow>({
+      columnId: 'danhMucPhi',
+      renderHeaderCell: () => 'Danh mục phí',
+      renderCell: (item) =>
+        item.hoaDon ? (
+          <Button appearance="secondary" size="small" style={{ whiteSpace: 'nowrap' }} onClick={() => setBreakdownRow(item)}>
+            Xem chi tiết
+          </Button>
+        ) : (
+          '—'
+        ),
+    }),
   ]
 
   const columnSizingOptions = {
@@ -171,6 +187,7 @@ export function ChiTietTable({ rows, filters }: ChiTietTableProps) {
     taoXacNhan: COL_TEN,
     trangThai: COL_TRANG_THAI_RONG,
     soTien: COL_SO_TIEN,
+    danhMucPhi: COL_HANH_DONG,
   }
 
   return (
@@ -193,6 +210,7 @@ export function ChiTietTable({ rows, filters }: ChiTietTableProps) {
       </DataGrid>
       <Body1 as="p">{`Tổng số dòng: ${rows.length}`}</Body1>
       <Pagination page={page} totalPages={totalPages} totalItems={rows.length} pageSize={PAGE_SIZE} onPageChange={filters.setPage} />
+      <HoaDonBreakdownDialog row={breakdownRow} onClose={() => setBreakdownRow(null)} />
     </div>
   )
 }
