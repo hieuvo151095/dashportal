@@ -236,24 +236,31 @@ export function useDashboardData(filters: DashboardFilters) {
 
     // ---- Tuân thủ đồng bộ theo Kỳ, xếp hạng theo Xã/Phường ----
     // Dùng dongBoDemoTheoPhuong (data demo riêng, KHÔNG phải mockDataset.truongList thật — xem
-    // syncComplianceMockData.ts) để widget luôn có đủ 3-5 trường/khu minh hoạ trường hợp danh
+    // syncComplianceMockData.ts) để widget luôn có đủ 8-10 trường/khu minh hoạ trường hợp danh
     // sách dài, thay vì phụ thuộc số trường thật (đa số khu chỉ có 1-2 trường thật). Vì vậy
     // widget này KHÔNG áp filter Cấp học/Xã-Phường của trang (data demo không gắn với 2 chiều
     // filter đó) — Tỷ lệ = số trường demo đã đồng bộ đúng hạn của Kỳ đang chọn / tổng số trường
-    // demo trong khu vực. truongChuaDongBo giữ luôn số ngày trễ của từng trường — mỗi tab
-    // "Chậm ..." tự lọc lại danh sách này theo ngưỡng riêng, không tính lại từ đầu.
+    // demo trong khu vực. danhSachTruong giữ TOÀN BỘ trường trong khu (cả đã và chưa đồng bộ) —
+    // dùng để hiện bảng chi tiết đầy đủ ở popup "Xem chi tiết".
     const dongBoTheoPhuong = phuongXaList.map((px) => {
       const truongDemoTrongKhu = dongBoDemoTheoPhuong[px.id] ?? []
-      const truongChuaDongBo = truongDemoTrongKhu
-        .map((truong) => ({ truong, soNgayTre: soNgayTreCuaTruong(truong, filters.ky) }))
-        .filter((item) => item.soNgayTre > 0)
-      const soDungHan = truongDemoTrongKhu.length - truongChuaDongBo.length
+      const danhSachTruong = truongDemoTrongKhu.map((truong) => {
+        const soNgayTre = soNgayTreCuaTruong(truong, filters.ky)
+        const daDongBo = soNgayTre === 0
+        return {
+          truong,
+          daDongBo,
+          ngayDongBo: daDongBo ? truong.ngayDongBoTheoKy[filters.ky] : null,
+          soNgayTre,
+        }
+      })
+      const soDungHan = danhSachTruong.filter((item) => item.daDongBo).length
       return {
         phuongXa: px,
         soTruong: truongDemoTrongKhu.length,
         soDungHan,
         tyLeDongBo: truongDemoTrongKhu.length === 0 ? 0 : soDungHan / truongDemoTrongKhu.length,
-        truongChuaDongBo,
+        danhSachTruong,
       }
     })
 
