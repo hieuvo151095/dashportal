@@ -3,6 +3,7 @@ import {
   DataBarVerticalRegular,
   FolderRegular,
   MoneyRegular,
+  SettingsRegular,
 } from '@fluentui/react-icons'
 import type { FluentIcon } from '@fluentui/react-icons'
 
@@ -58,7 +59,10 @@ export const navTree: NavEntry[] = [
       { path: '/cong-no/chi-tiet', label: 'Chi tiết theo trường' },
     ],
   },
+  { type: 'leaf', path: '/thiet-lap', label: 'Thiết lập' },
 ]
+
+export const ThietLapIcon: FluentIcon = SettingsRegular
 
 export const DashboardIcon: FluentIcon = DataBarVerticalRegular
 

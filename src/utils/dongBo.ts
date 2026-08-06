@@ -1,4 +1,5 @@
 import type { Truong } from '../mock-data'
+import { getHanDongBoSoNgay } from './syncSettings'
 
 // Chữ ký hẹp hơn Truong đầy đủ — chỉ cần ngayDongBoTheoKy — để soNgayTreCuaTruong dùng được cả
 // cho Truong thật lẫn dữ liệu demo riêng của widget "Tình trạng đồng bộ dữ liệu" (xem
@@ -7,12 +8,15 @@ interface CoNgayDongBoTheoKy {
   ngayDongBoTheoKy: Record<string, string>
 }
 
-// Hạn chót đồng bộ dữ liệu của 1 kỳ = ngày 7 tháng kế tiếp (vd kỳ 07/2026 → hạn 07/08/2026).
+// Hạn chót đồng bộ dữ liệu của 1 kỳ = ngày thứ N tháng kế tiếp, N đọc từ cấu hình ở trang Thiết
+// lập (mặc định 7, xem utils/syncSettings.ts) — KHÁC với hanChotDongBoCuaKy riêng ở
+// mock-data/truong.ts (hardcode cố định 7, chỉ dùng lúc sinh lịch sử ngày đồng bộ giả lập 1 lần,
+// không đọc lại khi đổi cấu hình).
 export function hanChotDongBoCuaKy(ky: string): Date {
   const [thangStr, namStr] = ky.split('/')
   // Date(năm, tháng, ngày) coi tham số tháng là 0-based — truyền thẳng số tháng 1-based của kỳ
   // vào đúng bằng chỉ số 0-based của tháng KẾ TIẾP, khỏi phải +1 rồi xử lý tràn năm thủ công.
-  return new Date(Number(namStr), Number(thangStr), 7)
+  return new Date(Number(namStr), Number(thangStr), getHanDongBoSoNgay())
 }
 
 const MS_MOT_NGAY = 24 * 60 * 60 * 1000

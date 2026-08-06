@@ -17,7 +17,7 @@ import {
 } from '@fluentui/react-components'
 import { ChevronLeftRegular, ChevronRightRegular } from '@fluentui/react-icons'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { DashboardIcon, isNavGroup, navTree } from '../routes/routeConfig'
+import { DashboardIcon, ThietLapIcon, isNavGroup, navTree } from '../routes/routeConfig'
 
 const COLLAPSED_WIDTH = 64
 const EXPANDED_WIDTH = 260
@@ -91,6 +91,12 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
             </NavSubItemGroup>
           </NavCategory>
         ))}
+
+        <Tooltip content="Thiết lập" relationship="label">
+          <NavItem value="/thiet-lap" icon={<ThietLapIcon />}>
+            {collapsed ? '' : 'Thiết lập'}
+          </NavItem>
+        </Tooltip>
       </NavDrawerBody>
       <NavDrawerFooter>
         <div className={styles.footer}>

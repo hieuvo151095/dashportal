@@ -31,6 +31,7 @@ import { TableHeaderRow } from '../../components/TableHeaderRow'
 import { TableSkeleton } from '../../components/TableSkeleton'
 import { formatNumber } from '../../utils/currency'
 import { formatDate } from '../../utils/date'
+import { getHanDongBoSoNgay } from '../../utils/syncSettings'
 import { COL_BADGE, COL_NGAY, COL_SO_LUONG, COL_TEN } from '../../utils/tableColumnSizes'
 import type { DashboardData } from './useDashboardData'
 
@@ -127,14 +128,19 @@ export function SyncComplianceSection({ data, loading }: SyncComplianceSectionPr
       renderCell: (item) => formatNumber(item.soTruong),
     }),
     createTableColumn<PhuongXaItem>({
-      columnId: 'tyLeDongBo',
-      renderHeaderCell: () => 'Tỷ lệ đồng bộ',
-      renderCell: (item) => `${Math.round(item.tyLeDongBo * 100)}%`,
+      columnId: 'soTruongDaDongBo',
+      renderHeaderCell: () => 'Số trường đã đồng bộ',
+      renderCell: (item) => formatNumber(item.soDungHan),
     }),
     createTableColumn<PhuongXaItem>({
       columnId: 'soTruongChuaDongBo',
       renderHeaderCell: () => 'Số trường chưa đồng bộ',
       renderCell: (item) => formatNumber(item.soTruong - item.soDungHan),
+    }),
+    createTableColumn<PhuongXaItem>({
+      columnId: 'tyLeDongBo',
+      renderHeaderCell: () => 'Tỷ lệ đồng bộ',
+      renderCell: (item) => `${Math.round(item.tyLeDongBo * 100)}%`,
     }),
     createTableColumn<PhuongXaItem>({
       columnId: 'danhSachTruong',
@@ -153,8 +159,9 @@ export function SyncComplianceSection({ data, loading }: SyncComplianceSectionPr
   const columnSizingOptions = {
     tenPhuongXa: COL_TEN_PHUONG_XA,
     soTruong: COL_SO_LUONG,
-    tyLeDongBo: COL_SO_LUONG,
+    soTruongDaDongBo: COL_SO_LUONG,
     soTruongChuaDongBo: COL_SO_LUONG,
+    tyLeDongBo: COL_SO_LUONG,
     danhSachTruong: COL_DANH_SACH_TRUONG,
   }
 
@@ -196,8 +203,7 @@ export function SyncComplianceSection({ data, loading }: SyncComplianceSectionPr
     <SectionCard title="Tình trạng đồng bộ dữ liệu" icon={ArrowSyncRegular} iconColor={tokens.colorPaletteTealForeground2}>
       <MessageBar intent="info" className={styles.note}>
         <MessageBarBody>
-          Hạn đồng bộ = ngày 7 của tháng kế tiếp Kỳ báo cáo. "Đã hoàn tất" = 100% trường trong khu vực đã đồng bộ đúng
-          hạn.
+          {`Hạn đồng bộ = ngày ${getHanDongBoSoNgay()} của tháng kế tiếp Kỳ báo cáo. "Đã hoàn tất" = 100% trường trong khu vực đã đồng bộ đúng hạn.`}
         </MessageBarBody>
       </MessageBar>
 

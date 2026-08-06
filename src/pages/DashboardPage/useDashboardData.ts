@@ -264,7 +264,13 @@ export function useDashboardData(filters: DashboardFilters) {
       }
     })
 
-    return { phanTichCapHoc, dongBoTheoPhuong }
+    // Trung bình cộng Tỷ lệ đồng bộ của TOÀN BỘ 168 Phường/Xã (kể cả Đặc khu Côn Đảo = 0%) —
+    // dùng cho KPI card "Tình trạng đồng bộ dữ liệu" ở KpiRow, tính từ đúng nguồn dữ liệu demo
+    // riêng của widget (dongBoTheoPhuong), không dùng mockDataset.truongList thật.
+    const tyLeDongBoTrungBinh =
+      dongBoTheoPhuong.length === 0 ? 0 : sum(dongBoTheoPhuong, (item) => item.tyLeDongBo) / dongBoTheoPhuong.length
+
+    return { phanTichCapHoc, dongBoTheoPhuong, tyLeDongBoTrungBinh }
   }, [filters.ky, filters.phuongXaId])
 
   return { ...data, ...phanTich }

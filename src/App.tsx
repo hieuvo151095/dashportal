@@ -6,6 +6,7 @@ import { DanhMucPhiTongHopPage } from './pages/DanhMucPhiTongHopPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
 import { PortalShell } from './pages/PortalShell'
+import { ThietLapPage } from './pages/ThietLapPage'
 import { ThuHocPhiChiTietPage } from './pages/ThuHocPhiChiTietPage'
 import { ThuHocPhiTongHopPage } from './pages/ThuHocPhiTongHopPage'
 import { ProtectedRoute } from './routes/ProtectedRoute'
@@ -24,6 +25,7 @@ function App() {
           <Route path="/thu-hoc-phi/chi-tiet" element={<ThuHocPhiChiTietPage />} />
           <Route path="/cong-no/tong-hop" element={<CongNoTongHopPage />} />
           <Route path="/cong-no/chi-tiet" element={<CongNoChiTietPage />} />
+          <Route path="/thiet-lap" element={<ThietLapPage />} />
         </Route>
       </Route>
 
