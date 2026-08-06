@@ -27,8 +27,8 @@ export function KpiRow({ data }: KpiRowProps) {
         icon={MoneyRegular}
         label="Tổng công nợ"
         value={formatCurrencyWithUnit(kpi.tongCongNo)}
-        accent="warning"
-        color="marigold"
+        accent="gold"
+        color="gold"
       />
       <KpiCard
         icon={PeopleRegular}
@@ -40,7 +40,7 @@ export function KpiRow({ data }: KpiRowProps) {
         icon={AlertRegular}
         label="Tỉ lệ nợ trung bình"
         value={`${Math.round(kpi.tyLeNoTrungBinh * 100)}%`}
-        color="purple"
+        color="navy"
       />
       <KpiCard
         icon={WarningRegular}

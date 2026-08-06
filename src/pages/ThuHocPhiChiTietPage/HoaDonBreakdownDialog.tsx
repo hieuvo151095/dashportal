@@ -17,6 +17,7 @@ import {
 } from '@fluentui/react-components'
 import { useMemo } from 'react'
 import { LabelValueField } from '../../components/LabelValueField'
+import { MonoAmount } from '../../components/MonoAmount'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
 import { getHoaDonBreakdown, type HoaDonBreakdownLine } from '../../mock-data/hoaDonBreakdown'
 import { formatCurrency } from '../../utils/currency'
@@ -78,7 +79,7 @@ export function HoaDonBreakdownDialog({ row, onClose }: HoaDonBreakdownDialogPro
     createTableColumn<HoaDonBreakdownLine>({
       columnId: 'soTien',
       renderHeaderCell: () => 'Số tiền',
-      renderCell: (item) => formatCurrency(item.soTien),
+      renderCell: (item) => <MonoAmount>{formatCurrency(item.soTien)}</MonoAmount>,
     }),
     createTableColumn<HoaDonBreakdownLine>({
       columnId: 'donViTinh',
@@ -155,7 +156,7 @@ export function HoaDonBreakdownDialog({ row, onClose }: HoaDonBreakdownDialogPro
 
               <div className={styles.tongCong}>
                 <span>Tổng cộng:</span>
-                <span>{formatCurrency(tongBreakdown)}</span>
+                <MonoAmount>{formatCurrency(tongBreakdown)}</MonoAmount>
               </div>
             </DialogContent>
             <DialogActions>

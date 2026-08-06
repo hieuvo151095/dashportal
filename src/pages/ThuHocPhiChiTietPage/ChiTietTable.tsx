@@ -16,6 +16,7 @@ import {
 import { ClockRegular } from '@fluentui/react-icons'
 import { useState } from 'react'
 import { EmptyState } from '../../components/EmptyState'
+import { MonoAmount } from '../../components/MonoAmount'
 import { Pagination } from '../../components/Pagination'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
 import { TODAY } from '../../mock-data'
@@ -156,12 +157,16 @@ export function ChiTietTable({ rows, filters }: ChiTietTableProps) {
         if (item.hoaDon.trangThai === 'Thanh toán một phần') {
           return (
             <div className={styles.twoLine}>
-              <Caption1>{`Đã trả: ${formatCurrency(item.hoaDon.daTra)}`}</Caption1>
-              <Caption1 className={styles.muted}>{`Còn lại: ${formatCurrency(item.hoaDon.conLai)}`}</Caption1>
+              <Caption1>
+                Đã trả: <MonoAmount>{formatCurrency(item.hoaDon.daTra)}</MonoAmount>
+              </Caption1>
+              <Caption1 className={styles.muted}>
+                Còn lại: <MonoAmount>{formatCurrency(item.hoaDon.conLai)}</MonoAmount>
+              </Caption1>
             </div>
           )
         }
-        return formatCurrency(item.hoaDon.soTien)
+        return <MonoAmount>{formatCurrency(item.hoaDon.soTien)}</MonoAmount>
       },
     }),
     createTableColumn<ChiTietRow>({

@@ -13,6 +13,7 @@ import {
 import { EyeRegular, MoneyHandRegular } from '@fluentui/react-icons'
 import { useNavigate } from 'react-router-dom'
 import { EmptyState } from '../../components/EmptyState'
+import { MonoAmount } from '../../components/MonoAmount'
 import { SectionCard } from '../../components/SectionCard'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
 import { TableSkeleton } from '../../components/TableSkeleton'
@@ -61,7 +62,7 @@ export function TopDebtSchoolsTable({ data, loading }: TopDebtSchoolsTableProps)
     createTableColumn<TopDebtRow>({
       columnId: 'congNo',
       renderHeaderCell: () => 'Số tiền công nợ',
-      renderCell: (item) => formatCurrency(item.tongNo),
+      renderCell: (item) => <MonoAmount>{formatCurrency(item.tongNo)}</MonoAmount>,
     }),
     createTableColumn<TopDebtRow>({
       columnId: 'soHocSinh',

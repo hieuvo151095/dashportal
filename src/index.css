@@ -10,3 +10,26 @@ body,
   height: 100%;
   margin: 0;
 }
+
+/* VaultLine — serif tiêu đề (Roboto Serif thay DM Serif Display, xem CLAUDE.md/yêu cầu gốc) chỉ
+   áp cho Display/Headline/Subhead. Fluent không có token fontFamily riêng cho heading nên nhắm
+   thẳng class slot ổn định (fui-Display/Title1/Title2/Title3/Subtitle1/Subtitle2) mà
+   @fluentui/react-text export — 1 chỗ, áp dụng toàn app, không phải sửa từng trang. */
+.fui-Display,
+.fui-LargeTitle,
+.fui-Title1,
+.fui-Title2,
+.fui-Title3,
+.fui-Subtitle1,
+.fui-Subtitle2 {
+  /* !important: Fluent (Griffel) chèn CSS-in-JS runtime SAU index.css trong <head>, cùng độ ưu
+     tiên (1 class) nên luôn thắng theo thứ tự chèn sau — không có hook token riêng cho font
+     heading để ghi đè "sạch" hơn (xem vaultlineTheme.ts). */
+  font-family: 'Roboto Serif', Georgia, serif !important;
+}
+
+/* VaultLine Dialog: Large radius (6px) — Fluent DialogSurface mặc định dùng borderRadiusXLarge
+   (8px). Không có prop chỉnh riêng nên nhắm thẳng class slot ổn định fui-DialogSurface. */
+.fui-DialogSurface {
+  border-radius: 6px !important;
+}

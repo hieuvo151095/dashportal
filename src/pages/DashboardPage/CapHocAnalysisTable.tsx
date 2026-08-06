@@ -4,14 +4,16 @@ import {
   DataGridBody,
   DataGridCell,
   DataGridRow,
+  Tooltip,
   createTableColumn,
   makeStyles,
   mergeClasses,
   tokens,
   type TableColumnDefinition,
 } from '@fluentui/react-components'
-import { HatGraduationRegular } from '@fluentui/react-icons'
+import { HatGraduationRegular, InfoRegular } from '@fluentui/react-icons'
 import { EmptyState } from '../../components/EmptyState'
+import { MonoAmount } from '../../components/MonoAmount'
 import { SectionCard } from '../../components/SectionCard'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
 import { TableSkeleton } from '../../components/TableSkeleton'
@@ -32,11 +34,25 @@ const useStyles = makeStyles({
       backgroundColor: tokens.colorNeutralBackground2Hover,
     },
   },
+  khacLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    columnGap: tokens.spacingHorizontalXS,
+  },
+  khacIcon: {
+    color: tokens.colorNeutralForeground3,
+    cursor: 'help',
+  },
 })
 
+const GHI_CHU_KHAC =
+  'Gồm các nhóm trường Liên cấp (trải dài từ cấp 1 đến cấp 3) và Trung tâm Giáo dục thường xuyên (TTGDTX).'
+
 type CapHocRow = DashboardData['phanTichCapHoc'][number]
-type TotalRow = Pick<CapHocRow, 'soTruong' | 'soHocSinh' | 'tongPhaiThu' | 'daThu' | 'tyLe'> & { isTotal: true }
-type GridRow = (CapHocRow & { isTotal?: false }) | TotalRow
+type SoLieuRow = Pick<CapHocRow, 'soTruong' | 'soHocSinh' | 'tongPhaiThu' | 'daThu' | 'tyLe'>
+type KhacRow = SoLieuRow & { isKhac: true; isTotal?: false }
+type TotalRow = SoLieuRow & { isTotal: true; isKhac?: false }
+type GridRow = (CapHocRow & { isTotal?: false; isKhac?: false }) | KhacRow | TotalRow
 
 interface CapHocAnalysisTableProps {
   data: DashboardData
@@ -73,13 +89,30 @@ export function CapHocAnalysisTable({ data, loading }: CapHocAnalysisTableProps)
   }
   total.tyLe = total.tongPhaiThu === 0 ? 0 : total.daThu / total.tongPhaiThu
 
-  const items: GridRow[] = [...rows, total]
+  // Hàng "Khác" để dành chỗ cho nhóm trường Liên cấp/TTGDTX — luôn hiện 0, không tính vào
+  // TỔNG CỘNG (total cộng dồn từ rows, không bao gồm hàng này).
+  const khac: KhacRow = { isKhac: true, soTruong: 0, soHocSinh: 0, tongPhaiThu: 0, daThu: 0, tyLe: 0 }
+
+  const items: GridRow[] = [...rows, khac, total]
 
   const columns: TableColumnDefinition<GridRow>[] = [
     createTableColumn<GridRow>({
       columnId: 'capHoc',
       renderHeaderCell: () => 'Cấp học',
-      renderCell: (item) => (item.isTotal ? 'TỔNG CỘNG' : item.capHoc),
+      renderCell: (item) => {
+        if (item.isTotal) return 'TỔNG CỘNG'
+        if (item.isKhac) {
+          return (
+            <div className={styles.khacLabel}>
+              <span>Khác</span>
+              <Tooltip content={GHI_CHU_KHAC} relationship="label">
+                <InfoRegular className={styles.khacIcon} fontSize={16} />
+              </Tooltip>
+            </div>
+          )
+        }
+        return item.capHoc
+      },
     }),
     createTableColumn<GridRow>({
       columnId: 'soTruong',
@@ -94,12 +127,12 @@ export function CapHocAnalysisTable({ data, loading }: CapHocAnalysisTableProps)
     createTableColumn<GridRow>({
       columnId: 'tongPhaiThu',
       renderHeaderCell: () => 'Tổng phải thu',
-      renderCell: (item) => formatCurrency(item.tongPhaiThu),
+      renderCell: (item) => <MonoAmount>{formatCurrency(item.tongPhaiThu)}</MonoAmount>,
     }),
     createTableColumn<GridRow>({
       columnId: 'daThu',
       renderHeaderCell: () => 'Đã thu',
-      renderCell: (item) => formatCurrency(item.daThu),
+      renderCell: (item) => <MonoAmount>{formatCurrency(item.daThu)}</MonoAmount>,
     }),
     createTableColumn<GridRow>({
       columnId: 'tyLe',
@@ -122,7 +155,7 @@ export function CapHocAnalysisTable({ data, loading }: CapHocAnalysisTableProps)
       <DataGrid
         items={items}
         columns={columns}
-        getRowId={(item: GridRow) => (item.isTotal ? 'total' : item.capHoc)}
+        getRowId={(item: GridRow) => (item.isTotal ? 'total' : item.isKhac ? 'khac' : item.capHoc)}
         resizableColumns
         columnSizingOptions={columnSizingOptions}
       >

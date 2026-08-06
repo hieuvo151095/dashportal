@@ -1,6 +1,7 @@
 import { Body1, Card, Caption1, makeStyles, tokens } from '@fluentui/react-components'
 import { ArrowDownRegular, ArrowUpRegular, type FluentIcon } from '@fluentui/react-icons'
 import type { ReactNode } from 'react'
+import { MonoAmount } from './MonoAmount'
 
 const useStyles = makeStyles({
   card: {
@@ -12,6 +13,8 @@ const useStyles = makeStyles({
     // lấp đầy đúng chiều cao hàng grid, các card thiếu dòng chỉ để trống khoảng dưới.
     height: '100%',
     boxSizing: 'border-box',
+    // VaultLine Subtle shadow (2 lớp) — Fluent Card mặc định dùng shadow4 (đậm hơn spec).
+    boxShadow: '0 1px 3px rgba(30, 41, 59, 0.04), 0 1px 2px rgba(30, 41, 59, 0.02)',
   },
   header: {
     display: 'flex',
@@ -49,23 +52,29 @@ const useStyles = makeStyles({
   },
 })
 
-export type KpiAccent = 'default' | 'success' | 'warning' | 'danger'
+export type KpiAccent = 'default' | 'success' | 'warning' | 'danger' | 'gold'
 
 const ACCENT_COLOR: Record<KpiAccent, string> = {
   default: tokens.colorNeutralForeground1,
   success: tokens.colorPaletteGreenForeground1,
-  warning: tokens.colorPaletteDarkOrangeForeground1,
+  // Yellow, không phải DarkOrange — DarkOrange đã đổi riêng cho mức "severe" ở badge tuổi nợ
+  // (xem vaultlineTheme.ts), dùng chung sẽ lệch màu với card nền marigold (cũng Warning amber).
+  warning: tokens.colorPaletteYellowForeground1,
   danger: tokens.colorPaletteRedForeground1,
+  // Vàng đồng — dùng tiết chế, chỉ cho số liệu quan trọng/nhấn mạnh (vd Tổng công nợ, KPI
+  // chính) theo đúng yêu cầu gốc, không lạm dụng cho mọi KPI.
+  gold: tokens.colorPaletteGoldForeground2,
 }
 
 // Màu KPI card — dùng token palette có sẵn trong theme Fluent 2 (colorPaletteXBackground2 cho
 // nền cả card, colorPaletteXForeground2 cho badge/icon), không hardcode hex mới. Các màu accent
 // chung (blue/purple/teal/...) trong Fluent 2 chỉ có 1 tầng Background — nên card dùng tầng nhạt
 // đó, còn badge dùng chính màu Foreground2 làm nền đặc (đậm hơn hẳn) + icon trắng để nổi bật.
-export type KpiColor = 'blue' | 'green' | 'marigold' | 'purple' | 'teal' | 'red'
+export type KpiColor = 'blue' | 'green' | 'marigold' | 'navy' | 'red' | 'gold'
 
 const COLOR_TOKENS: Record<KpiColor, { cardBackground: string; badgeBackground: string }> = {
   blue: { cardBackground: tokens.colorPaletteBlueBackground2, badgeBackground: tokens.colorPaletteBlueForeground2 },
+  gold: { cardBackground: tokens.colorPaletteGoldBackground2, badgeBackground: tokens.colorPaletteGoldForeground2 },
   green: {
     cardBackground: tokens.colorPaletteGreenBackground2,
     badgeBackground: tokens.colorPaletteGreenForeground2,
@@ -74,11 +83,7 @@ const COLOR_TOKENS: Record<KpiColor, { cardBackground: string; badgeBackground: 
     cardBackground: tokens.colorPaletteMarigoldBackground2,
     badgeBackground: tokens.colorPaletteMarigoldForeground2,
   },
-  purple: {
-    cardBackground: tokens.colorPalettePurpleBackground2,
-    badgeBackground: tokens.colorPalettePurpleForeground2,
-  },
-  teal: { cardBackground: tokens.colorPaletteTealBackground2, badgeBackground: tokens.colorPaletteTealForeground2 },
+  navy: { cardBackground: tokens.colorPaletteNavyBackground2, badgeBackground: tokens.colorPaletteNavyForeground2 },
   red: { cardBackground: tokens.colorPaletteRedBackground2, badgeBackground: tokens.colorPaletteRedForeground1 },
 }
 
@@ -134,9 +139,9 @@ export function KpiCard({
         )}
       </div>
       <div className={styles.valueRow}>
-        <span className={styles.value} style={{ color: ACCENT_COLOR[accent] }}>
+        <MonoAmount className={styles.value} style={{ color: ACCENT_COLOR[accent] }}>
           {value}
-        </span>
+        </MonoAmount>
         {trailing}
       </div>
       {subValue && <Body1>{subValue}</Body1>}

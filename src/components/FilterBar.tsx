@@ -14,6 +14,8 @@ const useStyles = makeStyles({
     rowGap: tokens.spacingVerticalS,
     marginBottom: tokens.spacingVerticalL,
     padding: tokens.spacingHorizontalL,
+    // VaultLine Subtle shadow — Fluent Card mặc định dùng shadow4 (đậm hơn spec).
+    boxShadow: '0 1px 3px rgba(30, 41, 59, 0.04), 0 1px 2px rgba(30, 41, 59, 0.02)',
   },
   fields: {
     display: 'flex',
@@ -50,7 +52,7 @@ export function FilterBar({ children, action, onApply, onReset }: FilterBarProps
   const styles = useStyles()
 
   return (
-    <Card className={styles.card}>
+    <Card className={styles.card} appearance="outline">
       <div className={styles.fields}>{children}</div>
       <div className={styles.buttons}>
         {action}

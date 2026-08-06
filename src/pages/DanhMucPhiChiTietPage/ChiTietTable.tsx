@@ -8,6 +8,7 @@ import {
   type TableColumnDefinition,
 } from '@fluentui/react-components'
 import { EmptyState } from '../../components/EmptyState'
+import { MonoAmount } from '../../components/MonoAmount'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
 import type { KhoanPhi } from '../../mock-data'
 import { formatCurrency } from '../../utils/currency'
@@ -43,7 +44,7 @@ export function ChiTietTable({ rows }: ChiTietTableProps) {
     createTableColumn<KhoanPhi>({
       columnId: 'soTien',
       renderHeaderCell: () => 'Số tiền',
-      renderCell: (item) => formatCurrency(item.soTien),
+      renderCell: (item) => <MonoAmount>{formatCurrency(item.soTien)}</MonoAmount>,
     }),
     createTableColumn<KhoanPhi>({
       columnId: 'donViTinh',

@@ -18,6 +18,8 @@ import { EmptyState } from '../../components/EmptyState'
 import { HeThongBadge } from '../../components/HeThongBadge'
 import { Pagination } from '../../components/Pagination'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
+import { MonoAmount } from '../../components/MonoAmount'
+import { BADGE_INFO_STYLE } from '../../utils/badgeColors'
 import { formatCurrency, formatNumber } from '../../utils/currency'
 import { ngayDongBoGanNhat } from '../../utils/dongBo'
 import {
@@ -147,15 +149,21 @@ export function OverviewTable({ rows, filters }: OverviewTableProps) {
       renderHeaderCell: () => 'Chi tiết thu',
       renderCell: (item) => (
         <div className={styles.twoLine}>
-          <Caption1>{`Tiền mặt: ${formatCurrency(item.tienMat)}`}</Caption1>
-          <Caption1 className={styles.muted}>{`CK/Thu hộ: ${formatCurrency(item.chuyenKhoan)}`}</Caption1>
+          <Caption1>
+            Tiền mặt: <MonoAmount>{formatCurrency(item.tienMat)}</MonoAmount>
+          </Caption1>
+          <Caption1 className={styles.muted}>
+            CK/Thu hộ: <MonoAmount>{formatCurrency(item.chuyenKhoan)}</MonoAmount>
+          </Caption1>
         </div>
       ),
     }),
     createTableColumn<GridRow>({
       columnId: 'tongThu',
       renderHeaderCell: () => 'Tổng thu',
-      renderCell: (item) => <span className={styles.tongThu}>{formatCurrency(item.tongThu)}</span>,
+      renderCell: (item) => (
+        <MonoAmount className={styles.tongThu}>{formatCurrency(item.tongThu)}</MonoAmount>
+      ),
     }),
     createTableColumn<GridRow>({
       columnId: 'hdConLai',
@@ -165,7 +173,7 @@ export function OverviewTable({ rows, filters }: OverviewTableProps) {
     createTableColumn<GridRow>({
       columnId: 'phiConLai',
       renderHeaderCell: () => 'Phí còn lại',
-      renderCell: (item) => formatCurrency(item.conLaiTien),
+      renderCell: (item) => <MonoAmount>{formatCurrency(item.conLaiTien)}</MonoAmount>,
     }),
     createTableColumn<GridRow>({
       columnId: 'trangThai',
@@ -174,7 +182,11 @@ export function OverviewTable({ rows, filters }: OverviewTableProps) {
         item.isTotal ? (
           ''
         ) : (
-          <Badge appearance="tint" color={TRANG_THAI_BADGE_COLOR[item.trangThaiTongHop]}>
+          <Badge
+            appearance="tint"
+            color={TRANG_THAI_BADGE_COLOR[item.trangThaiTongHop]}
+            style={TRANG_THAI_BADGE_COLOR[item.trangThaiTongHop] === 'informative' ? BADGE_INFO_STYLE : undefined}
+          >
             {item.trangThaiTongHop}
           </Badge>
         ),

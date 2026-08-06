@@ -11,9 +11,11 @@ import {
   type TableColumnDefinition,
 } from '@fluentui/react-components'
 import { EmptyState } from '../../components/EmptyState'
+import { MonoAmount } from '../../components/MonoAmount'
 import { Pagination } from '../../components/Pagination'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
 import type { NhomTuoiNo } from '../../mock-data'
+import { BADGE_INFO_STYLE } from '../../utils/badgeColors'
 import { formatCurrency } from '../../utils/currency'
 import { formatDate } from '../../utils/date'
 import {
@@ -107,7 +109,7 @@ export function ChiTietTable({ rows, filters }: ChiTietTableProps) {
     createTableColumn<DebtRow>({
       columnId: 'soTienNo',
       renderHeaderCell: () => 'Số tiền nợ',
-      renderCell: (item) => formatCurrency(item.hoaDon.conLai),
+      renderCell: (item) => <MonoAmount>{formatCurrency(item.hoaDon.conLai)}</MonoAmount>,
     }),
     createTableColumn<DebtRow>({
       columnId: 'hanThanhToan',
@@ -127,7 +129,11 @@ export function ChiTietTable({ rows, filters }: ChiTietTableProps) {
       columnId: 'nhomTuoiNo',
       renderHeaderCell: () => 'Nhóm tuổi nợ',
       renderCell: (item) => (
-        <Badge appearance="tint" color={BADGE_COLOR[item.nhomTuoiNo]}>
+        <Badge
+          appearance="tint"
+          color={BADGE_COLOR[item.nhomTuoiNo]}
+          style={BADGE_COLOR[item.nhomTuoiNo] === 'informative' ? BADGE_INFO_STYLE : undefined}
+        >
           {item.nhomTuoiNo}
         </Badge>
       ),

@@ -12,9 +12,11 @@ import {
 import { EyeRegular } from '@fluentui/react-icons'
 import { useNavigate } from 'react-router-dom'
 import { EmptyState } from '../../components/EmptyState'
+import { MonoAmount } from '../../components/MonoAmount'
 import { Pagination } from '../../components/Pagination'
 import { TableHeaderRow } from '../../components/TableHeaderRow'
 import type { NhomTuoiNo } from '../../mock-data'
+import { BADGE_INFO_STYLE } from '../../utils/badgeColors'
 import { formatCurrency, formatNumber } from '../../utils/currency'
 import { formatDate } from '../../utils/date'
 import { ngayDongBoGanNhat } from '../../utils/dongBo'
@@ -88,13 +90,17 @@ export function SchoolDebtTable({ rows, filters }: SchoolDebtTableProps) {
     createTableColumn<Row>({
       columnId: 'soTien',
       renderHeaderCell: () => 'Số tiền chưa thu',
-      renderCell: (item) => formatCurrency(item.soTienChuaThu),
+      renderCell: (item) => <MonoAmount>{formatCurrency(item.soTienChuaThu)}</MonoAmount>,
     }),
     createTableColumn<Row>({
       columnId: 'nhomUuThe',
       renderHeaderCell: () => 'Nhóm tuổi nợ chiếm ưu thế',
       renderCell: (item) => (
-        <Badge appearance="tint" color={BADGE_COLOR[item.nhomTuoiNoUuThe as NhomTuoiNo]}>
+        <Badge
+          appearance="tint"
+          color={BADGE_COLOR[item.nhomTuoiNoUuThe as NhomTuoiNo]}
+          style={BADGE_COLOR[item.nhomTuoiNoUuThe as NhomTuoiNo] === 'informative' ? BADGE_INFO_STYLE : undefined}
+        >
           {item.nhomTuoiNoUuThe}
         </Badge>
       ),
