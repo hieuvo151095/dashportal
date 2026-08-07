@@ -19,7 +19,7 @@ import { AlertRegular, PersonRegular, SettingsRegular, SignOutRegular } from '@f
 import { Fragment } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { getBreadcrumbTrail } from '../routes/routeConfig'
-import { logout } from '../utils/auth'
+import { TEN_NGUOI_DUNG, logout } from '../utils/auth'
 
 const useStyles = makeStyles({
   root: {
@@ -117,7 +117,7 @@ export function Header() {
         <Menu>
           <MenuTrigger disableButtonEnhancement>
             <Button appearance="subtle" className={styles.avatarButton}>
-              <Avatar name="Lãnh đạo Sở GD&ĐT" color="colorful" />
+              <Avatar name={TEN_NGUOI_DUNG} color="colorful" />
             </Button>
           </MenuTrigger>
           <MenuPopover>

@@ -2,8 +2,6 @@ import {
   Body1,
   Button,
   Field,
-  MessageBar,
-  MessageBarBody,
   SpinButton,
   Tab,
   TabList,
@@ -17,6 +15,7 @@ import { useState } from 'react'
 import { PageTitle } from '../../components/PageTitle'
 import { SectionCard } from '../../components/SectionCard'
 import { getHanDongBoSoNgay, setHanDongBoSoNgay } from '../../utils/syncSettings'
+import { AiAssistantSettings } from './AiAssistantSettings'
 
 const useStyles = makeStyles({
   tabList: {
@@ -95,10 +94,8 @@ export function ThietLapPage() {
       )}
 
       {tab === 'ai-assistant' && (
-        <SectionCard title="AI Assistant">
-          <MessageBar intent="info">
-            <MessageBarBody>Chưa cấu hình — sẽ cập nhật sau.</MessageBarBody>
-          </MessageBar>
+        <SectionCard title="AI Assistant" note="Kết nối trực tiếp tới Claude API (Anthropic) từ trình duyệt — dùng cho khung chat trợ lý AI ở góc dưới phải.">
+          <AiAssistantSettings />
         </SectionCard>
       )}
     </>

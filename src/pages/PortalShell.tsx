@@ -1,6 +1,7 @@
 import { makeStyles, tokens } from '@fluentui/react-components'
 import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
+import { FloatingChatWidget } from '../components/FloatingChatWidget'
 import { Header } from '../components/Header'
 import { Sidebar } from '../components/Sidebar'
 
@@ -36,6 +37,7 @@ export function PortalShell() {
           <Outlet />
         </main>
       </div>
+      <FloatingChatWidget />
     </div>
   )
 }
